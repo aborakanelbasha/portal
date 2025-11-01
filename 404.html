@@ -1,209 +1,3 @@
-
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <title>بوابة تصاريح العمل | النجار للمقاولات</title>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta name="robots" content="noindex, nofollow">
-    <meta name="googlebot" content="noindex, nofollow">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-
-
-    <script
-      type="text/javascript"
-      src="/js/lib/dummy.js"
-      
-    ></script>
-
-
-
-    <style id="compiled-css" type="text/css">
-      body {
-      font-family: 'Segoe UI', sans-serif;
-      background: url('https://i.postimg.cc/RVdVFtz0/hero.png') no-repeat center center fixed;
-      background-size: cover;
-      background-color: #0f172a;
-      color: #ffffff;
-      margin: 0;
-      padding: 0 20px 80px;
-    }
-
-    .overlay {
-      position: fixed;
-      inset: 0;
-      backdrop-filter: brightness(0.5);
-      z-index: 0;
-    }
-
-    .container {
-      position: relative;
-      z-index: 1;
-      max-width: 1000px;
-      margin: auto;
-      padding: 40px 0;
-      text-align: center;
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
-
-    .description {
-      color: #ccc;
-      margin-bottom: 30px;
-    }
-
-    .search-box {
-      margin-bottom: 30px;
-    }
-
-    #searchInput {
-      padding: 12px 20px;
-      width: 100%;
-      max-width: 500px;
-      font-size: 1rem;
-      border-radius: 8px;
-      border: none;
-      background: rgba(255, 255, 255, 0.1);
-      color: #ffffff;
-    }
-
-    .section-title {
-      margin: 40px 0 20px;
-      font-size: 1.4rem;
-      border-bottom: 1px solid #444;
-      padding-bottom: 10px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
-      background: rgba(255, 255, 255, 0.07);
-      border-radius: 10px;
-      padding: 20px;
-      transition: 0.3s ease all;
-      backdrop-filter: blur(6px);
-    }
-
-    .card:hover {
-      transform: scale(1.02);
-      box-shadow: 0 0 15px rgba(33, 150, 243, 0.5);
-    }
-
-    .card a {
-      text-decoration: none;
-      color: #ffffff;
-      font-size: 1rem;
-    }
-
-    footer {
-      margin-top: 60px;
-      font-size: 0.9rem;
-      color: #aaa;
-    }
-
-    @media (max-width: 600px) {
-      h1 { font-size: 2rem; }
-      .section-title { font-size: 1.2rem; }
-    }
-
-      /* EOS */
-    </style>
-
-    <style type="text/css">
-      :root {
-        color-scheme: light;
-      }
-    </style>
-
-    <script id="insert"></script>
-
-      <script src="/js/stringify.js?83eec4ea2326443258814bfcf6997816debe6743" charset="utf-8"></script>
-      <script>
-        const customConsole = (w) => {
-          const pushToConsole = (payload, type) => {
-            w.parent.postMessage({
-              console: {
-                payload: stringify(payload),
-                type:    type
-              }
-            }, "*")
-          }
-
-          w.onerror = (message, url, line, column) => {
-            // IMPORTANT: the line needs to correspond with the REF:LINE
-            // unfortunately this number needs to be altered every time this view is changed
-            line = line - 117
-            if (line < 0){
-              pushToConsole(message, "error")
-            } else {
-              pushToConsole(`[Line ${line}] ${message}`, "error")
-              // pushToConsole(`[${line}:${column}] ${message}`, "error")
-            }
-          }
-
-          let console = (function(systemConsole){
-            return {
-              log: function(){
-                let args = Array.from(arguments)
-                pushToConsole(args, "log")
-                systemConsole.log.apply(this, args)
-              },
-              info: function(){
-                let args = Array.from(arguments)
-                pushToConsole(args, "info")
-                systemConsole.info.apply(this, args)
-              },
-              warn: function(){
-                let args = Array.from(arguments)
-                pushToConsole(args, "warn")
-                systemConsole.warn.apply(this, args)
-              },
-              error: function(){
-                let args = Array.from(arguments) // REF:LINE
-                pushToConsole(args, "error")
-                systemConsole.error.apply(this, args)
-              },
-              system: function(arg){
-                pushToConsole(arg, "system")
-              },
-              clear: function(){
-                systemConsole.clear.apply(this, {})
-              },
-              time: function(){
-                let args = Array.from(arguments)
-                systemConsole.time.apply(this, args)
-              },
-              assert: function(assertion, label){
-                if (!assertion){
-                  pushToConsole(label, "log")
-                }
-
-                let args = Array.from(arguments)
-                systemConsole.assert.apply(this, args)
-              }
-            }
-          }(window.console))
-
-          window.console = { ...window.console, ...console }
-
-          console.system("Running fiddle")
-        }
-
-        if (window.parent){
-          customConsole(window)
-        }
-      </script>
-  </head>
-  <body>
-    <div class="overlay"></div>
 <div class="container">
   <h1>بوابة تصاريح العمل</h1>
   <p class="description">
@@ -211,136 +5,48 @@
   </p>
 
   <div class="search-box">
-  <input
-    type="text"
-    id="searchInput"
-    oninput="filterPermits()"
-    dir="rtl"
-    style="text-align: right;"
-    placeholder="ابحث باسم التصريح أو الكود (WAH-GWP-...)"
-  />
-</div>
+    <input
+      type="text"
+      id="searchInput"
+      oninput="filterPermits()"
+      dir="rtl"
+      style="text-align: right;"
+      placeholder="ابحث باسم التصريح أو الكود (WAH-GWP-...)"
+    />
+  </div>
 
+  <!-- ✅ شريط ترحيبي محسّن -->
+  <div style="background: #f3f4f6; color: #111827; padding: 15px 20px; border-radius: 10px; text-align: right; font-size: 0.95rem; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+    <span style="font-size: 1.1rem;">👋 أهلاً بك</span><br>
+    استخدم البطاقات أدناه لإنشاء التصريح المناسب. بعد إدخال البيانات اضغط <strong>Generate PDF</strong> للطباعة أو المشاركة.
+  </div>
 
- <!-- ✅ الشريط الرمادي فوق التصاريح -->
-<div style="background: #e5e7eb; color: #0f172a; padding: 15px 20px; border-radius: 10px; text-align: right; font-size: 0.9rem; margin-bottom: 20px;">
-  👋 أهلاً بك  
-  <br>
-  استخدم البطاقات أدناه لإنشاء التصريح المناسب. بعد إدخال البيانات اضغط <strong>Generate PDF</strong> للطباعة أو المشاركة.
-</div>
+  <!-- ✅ عنوان قسم التصاريح -->
+  <div class="section-title">📄 التصاريح المتاحة</div>
 
-<!-- ✅ عنوان قسم التصاريح -->
-<div class="section-title">📄 التصاريح المتاحة</div>
-
+  <!-- ✅ البطاقات -->
   <div class="grid" id="permitsGrid"></div>
 
-  <div class="section-title">📂موارد إضافية</div>
+  <!-- ✅ قسم "كيف تستخدم؟" محسّن -->
+  <div style="background: rgba(255,255,255,0.07); padding: 25px 20px; border-radius: 12px; margin-top: 35px; text-align: right; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+    <h3 style="margin-top: 0; color: #ffffff; font-size: 1.2rem;">🧭 كيف تستخدم؟</h3>
+    <ul style="color: #d1d5db; padding-right: 20px; line-height: 1.9; list-style: none;">
+      <li>✅ اختر نوع التصريح المناسب من البطاقات بالأعلى.</li>
+      <li>🖊️ املأ الحقول المطلوبة بدقة، وتأكد من الأسماء والتواريخ.</li>
+      <li>📄 اضغط <strong>Generate PDF</strong> لتحصل على التصريح وتقوم بطباعته أو مشاركته.</li>
+    </ul>
+  </div>
+
+  <!-- ✅ موارد إضافية -->
+  <div class="section-title">📂 موارد إضافية</div>
   <div class="grid">
     <div class="card">
-      <a href="https://najran-ptw.glide.page/dl/8aba19" target="_blank"
-        >📁 سجل تصاريح العمل</a
-      >
+      <a href="https://najran-ptw.glide.page/dl/8aba19" target="_blank">📁 سجل تصاريح العمل</a>
     </div>
     <div class="card">
-      <a href="https://sites.google.com/view/najran-ra/home" target="_blank"
-        >🛠️ تقييم المخاطر</a
-      >
+      <a href="https://sites.google.com/view/najran-ra/home" target="_blank">🛠️ تقييم المخاطر</a>
     </div>
   </div>
 
   <footer>جميع الحقوق محفوظة © Eng.Ahmed El-Basha</footer>
 </div>
-
-  <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"95d4af946c9a4d229ea725f950960b54","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
-
-    <script type="text/javascript">
-
-const permits = [
-      { title: "تصريح العمل في الأماكن المرتفعة", url: "https://script.google.com/macros/s/AKfycbwVaSmrvgSG_KyhHaBGnrVcQVW_trdva1Vkk3d2sxlqjW8RC16iVNikjphQ-TSNyj7X/exec" },
-      { title: "تصريح أعمال الحفر", url: "https://script.google.com/macros/s/AKfycbzeNCkVOGRq4I2DAnsP_rwtyJsH95-qrdpDH7SGtU9pKHCssDmGFeMi_LCVAym_pamz/exec" },
-      { title: "تصريح الأعمال الساخنة", url: "https://script.google.com/macros/s/AKfycbyj16dWBfMwWn5htsSTpgnjJR_VGshTiyn3pYA-_GRKSUUaNmngJIqBl8L2df8nwmKpQw/exec" },
-      { title: "تصريح الأماكن المحصورة", url: "https://script.google.com/macros/s/AKfycbxFfOIG6s8tDdAArAzmAoYUuqnW0zQGv7RsnQMrdlcwuae30_5FYDSNyvXs2V7JLyX0/exec" },
-      { title: "تصريح الأعمال العامة", url: "https://script.google.com/macros/s/AKfycbyWrievOKw_XXJRS2E30P8VsG5f3WjilJoORpfplM0EFuw77zgre8sQwYjnyBHAXKoy/exec" },
-      { title: "تصريح أعمال الرفع", url: "https://script.google.com/macros/s/AKfycbyqJipVrchzNaCGgyi-vRgmbKZA52uhOguv9eRM46FzJbrj2hxl0rAtqwogA8lqmgorQQ/exec" },
-    ];
-
-    const permitsGrid = document.getElementById("permitsGrid");
-
-    function createCard(title, url) {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.setAttribute("data-title", title.toLowerCase());
-
-      const link = document.createElement("a");
-      link.href = url;
-      link.target = "_blank";
-      link.innerText = title;
-
-      card.appendChild(link);
-      return card;
-    }
-
-    function loadPermits() {
-      permits.forEach(p => {
-        const card = createCard(p.title, p.url);
-        permitsGrid.appendChild(card);
-      });
-    }
-
-    function filterPermits() {
-      const val = document.getElementById("searchInput").value.toLowerCase();
-      document.querySelectorAll("#permitsGrid .card").forEach(card => {
-        const title = card.getAttribute("data-title");
-        card.style.display = title.includes(val) ? "block" : "none";
-      });
-    }
-
-    loadPermits();
-
-  </script>
-
-  <script>
-    // tell the embed parent frame the height of the content
-    if (window.parent && window.parent.parent){
-      window.parent.parent.postMessage(["resultsFrame", {
-        height: document.body.getBoundingClientRect().height,
-        slug: ""
-      }], "*")
-    }
-
-    // always overwrite window.name, in case users try to set it manually
-    window.name = "result"
-  </script>
-
-  <script>
-    const allLines = []
-    const cssElement = document.querySelector("#compiled-css")
-
-    window.addEventListener("message", (message) => {
-        if (message.data.console){
-          let insert = document.querySelector("#insert")
-          allLines.push(message.data.console.payload)
-          insert.innerHTML = allLines.join(";\r")
-
-          let result = eval.call(null, message.data.console.payload)
-          if (result !== undefined){
-            console.log(result)
-          }
-        }
-
-      if (message.data.css){
-        cssElement.textContent = message.data.css.payload
-      }
-
-      if (message.data.html){
-        document.body.innerHTML = message.data.html.payload
-      }
-    })
-
-    if (window.parent){
-      window.parent.postMessage({loaded: true}, "*")
-    }
-  </script>
-
-</html>

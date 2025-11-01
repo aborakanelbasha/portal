@@ -222,7 +222,16 @@
 </div>
 
 
-  <div class="section-title">📄 التصاريح المتاحة</div>
+ <!-- ✅ الشريط الرمادي فوق التصاريح -->
+<div style="background: #e5e7eb; color: #0f172a; padding: 15px 20px; border-radius: 10px; text-align: right; font-size: 0.9rem; margin-bottom: 20px;">
+  👋 أهلاً بك  
+  <br>
+  استخدم البطاقات أدناه لإنشاء التصريح المناسب. بعد إدخال البيانات اضغط <strong>Generate PDF</strong> للطباعة أو المشاركة.
+</div>
+
+<!-- ✅ عنوان قسم التصاريح -->
+<div class="section-title">📄 التصاريح المتاحة</div>
+
   <div class="grid" id="permitsGrid"></div>
 
   <div class="section-title">📂موارد إضافية</div>
@@ -333,4 +342,5 @@ const permits = [
       window.parent.postMessage({loaded: true}, "*")
     }
   </script>
+
 </html>

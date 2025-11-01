@@ -1,52 +1,201 @@
-<div class="container">
-  <h1>بوابة تصاريح العمل</h1>
-  <p class="description">
-    مرحبًا بك في بوابة تصاريح العمل الخاصة بشركة النجار للمقاولات
-  </p>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>بوابة تصاريح العمل | النجار للمقاولات</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: url('https://i.postimg.cc/RVdVFtz0/hero.png') no-repeat center center fixed;
+      background-size: cover;
+      background-color: #0f172a;
+      color: #ffffff;
+      margin: 0;
+      padding: 0 20px 80px;
+    }
 
-  <div class="search-box">
-    <input
-      type="text"
-      id="searchInput"
-      oninput="filterPermits()"
-      dir="rtl"
-      style="text-align: right;"
-      placeholder="ابحث باسم التصريح أو الكود (WAH-GWP-...)"
-    />
-  </div>
+    .overlay {
+      position: fixed;
+      inset: 0;
+      backdrop-filter: brightness(0.5);
+      z-index: 0;
+    }
 
-  <!-- ✅ شريط ترحيبي محسّن -->
-  <div style="background: #f3f4f6; color: #111827; padding: 15px 20px; border-radius: 10px; text-align: right; font-size: 0.95rem; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-    <span style="font-size: 1.1rem;">👋 أهلاً بك</span><br>
-    استخدم البطاقات أدناه لإنشاء التصريح المناسب. بعد إدخال البيانات اضغط <strong>Generate PDF</strong> للطباعة أو المشاركة.
-  </div>
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1000px;
+      margin: auto;
+      padding: 40px 0;
+      text-align: center;
+    }
 
-  <!-- ✅ عنوان قسم التصاريح -->
-  <div class="section-title">📄 التصاريح المتاحة</div>
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
 
-  <!-- ✅ البطاقات -->
-  <div class="grid" id="permitsGrid"></div>
+    .description {
+      color: #ccc;
+      margin-bottom: 30px;
+    }
 
-  <!-- ✅ قسم "كيف تستخدم؟" محسّن -->
-  <div style="background: rgba(255,255,255,0.07); padding: 25px 20px; border-radius: 12px; margin-top: 35px; text-align: right; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-    <h3 style="margin-top: 0; color: #ffffff; font-size: 1.2rem;">🧭 كيف تستخدم؟</h3>
-    <ul style="color: #d1d5db; padding-right: 20px; line-height: 1.9; list-style: none;">
-      <li>✅ اختر نوع التصريح المناسب من البطاقات بالأعلى.</li>
-      <li>🖊️ املأ الحقول المطلوبة بدقة، وتأكد من الأسماء والتواريخ.</li>
-      <li>📄 اضغط <strong>Generate PDF</strong> لتحصل على التصريح وتقوم بطباعته أو مشاركته.</li>
-    </ul>
-  </div>
+    .search-box {
+      margin-bottom: 30px;
+    }
 
-  <!-- ✅ موارد إضافية -->
-  <div class="section-title">📂 موارد إضافية</div>
-  <div class="grid">
-    <div class="card">
-      <a href="https://najran-ptw.glide.page/dl/8aba19" target="_blank">📁 سجل تصاريح العمل</a>
+    #searchInput {
+      padding: 12px 20px;
+      width: 100%;
+      max-width: 500px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      direction: rtl;
+      text-align: right;
+    }
+
+    .section-title {
+      margin: 40px 0 20px;
+      font-size: 1.4rem;
+      border-bottom: 1px solid #444;
+      padding-bottom: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 10px;
+      padding: 20px;
+      transition: 0.3s ease all;
+      backdrop-filter: blur(6px);
+    }
+
+    .card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 15px rgba(33, 150, 243, 0.5);
+    }
+
+    .card a {
+      text-decoration: none;
+      color: #ffffff;
+      font-size: 1rem;
+    }
+
+    footer {
+      margin-top: 60px;
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      .section-title { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+  <div class="container">
+    <h1>بوابة تصاريح العمل</h1>
+    <p class="description">
+      مرحبًا بك في بوابة تصاريح العمل الخاصة بشركة النجار للمقاولات
+    </p>
+
+    <div class="search-box">
+      <input
+        type="text"
+        id="searchInput"
+        oninput="filterPermits()"
+        placeholder="ابحث باسم التصريح أو الكود (WAH-GWP-...)"
+      />
     </div>
-    <div class="card">
-      <a href="https://sites.google.com/view/najran-ra/home" target="_blank">🛠️ تقييم المخاطر</a>
+
+    <!-- ✅ شريط الترحيب -->
+    <div style="background: #f3f4f6; color: #111827; padding: 15px 20px; border-radius: 10px; text-align: right; font-size: 0.95rem; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+      <span style="font-size: 1.1rem;">👋 أهلاً بك</span><br>
+      استخدم البطاقات أدناه لإنشاء التصريح المناسب. بعد إدخال البيانات اضغط <strong>Generate PDF</strong> للطباعة أو المشاركة.
     </div>
+
+    <!-- ✅ التصاريح -->
+    <div class="section-title">📄 التصاريح المتاحة</div>
+    <div class="grid" id="permitsGrid"></div>
+
+    <!-- ✅ قسم الإرشادات -->
+    <div style="background: rgba(255,255,255,0.07); padding: 25px 20px; border-radius: 12px; margin-top: 35px; text-align: right; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+      <h3 style="margin-top: 0; color: #ffffff; font-size: 1.2rem;">🧭 كيف تستخدم؟</h3>
+      <ul style="color: #d1d5db; padding-right: 20px; line-height: 1.9; list-style: none;">
+        <li>✅ اختر نوع التصريح المناسب من البطاقات بالأعلى.</li>
+        <li>🖊️ املأ الحقول المطلوبة بدقة، وتأكد من الأسماء والتواريخ.</li>
+        <li>📄 اضغط <strong>Generate PDF</strong> لتحصل على التصريح وتقوم بطباعته أو مشاركته.</li>
+      </ul>
+    </div>
+
+    <!-- ✅ موارد إضافية -->
+    <div class="section-title">📂 موارد إضافية</div>
+    <div class="grid">
+      <div class="card">
+        <a href="https://najran-ptw.glide.page/dl/8aba19" target="_blank">📁 سجل تصاريح العمل</a>
+      </div>
+      <div class="card">
+        <a href="https://sites.google.com/view/najran-ra/home" target="_blank">🛠️ تقييم المخاطر</a>
+      </div>
+    </div>
+
+    <footer>جميع الحقوق محفوظة © Eng.Ahmed El-Basha</footer>
   </div>
 
-  <footer>جميع الحقوق محفوظة © Eng.Ahmed El-Basha</footer>
-</div>
+  <!-- ✅ سكربت التصاريح -->
+  <script>
+    const permits = [
+      { title: "تصريح العمل في الأماكن المرتفعة", url: "https://script.google.com/macros/s/AKfycbwVaSmrvgSG_KyhHaBGnrVcQVW_trdva1Vkk3d2sxlqjW8RC16iVNikjphQ-TSNyj7X/exec" },
+      { title: "تصريح أعمال الحفر", url: "https://script.google.com/macros/s/AKfycbzeNCkVOGRq4I2DAnsP_rwtyJsH95-qrdpDH7SGtU9pKHCssDmGFeMi_LCVAym_pamz/exec" },
+      { title: "تصريح الأعمال الساخنة", url: "https://script.google.com/macros/s/AKfycbyj16dWBfMwWn5htsSTpgnjJR_VGshTiyn3pYA-_GRKSUUaNmngJIqBl8L2df8nwmKpQw/exec" },
+      { title: "تصريح الأماكن المحصورة", url: "https://script.google.com/macros/s/AKfycbxFfOIG6s8tDdAArAzmAoYUuqnW0zQGv7RsnQMrdlcwuae30_5FYDSNyvXs2V7JLyX0/exec" },
+      { title: "تصريح الأعمال العامة", url: "https://script.google.com/macros/s/AKfycbyWrievOKw_XXJRS2E30P8VsG5f3WjilJoORpfplM0EFuw77zgre8sQwYjnyBHAXKoy/exec" },
+      { title: "تصريح أعمال الرفع", url: "https://script.google.com/macros/s/AKfycbyqJipVrchzNaCGgyi-vRgmbKZA52uhOguv9eRM46FzJbrj2hxl0rAtqwogA8lqmgorQQ/exec" },
+    ];
+
+    const permitsGrid = document.getElementById("permitsGrid");
+
+    function createCard(title, url) {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.setAttribute("data-title", title.toLowerCase());
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.target = "_blank";
+      link.innerText = title;
+
+      card.appendChild(link);
+      return card;
+    }
+
+    function loadPermits() {
+      permits.forEach(p => {
+        const card = createCard(p.title, p.url);
+        permitsGrid.appendChild(card);
+      });
+    }
+
+    function filterPermits() {
+      const val = document.getElementById("searchInput").value.toLowerCase();
+      document.querySelectorAll("#permitsGrid .card").forEach(card => {
+        const title = card.getAttribute("data-title");
+        card.style.display = title.includes(val) ? "block" : "none";
+      });
+    }
+
+    loadPermits();
+  </script>
+</body>
+</html>

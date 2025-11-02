@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Google Search Console verification -->
+  <meta name="google-site-verification" content="2ss798WX2_8N-DSpWjhipVl2PXBDC8hJCEAPRd2gwwQ" />
+
+  <title>بوابة تصاريح العمل | النجار للمقاولات</title>
+
+  <!-- Meta description -->
+  <meta name="description" content="إنشاء تصاريح العمل وطباعتها PDF بسرعة.">
+
+  <!-- Icons -->
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/favicon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#0f172a">
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://al-najjar.pages.dev/">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ar_AR">
+  <meta property="og:site_name" content="بوابة النجّار">
+  <meta property="og:url" content="https://al-najjar.pages.dev/">
+  <meta property="og:title" content="بوابة تصاريح العمل | النجار للمقاولات">
+  <meta property="og:description" content="إنشاء تصاريح العمل وطباعتها PDF بسرعة.">
+  <meta property="og:image" content="/og-image.png">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="بوابة تصاريح العمل | النجار للمقاولات">
+  <meta name="twitter:description" content="إنشاء تصاريح العمل وطباعتها PDF بسرعة.">
+  <meta name="twitter:image" content="/og-image.png">
+
+  <style>
+    :root{
+      --card-bg: rgba(255,255,255,0.07);
+      --card-bg-hover: rgba(255,255,255,0.10);
+      --text: #ffffff;
+      --muted: #d1d5db;
+      --focus: #ffd166;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: url('https://i.postimg.cc/RVdVFtz0/hero.png') no-repeat center center fixed;
+      background-size: cover;
+      background-color: #0f172a;
+      color: var(--text);
+      margin: 0;
+      padding: 0 20px 80px;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      backdrop-filter: brightness(0.5);
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1000px;
+      margin: auto;
+      padding: 40px 0;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .description {
+      color: #ccc;
+      margin-bottom: 30px;
+    }
+
+    .search-box { margin-bottom: 30px; }
+
+    #searchInput {
+      padding: 12px 20px;
+      width: 100%;
+      max-width: 500px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+      direction: rtl;
+      text-align: right;
+    }
+
+    .section-title {
+      margin: 40px 0 20px;
+      font-size: 1.4rem;
+      border-bottom: 1px solid #444;
+      padding-bottom: 10px;
+      text-align: right;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    /* ✅ الكارد = رابط كامل قابل للنقر وبداخله هوية بصرية */
+    .card {
+      display: block;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px 18px;
+      transition: 0.25s ease all;
+      backdrop-filter: blur(6px);
+      text-decoration: none;
+      color: var(--text);
+      cursor: pointer;
+      text-align: right;
+      position: relative;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px rgba(33, 150, 243, 0.45);
+      background: var(--card-bg-hover);
+    }
+    .card:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    .card .top{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+    .card .icon{
+      font-size: 1.25rem;
+    }
+    .card .title{
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+    .card .badge{
+      margin-inline-start: auto;
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+    .card .desc{
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 2px;
+    }
+
+    /* ✅ سكلتون تحميل */
+    .skeleton{
+      border-radius: 12px;
+      height: 72px;
+      position: relative;
+      overflow: hidden;
+      background: rgba(255,255,255,0.08);
+    }
+    .skeleton::after{
+      content:"";
+      position:absolute; inset:0;
+      transform: translateX(-100%);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+      animation: shimmer 1.2s infinite;
+    }
+    @keyframes shimmer{
+      100%{ transform: translateX(100%); }
+    }
+
+    footer {
+      margin-top: 60px;
+      font-size: 0.9rem;
+      color: #aaa;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      .section-title { font-size: 1.2rem; }
+    }
+
+    /* حركة أقل للي يفضّلوا ذلك */
+    @media (prefers-reduced-motion: reduce){
+      .card:hover{ transform:none; box-shadow:none; }
+      .skeleton::after{ animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+  <div class="container">
+    <h1>بوابة تصاريح العمل</h1>
+    <p class="description">
+      مرحبًا بك في بوابة تصاريح العمل الخاصة بشركة النجار للمقاولات
+    </p>
+
+    <div class="search-box">
+      <input
+        type="text"
+        id="searchInput"
+        oninput="filterPermits()"
+        placeholder="ابحث باسم التصريح أو الكود (WAH-GWP-...)"
+        aria-label="حقل البحث عن التصاريح"
+      />
+    </div>
+
+    <!-- ✅ شريط الترحيب بخلفية شفافة مثل باقي الكروت -->
+    <div style="background: var(--card-bg); color: var(--text); padding: 15px 20px; border-radius: 12px; text-align: right; font-size: 0.95rem; margin-bottom: 25px; box-shadow: 0 0 10px rgba(0,0,0,0.08);">
+      <span style="font-size: 1.1rem;">👋 أهلاً بك</span><br>
+      استخدم البطاقات أدناه لإنشاء التصريح المناسب. بعد إدخال البيانات اضغط <strong>Generate PDF</strong> للطباعة أو المشاركة.
+    </div>
+
+    <!-- ✅ التصاريح -->
+    <div class="section-title">📄 التصاريح المتاحة</div>
+
+    <!-- سكلتون التحميل -->
+    <div class="grid" id="permitsSkeleton" aria-hidden="true"></div>
+    <!-- شبكة التصاريح -->
+    <div class="grid" id="permitsGrid" aria-live="polite"></div>
+
+    <!-- ✅ قسم الإرشادات -->
+    <div style="background: var(--card-bg); padding: 25px 20px; border-radius: 12px; margin-top: 35px; text-align: right; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+      <h3 style="margin-top: 0; color: var(--text); font-size: 1.2rem;">🧭 كيف تستخدم؟</h3>
+      <ul style="color: var(--muted); padding-right: 20px; line-height: 1.9; list-style: none;">
+        <li>✅ اختر نوع التصريح المناسب من البطاقات بالأعلى.</li>
+        <li>🖊️ املأ الحقول المطلوبة بدقة، وتأكد من الأسماء والتواريخ.</li>
+        <li>📄 اضغط <strong>Generate PDF</strong> لتحصل على التصريح وتقوم بطباعته أو مشاركته.</li>
+      </ul>
+    </div>
+
+    <!-- ✅ موارد إضافية (الكارد كله قابل للنقر) -->
+    <div class="section-title">📂 موارد إضافية</div>
+    <div class="grid">
+      <a class="card" href="https://najran-ptw.glide.page/dl/8aba19" target="_blank" rel="noopener noreferrer" aria-label="سجل تصاريح العمل">
+        <div class="top">
+          <span class="icon">📁</span>
+          <span class="title">سجل تصاريح العمل</span>
+          <span class="badge">LOG</span>
+        </div>
+        <div class="desc">عرض وتتبع التصاريح الصادرة.</div>
+      </a>
+
+      <a class="card" href="https://sites.google.com/view/najran-ra/home" target="_blank" rel="noopener noreferrer" aria-label="تقييم المخاطر">
+        <div class="top">
+          <span class="icon">🛠️</span>
+          <span class="title">تقييم المخاطر</span>
+          <span class="badge">RA</span>
+        </div>
+        <div class="desc">نماذج وإرشادات تقييم المخاطر.</div>
+      </a>
+    </div>
+
+    <footer>جميع الحقوق محفوظة © Eng.Ahmed El-Basha</footer>
+  </div>
+
+  <!-- ✅ سكربت -->
+  <script>
+    // بيانات التصاريح مع الهوية البصرية (أيقونة + كود + وصف)
+    const permits = [
+      { title: "تصريح العمل في الأماكن المرتفعة", code: "WAH", icon:"🧗", desc:"أعمال فوق مستوى الأرض تتطلب إجراءات وقاية من السقوط.", url: "https://script.google.com/macros/s/AKfycbwVaSmrvgSG_KyhHaBGnrVcQVW_trdva1Vkk3d2sxlqjW8RC16iVNikjphQ-TSNyj7X/exec" },
+      { title: "تصريح أعمال الحفر",                 code: "EXC", icon:"⛏️", desc:"أعمال حفر/خنادق ومجاورة خدمات مدفونة.",                 url: "https://script.google.com/macros/s/AKfycbzeNCkVOGRq4I2DAnsP_rwtyJsH95-qrdpDH7SGtU9pKHCssDmGFeMi_LCVAym_pamz/exec" },
+      { title: "تصريح الأعمال الساخنة",             code: "HOT", icon:"🔥", desc:"لحام/قطع/جرايندر أو أي مصدر شرر/لهب.",                   url: "https://script.google.com/macros/s/AKfycbyj16dWBfMwWn5htsSTpgnjJR_VGshTiyn3pYA-_GRKSUUaNmngJIqBl8L2df8nwmKpQw/exec" },
+      { title: "تصريح الأماكن المحصورة",            code: "CSE", icon:"🕳️", desc:"دخول مناطق مغلقة التهوية أو ذات فتحات محدودة.",        url: "https://script.google.com/macros/s/AKfycbxFfOIG6s8tDdAArAzmAoYUuqnW0zQGv7RsnQMrdlcwuae30_5FYDSNyvXs2V7JLyX0/exec" },
+      { title: "تصريح الأعمال العامة",              code: "GWP", icon:"🧰", desc:"أعمال عامة لا تندرج تحت تصاريح متخصصة.",                 url: "https://script.google.com/macros/s/AKfycbyWrievOKw_XXJRS2E30P8VsG5f3WjilJoORpfplM0EFuw77zgre8sQwYjnyBHAXKoy/exec" },
+      { title: "تصريح أعمال الرفع",                 code: "LOP", icon:"🏗️", desc:"استخدام الأوناش والرفع بالرافعات والونشات.",              url: "https://script.google.com/macros/s/AKfycbyqJipVrchzNaCGgyi-vRgmbKZA52uhOguv9eRM46FzJbrj2hxl0rAtqwogA8lqmgorQQ/exec" },
+    ];
+
+    const permitsGrid = document.getElementById("permitsGrid");
+    const permitsSkeleton = document.getElementById("permitsSkeleton");
+
+    // ✅ سكلتونات بعدد التصاريح
+    function renderSkeletons(count){
+      permitsSkeleton.innerHTML = "";
+      for(let i=0;i<count;i++){
+        const sk = document.createElement("div");
+        sk.className = "skeleton";
+        sk.setAttribute("aria-hidden","true");
+        permitsSkeleton.appendChild(sk);
+      }
+    }
+
+    // ✅ إنشاء كارد بتصميم موحّد
+    function createCard({title, code, icon, desc, url}) {
+      const linkCard = document.createElement("a");
+      linkCard.className = "card";
+      linkCard.href = url;
+      linkCard.target = "_blank";
+      linkCard.rel = "noopener noreferrer";
+      linkCard.setAttribute("aria-label", title);
+      linkCard.setAttribute("data-title", title.toLowerCase());
+
+      linkCard.innerHTML = `
+        <div class="top">
+          <span class="icon">${icon}</span>
+          <span class="title">${title}</span>
+          <span class="badge">${code}</span>
+        </div>
+        <div class="desc">${desc}</div>
+      `;
+      return linkCard;
+    }
+
+    function loadPermits() {
+      // إظهار سكلتون أولاً
+      renderSkeletons(permits.length);
+
+      // استبدال بالسجلات مباشرة
+      permitsGrid.innerHTML = "";
+      permits.forEach(p => permitsGrid.appendChild(createCard(p)));
+      // إخفاء السكلتون
+      permitsSkeleton.innerHTML = "";
+    }
+
+    function filterPermits() {
+      const val = document.getElementById("searchInput").value.toLowerCase().trim();
+      document.querySelectorAll("#permitsGrid .card").forEach(card => {
+        const title = (card.getAttribute("data-title")||"").toLowerCase();
+        card.style.display = title.includes(val) ? "" : "none";
+      });
+    }
+
+    // تحسين وصول: اختصار "/" للتركيز على البحث
+    window.addEventListener('keydown', (e)=>{
+      if(e.key === '/'){
+        e.preventDefault();
+        document.getElementById('searchInput').focus();
+      }
+    });
+
+    loadPermits();
+  </script>
+</body>
+</html>

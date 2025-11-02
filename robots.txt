@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://al-najjar.netlify.app/sitemap.xml
+Sitemap: https://al-najjar.pages.dev/sitemap.xml

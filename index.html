@@ -18,24 +18,33 @@
       --card-bg: rgba(255,255,255,.07);
       --card-bg-hover: rgba(255,255,255,.10);
       --text:#fff; --muted:#d1d5db; --focus:#ffd166;
-      --accent:#60a5fa;
       --accent-najran:#2563eb;
       --accent-sharurah:#16a34a;
+      --panel: rgba(0,0,0,.35);
+      --panel-brd: rgba(255,255,255,.16);
     }
     *{box-sizing:border-box}
     body{
       font-family:'Segoe UI',system-ui,Tahoma; margin:0; color:var(--text);
       background:#0f172a url('https://i.postimg.cc/RVdVFtz0/hero.png') no-repeat center/cover fixed;
-      padding:0 16px 70px;
+      padding:0 16px 90px;
     }
-    .overlay{position:fixed;inset:0;backdrop-filter:brightness(.5);z-index:0}
-    .container{position:relative;z-index:1;max-width:1100px;margin:auto;padding:36px 0}
-    h1{margin:0 0 6px;font-size:2.2rem;text-align:center}
-    .subtitle{color:#cbd5e1;text-align:center;margin:0 0 20px}
+    .overlay{position:fixed;inset:0;backdrop-filter:brightness(.55);z-index:0}
+    .container{position:relative;z-index:1;max-width:1100px;margin:auto;padding:32px 0}
+    h1{margin:0 0 8px;font-size:2.4rem;text-align:center}
+    .subtitle{color:#cbd5e1;text-align:center;margin:0 0 18px}
+
+    .soft-note{
+      text-align:center; margin:12px auto 18px; max-width:980px;
+      background:var(--panel); border:1px solid var(--panel-brd);
+      padding:12px 14px; border-radius:12px; font-weight:700;
+    }
+
+    /* اختيار المشروع */
     .seg{
       display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
       background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);
-      border-radius:12px; padding:8px; margin:14px auto 18px; max-width:980px;
+      border-radius:12px; padding:8px; margin:12px auto 16px; max-width:980px;
     }
     .seg button{
       position:relative;
@@ -51,14 +60,30 @@
       position:absolute; top:-8px; inset-inline-end:-8px;
       font-size:.7rem; background:#22c55e; color:#04101f; padding:3px 7px; border-radius:999px; border:1px solid #a7f3d0;
     }
+
+    /* الشريط المدمج: الترحيب + البحث في نفس السطر */
     .toolbar{
-      display:flex; gap:10px; align-items:center; justify-content:space-between; max-width:980px; margin:0 auto 14px;
+      display:grid; align-items:center; gap:10px;
+      grid-template-columns: 1fr 1fr; /* الترحيب | البحث */
+      max-width:980px; margin:0 auto 14px;
     }
-    .search{flex:1; display:flex; justify-content:flex-end}
+    .welcome-inline{
+      background:var(--panel); border:1px solid var(--panel-brd);
+      padding:12px 14px; border-radius:12px; text-align:right; color:#e5e7eb;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .search{
+      display:flex; justify-content:flex-start;
+      background:var(--panel); border:1px solid var(--panel-brd);
+      border-radius:12px; padding:6px;
+    }
     #searchInput{
-      width:100%; max-width:420px; padding:12px 14px; border-radius:10px; border:none;
-      background:rgba(255,255,255,.1); color:var(--text); text-align:right;
+      flex:1; min-width:0; padding:10px 12px; border-radius:8px; border:none;
+      background:rgba(255,255,255,.10); color:var(--text); text-align:right;
     }
+
+    /* الشبكات والبطاقات */
+    .section-title{max-width:980px;margin:22px auto 10px; font-size:1.1rem; border-bottom:1px solid #475569; padding-bottom:8px}
     .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:18px; max-width:980px; margin:0 auto}
     .card{
       display:block; text-decoration:none; color:var(--text); text-align:right;
@@ -70,17 +95,25 @@
     .title{font-weight:700}
     .badge{margin-inline-start:auto; font-size:.8rem; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18)}
     .desc{color:var(--muted); font-size:.92rem}
-    .section-title{max-width:980px;margin:22px auto 10px; font-size:1.1rem; border-bottom:1px solid #475569; padding-bottom:8px}
-    .hint{max-width:980px; margin:14px auto; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:14px}
-    footer{margin-top:36px; text-align:center; color:#a3a3a3}
     .skeleton{border-radius:12px;height:72px;background:rgba(255,255,255,0.08);position:relative;overflow:hidden}
     .skeleton::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);animation:shimmer 1.2s infinite}
     @keyframes shimmer{100%{transform:translateX(100%)}}
     [hidden]{display:none !important}
+
+    /* بانر «كيف تستخدم؟» */
+    .tiny{
+      max-width:980px; margin:10px auto; color:#e5e7eb; text-align:right;
+      background:var(--panel); border:1px solid var(--panel-brd); padding:12px 14px; border-radius:12px;
+    }
+
+    footer{margin-top:36px; text-align:center; color:#a3a3a3}
+
+    @media(max-width:800px){
+      .toolbar{ grid-template-columns: 1fr; } /* سطرين على الموبايل */
+    }
     @media(max-width:600px){
-      h1{font-size:1.8rem}
+      h1{font-size:1.9rem}
       .subtitle{font-size:.95rem}
-      .toolbar{flex-direction:column; align-items:stretch}
     }
     @media (prefers-reduced-motion: reduce){ .card:hover{transform:none; box-shadow:none} .skeleton::after{animation:none} }
   </style>
@@ -90,9 +123,13 @@
   <div class="container">
 
     <h1>بوابة تصاريح العمل</h1>
-    <p class="subtitle">اختر المشروع، ثم أنشئ تصريحك واضغط <b>Generate PDF</b> للطباعة أو المشاركة.</p>
+    <!-- (1) جملة الترحيب الرئيسية القديمة -->
+    <p class="subtitle">مرحبًا بك في بوابة تصاريح العمل الخاصة بشركة النجار للمقاولات</p>
 
-    <!-- شريط اختيار المشروع -->
+    <!-- ملاحظة لطيفة بدل "اختر المشروع..." -->
+    <div class="soft-note">🧭 يُرجى اختيار المشروع</div>
+
+    <!-- اختيار المشروع -->
     <div class="seg" role="tablist" aria-label="اختيار المشروع">
       <button id="btn-najran" role="tab" aria-selected="true" class="active"
         data-project="najran" title="مبنى إداري ومبنى التحكم بمحطة كهرباء نجران">
@@ -105,13 +142,13 @@
       </button>
     </div>
 
-    <!-- شريط أدوات -->
+    <!-- (2) سطر واحد: الترحيب المختصر + البحث -->
     <div class="toolbar">
-      <div class="hint" style="flex:1;text-align:right">
-        👋 أهلاً بك — اكتب اسم التصريح أو الكود للبحث السريع. اختصار: اضغط <b>/</b> للتركيز على البحث.
+      <div class="welcome-inline" aria-live="polite">
+        👋 أهلاً بك — اكتب اسم التصريح أو الكود للبحث السريع
       </div>
-      <div class="search">
-        <input id="searchInput" type="text" placeholder="ابحث باسم التصريح أو الكود (WAH / GWP ...)" oninput="filterPermits()" aria-label="بحث في التصاريح">
+      <div class="search" role="search">
+        <input id="searchInput" type="text" placeholder="ابحث باسم التصريح أو الكود (… WAH-GWP …)" oninput="filterPermits()" aria-label="بحث في التصاريح">
       </div>
     </div>
 
@@ -121,6 +158,16 @@
     <!-- الشبكة -->
     <div class="grid" id="skeleton"></div>
     <div class="grid" id="grid" aria-live="polite"></div>
+
+    <!-- (4) كيف تستخدم؟ -->
+    <div class="tiny" id="howToBox">
+      <h3 style="margin:0 0 8px">🧭 كيف تستخدم؟</h3>
+      <ul style="margin:0; padding-right:18px; line-height:1.9">
+        <li>✅ اختر نوع التصريح المناسب من البطاقات بالأعلى.</li>
+        <li>✏️ املأ الحقول المطلوبة بدقة، وتأكد من الأسماء والتواريخ.</li>
+        <li>📄 اضغط <b>Generate PDF</b> لتحصل على التصريح وتقوم بطباعته أو مشاركته.</li>
+      </ul>
+    </div>
 
     <!-- موارد إضافية (ديناميكي) -->
     <div id="resourcesSection" class="section-title" hidden>📂 موارد إضافية</div>
@@ -134,8 +181,7 @@
     const PROJECTS = {
       najran: {
         id:'najran',
-        name:'مبنى إداري ومبنى التحكم بمحطة كهرباء نجران',
-        color:'var(--accent-najran)',
+        name:'التصاريح المتاحة — مبنى إداري ومبنى التحكم بمحطة كهرباء نجران',
         links:[
           { title:"تصريح العمل في الأماكن المرتفعة", code:"WAH", icon:"🧗", desc:"أعمال فوق مستوى الأرض تتطلب إجراءات وقاية من السقوط.", url:"https://script.google.com/macros/s/AKfycbwVaSmrvgSG_KyhHaBGnrVcQVW_trdva1Vkk3d2sxlqjW8RC16iVNikjphQ-TSNyj7X/exec" },
           { title:"تصريح أعمال الحفر",               code:"EXC", icon:"⛏️", desc:"أعمال حفر/خنادق ومجاورة خدمات مدفونة.",                 url:"https://script.google.com/macros/s/AKfycbzeNCkVOGRq4I2DAnsP_rwtyJsH95-qrdpDH7SGtU9pKHCssDmGFeMi_LCVAym_pamz/exec" },
@@ -151,17 +197,18 @@
       },
       sharurah: {
         id:'sharurah',
-        name:'إنشاء بوابات أمنية بمحطة كهرباء شرورة',
-        color:'var(--accent-sharurah)',
+        name:'التصاريح المتاحة — إنشاء بوابات أمنية بمحطة كهرباء شرورة',
         links:[
           { title:"تصريح الأعمال العامة",            code:"GWP", icon:"🧰", desc:"أعمال عامة لا تندرج تحت تصاريح متخصصة.",                 url:"https://script.google.com/macros/s/AKfycbyjijxMu2kAyHEUGzLYnoskA2K0Q9Tlh2TZRegn6naNVhA8V7DfG-Z0Q2v4V_9bjnNcCQ/exec" },
           { title:"تصريح الأماكن المحصورة",          code:"CSE", icon:"🕳️", desc:"دخول مناطق مغلقة التهوية أو ذات فتحات محدودة.",        url:"https://script.google.com/macros/s/AKfycbyMwmk_BiB6jxdV0IVK-s8Tvy90AmuWDXYa28J2fTW_3v1sjnt4DhfBWPO6n1LueQkKeg/exec" },
           { title:"تصريح أعمال الحفر",               code:"EXC", icon:"⛏️", desc:"أعمال حفر/خنادق ومجاورة خدمات مدفونة.",                 url:"https://script.google.com/macros/s/AKfycbzE39JEq2zdreAxLUiWw7GOzDtJ5Bs1ytUkRaX4DLOqt4vKg0hqqsNxG4n26sgzYDOZ/exec" },
           { title:"تصريح الأعمال الساخنة",           code:"HWP", icon:"🔥", desc:"لحام/قطع/جرايندر أو أي مصدر شرر/لهب.",                   url:"https://script.google.com/macros/s/AKfycbz2aQZRYG5_tTTk83P0-TrfX-jDXLFxhtm1ft28MgXUoYmIZzb0XcW2v2k8RdyPS9LbPQ/exec" },
           { title:"تصريح العمل في الأماكن المرتفعة", code:"WAH", icon:"🧗", desc:"أعمال فوق مستوى الأرض تتطلب إجراءات وقاية من السقوط.", url:"https://script.google.com/macros/s/AKfycbwKAdP5ldeTnVG47ghWCu-BetIiHzAFGSYrXfCsoMX2QIdRnNAeSyXptMDdlpjl07Ks/exec" },
-          { title:"تصريح أعمال الرفع",               code:"LOP", icon:"🏗️", desc:"استخدام الأوناش والرفع بالرافعات والونشات.",              url:"https://script.google.com/macros/s/AKfycbwJWXCguWxVrRUapCfukPQ2cgxRZOmMd9WjwCHDB9nr-EAR7K0r4ZGxEFz1Vi7quntd/exec" }
+          { title:"تصريح أعمال الرفع",               code:"LOP", icon:"🏗️", desc:"استخدام الأوناش والرفع بالرافعات والونشات.",              url:"https://script.google.com/macros/s/AKfycbwJWXCguWxVrRUapCfukPQ2cgxRZOmMd9WjwCHDB9nr-EAR7K0r4ZGxEF1Vi7quntd/exec" }
         ],
-        resources:[ /* حاليًا بلا موارد */ ]
+        resources:[
+          { label:"تقييم المخاطر - شرورة", code:"RA", icon:"🛠️", desc:"نماذج وإرشادات تقييم المخاطر لمشروع شرورة.", href:"https://sites.google.com/d/1GcTU71M0DlHm8LBQZ_osejInCnqfdOUq/p/1CslJgVDImOo_PSOLHpDuvoe2HfdpIUfF/edit" }
+        ]
       }
     };
 
@@ -170,8 +217,6 @@
     const skeleton = document.getElementById('skeleton');
     const projTitle = document.getElementById('projTitle');
     const seg = document.querySelector('.seg');
-    const btnNajran = document.getElementById('btn-najran');
-    const btnSharurah = document.getElementById('btn-sharurah');
     const resourcesSection = document.getElementById('resourcesSection');
     const resourcesGrid = document.getElementById('resourcesGrid');
 
@@ -224,9 +269,9 @@
       applyActive(p.id);
       setParam('project', p.id);
       localStorage.setItem('preferredProject', p.id);
-      // تحديث العنوان
-      document.title = `بوابة تصاريح العمل | ${p.name}`;
-      // تطبيق فلتر لو فيه قيمة
+      // عنوان الصفحة
+      document.title = `بوابة تصاريح العمل | ${p.name.replace('التصاريح المتاحة — ','')}`;
+      // فلترة مبدئية
       filterPermits();
     }
     function filterPermits(){
@@ -245,7 +290,7 @@
       }
     });
 
-    // أحداث الأزرار
+    // تغييرات المشروع
     seg.addEventListener('click', (e)=>{
       const btn=e.target.closest('button[data-project]'); if(!btn) return;
       renderProject(btn.dataset.project);
@@ -253,7 +298,6 @@
 
     // تهيئة
     (function init(){
-      // اختيار مبدئي: ?project أو LocalStorage أو najran
       const saved = localStorage.getItem('preferredProject');
       const first = getParam('project') || saved || 'najran';
       renderProject(first);

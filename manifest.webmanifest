@@ -1,0 +1,12 @@
+{
+  "name": "بوابة تصاريح العمل - النجار",
+  "short_name": "تصاريح النجار",
+  "start_url": "/?utm_source=pwa",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    { "src": "/favicon.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/favicon.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

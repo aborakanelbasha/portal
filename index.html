@@ -5,14 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>بوابة تصاريح العمل | النجار للمقاولات</title>
   <meta name="description" content="إنشاء تصاريح العمل وطباعتها PDF بسرعة.">
+  <!-- تحسين عرض الألوان (اختيار 8) -->
+  <meta name="color-scheme" content="dark light" />
+  <meta name="theme-color" content="#0f172a">
+
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="/favicon.png">
-  <meta name="theme-color" content="#0f172a">
+
   <meta property="og:type" content="website">
   <meta property="og:locale" content="ar_AR">
   <meta property="og:title" content="بوابة تصاريح العمل | النجار للمقاولات">
   <meta property="og:description" content="إنشاء تصاريح العمل وطباعتها PDF بسرعة.">
   <meta property="og:image" content="/og-image.png">
+
   <style>
     :root{
       --card-bg: rgba(255,255,255,.07);
@@ -61,7 +66,7 @@
       font-size:.7rem; background:#22c55e; color:#04101f; padding:3px 7px; border-radius:999px; border:1px solid #a7f3d0;
     }
 
-    /* الشريط المدمج: الترحيب + البحث في نفس السطر */
+    /* الشريط المدمج: الترحيب + البحث */
     .toolbar{
       display:grid; align-items:center; gap:10px;
       grid-template-columns: 1fr 1fr; /* الترحيب | البحث */
@@ -89,8 +94,17 @@
       display:block; text-decoration:none; color:var(--text); text-align:right;
       background:var(--card-bg); border-radius:12px; padding:16px 18px; backdrop-filter:blur(6px);
       transition:.25s; border:1px solid rgba(255,255,255,.12);
+      /* (5) ظلال أنعم افتراضيًا */
+      box-shadow:0 6px 20px rgba(0,0,0,.18);
     }
-    .card:hover{ transform:translateY(-2px); background:var(--card-bg-hover); box-shadow:0 0 15px rgba(96,165,250,.45) }
+    .card:hover{
+      transform:translateY(-2px); background:var(--card-bg-hover);
+      /* (5) إبراز عند الـHover */
+      box-shadow:0 14px 34px rgba(2,132,199,.35)
+    }
+    /* (5) Focus واضح للوصولية */
+    .card:focus{ outline:3px solid rgba(96,165,250,.6); outline-offset:2px }
+
     .top{display:flex; gap:10px; align-items:center; margin-bottom:6px}
     .title{font-weight:700}
     .badge{margin-inline-start:auto; font-size:.8rem; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18)}
@@ -115,7 +129,18 @@
       h1{font-size:1.9rem}
       .subtitle{font-size:.95rem}
     }
-    @media (prefers-reduced-motion: reduce){ .card:hover{transform:none; box-shadow:none} .skeleton::after{animation:none} }
+    @media (prefers-reduced-motion: reduce){
+      .card{ transition:none }
+      .card:hover{ transform:none; box-shadow:0 6px 20px rgba(0,0,0,.18) }
+      .skeleton::after{ animation:none }
+    }
+
+    /* أيقونات SVG موحّدة */
+    .ic{ width:22px; height:22px; display:inline-block; vertical-align:-3px; color:inherit; }
+    /* (اختياري) لون خفيف للأيقونة */
+    .card .ic{ color:#93c5fd; }
+    /* خط أحادي للمعلومات */
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
   </style>
 </head>
 <body>
@@ -123,10 +148,8 @@
   <div class="container">
 
     <h1>بوابة تصاريح العمل</h1>
-    <!-- (1) جملة الترحيب الرئيسية القديمة -->
     <p class="subtitle">مرحبًا بك في بوابة تصاريح العمل الخاصة بشركة النجار للمقاولات</p>
 
-    <!-- ملاحظة لطيفة بدل "اختر المشروع..." -->
     <div class="soft-note">🧭 يُرجى اختيار المشروع</div>
 
     <!-- اختيار المشروع -->
@@ -142,7 +165,7 @@
       </button>
     </div>
 
-    <!-- (2) سطر واحد: الترحيب المختصر + البحث -->
+    <!-- سطر الترحيب + البحث -->
     <div class="toolbar">
       <div class="welcome-inline" aria-live="polite">
         👋 أهلاً بك — اكتب اسم التصريح أو الكود للبحث السريع
@@ -159,7 +182,7 @@
     <div class="grid" id="skeleton"></div>
     <div class="grid" id="grid" aria-live="polite"></div>
 
-    <!-- (4) كيف تستخدم؟ -->
+    <!-- كيف تستخدم؟ -->
     <div class="tiny" id="howToBox">
       <h3 style="margin:0 0 8px">🧭 كيف تستخدم؟</h3>
       <ul style="margin:0; padding-right:18px; line-height:1.9">
@@ -183,31 +206,31 @@
         id:'najran',
         name:'التصاريح المتاحة — مبنى إداري ومبنى التحكم بمحطة كهرباء نجران',
         links:[
-          { title:"تصريح العمل في الأماكن المرتفعة", code:"WAH", icon:"🧗", desc:"أعمال فوق مستوى الأرض تتطلب إجراءات وقاية من السقوط.", url:"https://script.google.com/macros/s/AKfycbwVaSmrvgSG_KyhHaBGnrVcQVW_trdva1Vkk3d2sxlqjW8RC16iVNikjphQ-TSNyj7X/exec" },
-          { title:"تصريح أعمال الحفر",               code:"EXC", icon:"⛏️", desc:"أعمال حفر/خنادق ومجاورة خدمات مدفونة.",                 url:"https://script.google.com/macros/s/AKfycbzeNCkVOGRq4I2DAnsP_rwtyJsH95-qrdpDH7SGtU9pKHCssDmGFeMi_LCVAym_pamz/exec" },
-          { title:"تصريح الأعمال الساخنة",           code:"HWP", icon:"🔥", desc:"لحام/قطع/جرايندر أو أي مصدر شرر/لهب.",                   url:"https://script.google.com/macros/s/AKfycbyj16dWBfMwWn5htsSTpgnjJR_VGshTiyn3pYA-_GRKSUUaNmngJIqBl8L2df8nwmKpQw/exec" },
-          { title:"تصريح الأماكن المحصورة",          code:"CSE", icon:"🕳️", desc:"دخول مناطق مغلقة التهوية أو ذات فتحات محدودة.",        url:"https://script.google.com/macros/s/AKfycbxFfOIG6s8tDdAArAzmAoYUuqnW0zQGv7RsnQMrdlcwuae30_5FYDSNyvXs2V7JLyX0/exec" },
-          { title:"تصريح الأعمال العامة",            code:"GWP", icon:"🧰", desc:"أعمال عامة لا تندرج تحت تصاريح متخصصة.",                 url:"https://script.google.com/macros/s/AKfycbyWrievOKw_XXJRS2E30P8VsG5f3WjilJoORpfplM0EFuw77zgre8sQwYjnyBHAXKoy/exec" },
-          { title:"تصريح أعمال الرفع",               code:"LOP", icon:"🏗️", desc:"استخدام الأوناش والرفع بالرافعات والونشات.",              url:"https://script.google.com/macros/s/AKfycbyqJipVrchzNaCGgyi-vRgmbKZA52uhOguv9eRM46FzJbrj2hxl0rAtqwogA8lqmgorQQ/exec" }
+          { title:"تصريح العمل في الأماكن المرتفعة", code:"WAH", icon:"wah", desc:"أعمال فوق مستوى الأرض تتطلب إجراءات وقاية من السقوط.", url:"https://script.google.com/macros/s/AKfycbwVaSmrvgSG_KyhHaBGnrVcQVW_trdva1Vkk3d2sxlqjW8RC16iVNikjphQ-TSNyj7X/exec" },
+          { title:"تصريح أعمال الحفر",               code:"EXC", icon:"exc", desc:"أعمال حفر/خنادق ومجاورة خدمات مدفونة.",                 url:"https://script.google.com/macros/s/AKfycbzeNCkVOGRq4I2DAnsP_rwtyJsH95-qrdpDH7SGtU9pKHCssDmGFeMi_LCVAym_pamz/exec" },
+          { title:"تصريح الأعمال الساخنة",           code:"HWP", icon:"hwp", desc:"لحام/قطع/جرايندر أو أي مصدر شرر/لهب.",                   url:"https://script.google.com/macros/s/AKfycbyj16dWBfMwWn5htsSTpgnjJR_VGshTiyn3pYA-_GRKSUUaNmngJIqBl8L2df8nwmKpQw/exec" },
+          { title:"تصريح الأماكن المحصورة",          code:"CSE", icon:"cse", desc:"دخول مناطق مغلقة التهوية أو ذات فتحات محدودة.",        url:"https://script.google.com/macros/s/AKfycbxFfOIG6s8tDdAArAzmAoYUuqnW0zQGv7RsnQMrdlcwuae30_5FYDSNyvXs2V7JLyX0/exec" },
+          { title:"تصريح الأعمال العامة",            code:"GWP", icon:"gwp", desc:"أعمال عامة لا تندرج تحت تصاريح متخصصة.",                 url:"https://script.google.com/macros/s/AKfycbyWrievOKw_XXJRS2E30P8VsG5f3WjilJoORpfplM0EFuw77zgre8sQwYjnyBHAXKoy/exec" },
+          { title:"تصريح أعمال الرفع",               code:"LOP", icon:"lop", desc:"استخدام الأوناش والرفع بالرافعات والونشات.",              url:"https://script.google.com/macros/s/AKfycbyqJipVrchzNaCGgyi-vRgmbKZA52uhOguv9eRM46FzJbrj2hxl0rAtqwogA8lqmgorQQ/exec" }
         ],
         resources:[
-          { label:"سجل تصاريح العمل", code:"LOG", icon:"📁", desc:"عرض وتتبع التصاريح الصادرة.", href:"https://najran-ptw.glide.page/dl/8aba19" },
-          { label:"تقييم المخاطر",    code:"RA",  icon:"🛠️", desc:"نماذج وإرشادات تقييم المخاطر.", href:"https://sites.google.com/view/najran-ra/home" },
+          { label:"سجل تصاريح العمل", code:"LOG", icon:"log", desc:"عرض وتتبع التصاريح الصادرة.", href:"https://najran-ptw.glide.page/dl/8aba19" },
+          { label:"تقييم المخاطر",    code:"RA",  icon:"ra",  desc:"نماذج وإرشادات تقييم المخاطر.", href:"https://sites.google.com/view/najran-ra/home" },
         ]
       },
       sharurah: {
         id:'sharurah',
         name:'التصاريح المتاحة — إنشاء بوابات أمنية بمحطة كهرباء شرورة',
         links:[
-          { title:"تصريح الأعمال العامة",            code:"GWP", icon:"🧰", desc:"أعمال عامة لا تندرج تحت تصاريح متخصصة.",                 url:"https://script.google.com/macros/s/AKfycbyjijxMu2kAyHEUGzLYnoskA2K0Q9Tlh2TZRegn6naNVhA8V7DfG-Z0Q2v4V_9bjnNcCQ/exec" },
-          { title:"تصريح الأماكن المحصورة",          code:"CSE", icon:"🕳️", desc:"دخول مناطق مغلقة التهوية أو ذات فتحات محدودة.",        url:"https://script.google.com/macros/s/AKfycbyMwmk_BiB6jxdV0IVK-s8Tvy90AmuWDXYa28J2fTW_3v1sjnt4DhfBWPO6n1LueQkKeg/exec" },
-          { title:"تصريح أعمال الحفر",               code:"EXC", icon:"⛏️", desc:"أعمال حفر/خنادق ومجاورة خدمات مدفونة.",                 url:"https://script.google.com/macros/s/AKfycbzE39JEq2zdreAxLUiWw7GOzDtJ5Bs1ytUkRaX4DLOqt4vKg0hqqsNxG4n26sgzYDOZ/exec" },
-          { title:"تصريح الأعمال الساخنة",           code:"HWP", icon:"🔥", desc:"لحام/قطع/جرايندر أو أي مصدر شرر/لهب.",                   url:"https://script.google.com/macros/s/AKfycbz2aQZRYG5_tTTk83P0-TrfX-jDXLFxhtm1ft28MgXUoYmIZzb0XcW2v2k8RdyPS9LbPQ/exec" },
-          { title:"تصريح العمل في الأماكن المرتفعة", code:"WAH", icon:"🧗", desc:"أعمال فوق مستوى الأرض تتطلب إجراءات وقاية من السقوط.", url:"https://script.google.com/macros/s/AKfycbwKAdP5ldeTnVG47ghWCu-BetIiHzAFGSYrXfCsoMX2QIdRnNAeSyXptMDdlpjl07Ks/exec" },
-          { title:"تصريح أعمال الرفع",               code:"LOP", icon:"🏗️", desc:"استخدام الأوناش والرفع بالرافعات والونشات.",              url:"https://script.google.com/macros/s/AKfycbwJWXCguWxVrRUapCfukPQ2cgxRZOmMd9WjwCHDB9nr-EAR7K0r4ZGxEF1Vi7quntd/exec" }
+          { title:"تصريح الأعمال العامة",            code:"GWP", icon:"gwp", desc:"أعمال عامة لا تندرج تحت تصاريح متخصصة.",                 url:"https://script.google.com/macros/s/AKfycbyjijxMu2kAyHEUGzLYnoskA2K0Q9Tlh2TZRegn6naNVhA8V7DfG-Z0Q2v4V_9bjnNcCQ/exec" },
+          { title:"تصريح الأماكن المحصورة",          code:"CSE", icon:"cse", desc:"دخول مناطق مغلقة التهوية أو ذات فتحات محدودة.",        url:"https://script.google.com/macros/s/AKfycbyMwmk_BiB6jxdV0IVK-s8Tvy90AmuWDXYa28J2fTW_3v1sjnt4DhfBWPO6n1LueQkKeg/exec" },
+          { title:"تصريح أعمال الحفر",               code:"EXC", icon:"exc", desc:"أعمال حفر/خنادق ومجاورة خدمات مدفونة.",                 url:"https://script.google.com/macros/s/AKfycbzE39JEq2zdreAxLUiWw7GOzDtJ5Bs1ytUkRaX4DLOqt4vKg0hqqsNxG4n26sgzYDOZ/exec" },
+          { title:"تصريح الأعمال الساخنة",           code:"HWP", icon:"hwp", desc:"لحام/قطع/جرايندر أو أي مصدر شرر/لهب.",                   url:"https://script.google.com/macros/s/AKfycbz2aQZRYG5_tTTk83P0-TrfX-jDXLFxhtm1ft28MgXUoYmIZzb0XcW2v2k8RdyPS9LbPQ/exec" },
+          { title:"تصريح العمل في الأماكن المرتفعة", code:"WAH", icon:"wah", desc:"أعمال فوق مستوى الأرض تتطلب إجراءات وقاية من السقوط.", url:"https://script.google.com/macros/s/AKfycbwKAdP5ldeTنVG47ghWCu-BetIiHzAFGSYrXfCsoMX2QIdRnNAeSyXptMDdlpjl07Ks/exec" },
+          { title:"تصريح أعمال الرفع",               code:"LOP", icon:"lop", desc:"استخدام الأوناش والرفع بالرافعات والونشات.",              url:"https://script.google.com/macros/s/AKfycbwJWXCguWxVrRUapCfukPQ2cgxRZOmMd9WjwCHDB9nr-EAR7K0ر4ZGxEF1Vi7quntd/exec" }
         ],
         resources:[
-          { label:"تقييم المخاطر - شرورة", code:"RA", icon:"🛠️", desc:"نماذج وإرشادات تقييم المخاطر لمشروع شرورة.", href:"https://sites.google.com/d/1GcTU71M0DlHm8LBQZ_osejInCnqfdOUq/p/1CslJgVDImOo_PSOLHpDuvoe2HfdpIUfF/edit" }
+          { label:"تقييم المخاطر - شرورة", code:"RA", icon:"ra", desc:"نماذج وإرشادات تقييم المخاطر لمشروع شرورة.", href:"https://sites.google.com/d/1GcTU71M0DlHm8LBQZ_osejInCnqfdOUq/p/1CslJgVDImOo_PSOLHpDuvoe2HfdpIUfF/edit" }
         ]
       }
     };
@@ -232,12 +255,23 @@
     function createCard({title, code, icon, desc, url}){
       const a=document.createElement('a'); a.className='card'; a.href=url; a.target="_blank"; a.rel="noopener";
       a.setAttribute('data-title', (title+' '+code).toLowerCase());
-      a.innerHTML=`<div class="top"><span>${icon}</span><span class="title">${title}</span><span class="badge">${code}</span></div><div class="desc">${desc}</div>`;
+
+      // دعم SVG أو الإيموجي القديم لو لسه موجود:
+      const known = ['wah','hwp','exc','cse','gwp','lop','log','ra'];
+      const iconHtml = known.includes((icon||'').toLowerCase())
+        ? `<svg class="ic" aria-hidden="true"><use href="#icon-${icon.toLowerCase()}"/></svg>`
+        : `<span>${icon||''}</span>`;
+
+      a.innerHTML=`<div class="top"><span>${iconHtml}</span><span class="title">${title}</span><span class="badge">${code}</span></div><div class="desc">${desc}</div>`;
       return a;
     }
     function createResCard({label, code, icon, desc, href}){
       const a=document.createElement('a'); a.className='card'; a.href=href; a.target='_blank'; a.rel='noopener';
-      a.innerHTML=`<div class="top"><span>${icon}</span><span class="title">${label}</span><span class="badge">${code}</span></div><div class="desc">${desc}</div>`;
+      const known = ['wah','hwp','exc','cse','gwp','lop','log','ra'];
+      const iconHtml = known.includes((icon||'').toLowerCase())
+        ? `<svg class="ic" aria-hidden="true"><use href="#icon-${icon.toLowerCase()}"/></svg>`
+        : `<span>${icon||''}</span>`;
+      a.innerHTML=`<div class="top"><span>${iconHtml}</span><span class="title">${label}</span><span class="badge">${code}</span></div><div class="desc">${desc}</div>`;
       return a;
     }
     function applyActive(projectId){
@@ -247,6 +281,7 @@
         b.setAttribute('aria-selected', active ? 'true':'false');
       });
     }
+
     function renderProject(id){
       const p = PROJECTS[id] || PROJECTS.najran;
       projTitle.textContent = p.name;
@@ -274,6 +309,7 @@
       // فلترة مبدئية
       filterPermits();
     }
+
     function filterPermits(){
       const val=(document.getElementById('searchInput').value||'').toLowerCase().trim();
       grid.querySelectorAll('.card').forEach(c=>{
@@ -283,7 +319,7 @@
     }
     window.filterPermits = filterPermits;
 
-    // اختصار "/" للبحث
+    // اختصار "/" للبحث (كما في كودك الأصلي)
     window.addEventListener('keydown', e=>{
       if(e.key==='/' && !/input|textarea/i.test(document.activeElement.tagName)){
         e.preventDefault(); document.getElementById('searchInput').focus();
@@ -301,10 +337,69 @@
       const saved = localStorage.getItem('preferredProject');
       const first = getParam('project') || saved || 'najran';
       renderProject(first);
-      // دعم ?q للبحث المسبق
       const q = getParam('q');
       if(q){ const si=document.getElementById('searchInput'); si.value=q; filterPermits(); }
     })();
   </script>
+
+  <!-- ===== SVG ICONS SPRITE (مخفي) ===== -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+    <!-- WAH: Work At Height -->
+    <symbol id="icon-wah" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8 3v18M14 3v18M8 7h6M8 11h6M8 15h6" />
+      <path d="M18 10l2-2 2 2" />
+      <path d="M20 20v-10" />
+    </symbol>
+
+    <!-- HWP: Hot Work -->
+    <symbol id="icon-hwp" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3c2.5 3 1 4.5 0 6s-1 2.5 0 4c1 1.6 3 2 4.5.6C18 12.8 18 10 16 7c0 4-3 3-3 1 0-1.5.5-2.5-1-5z"/>
+      <path d="M8 14c-1.5 2.2-.3 5 2.5 6s6-.6 6.5-3.5"/>
+    </symbol>
+
+    <!-- EXC: Excavation -->
+    <symbol id="icon-exc" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 17c1.5 1 3 1.5 5 1.5 2 0 3.5-.5 5-1.5" />
+      <path d="M12 5l7 7" />
+      <path d="M18 4l2 2-4 4-2-2z" />
+      <path d="M9 12l3-3" />
+    </symbol>
+
+    <!-- CSE: Confined Space Entry -->
+    <symbol id="icon-cse" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <ellipse cx="12" cy="7" rx="6" ry="3"/>
+      <path d="M6 7v10c0 1.7 2.7 3 6 3s6-1.3 6-3V7" />
+      <path d="M10 12l2 2 2-2M12 10v4" />
+    </symbol>
+
+    <!-- GWP: General Work Permit -->
+    <symbol id="icon-gwp" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="6" y="5" width="12" height="14" rx="2" />
+      <path d="M9 5.5V4h6v1.5" />
+      <path d="M9 10h6M9 14h6" />
+    </symbol>
+
+    <!-- LOP: Lifting Operations -->
+    <symbol id="icon-lop" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3v4a3 3 0 1 0 6 0V3" />
+      <path d="M15 10v4a3 3 0 1 1-6 0" />
+      <path d="M12 14c0 1.1-.9 2-2 2" />
+    </symbol>
+
+    <!-- LOG: Logbook -->
+    <symbol id="icon-log" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z" />
+      <path d="M5 8h13" />
+      <path d="M9 12h6M9 16h6" />
+    </symbol>
+
+    <!-- RA: Risk Assessment -->
+    <symbol id="icon-ra" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z" />
+      <path d="M12 8v5" />
+      <path d="M12 16h.01" />
+    </symbol>
+  </svg>
+  <!-- ===== نهاية الـSprite ===== -->
 </body>
 </html>

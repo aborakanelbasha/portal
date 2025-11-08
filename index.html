@@ -23,14 +23,14 @@
     :root{
       --card-bg: rgba(255,255,255,.07);
       --card-bg-hover: rgba(255,255,255,.10);
-      --text:#fff; --muted:#d1d5db; --focus:#ffd166;
+      --text:#fff; --muted:#d1d5db; --focus:#60a5fa;
       --accent-najran:#2563eb; --accent-sharurah:#16a34a;
       --panel: rgba(0,0,0,.35); --panel-brd: rgba(255,255,255,.16);
     }
     *{box-sizing:border-box}
     body{
       font-family:'Segoe UI',system-ui,Tahoma; margin:0; color:var(--text);
-      background:#0f172a url('https://i.postimg.cc/RVdVFtz0/hero.png') no-repeat center/cover fixed;
+      background:#0f172a; /* تُستبدل لاحقًا بالصورة Lazy */
       padding:0 16px 110px;
     }
     .overlay{position:fixed;inset:0;backdrop-filter:brightness(.55);z-index:0}
@@ -60,7 +60,7 @@
     }
     .seg .badge-new{
       position:absolute; top:-8px; inset-inline-end:-8px;
-      font-size:.7rem; background:#22c55e; color:#04101f; padding:3px 7px; border-radius:999px; border:1px solid #a7f3d0;
+      font-size:.7rem; background:#22c55e; color:#04101ف; padding:3px 7px; border-radius:999px; border:1px solid #a7f3d0;
     }
 
     .toolbar{
@@ -110,6 +110,12 @@
 
     .ic{ width:22px; height:22px; display:inline-block; vertical-align:-3px; color:inherit }
     .card .ic{ color:#93c5fd }
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
+
+    /* وصولية إضافية */
+    .card:focus-visible, .seg button:focus-visible, .install-btn:focus-visible, #reloadBtn:focus-visible {
+      outline:3px solid var(--focus); outline-offset:2px;
+    }
   </style>
 </head>
 <body>
@@ -149,9 +155,9 @@
     <div class="tiny" id="howToBox">
       <h3 style="margin:0 0 8px">🧭 كيف تستخدم؟</h3>
       <ul style="margin:0; padding-right:18px; line-height:1.9">
-        <li>✅ اختر نوع التصريح المناسب من البطاقات بالأعلى.</li>
-        <li>✏️ املأ الحقول المطلوبة بدقة، وتأكد من الأسماء والتواريخ.</li>
-        <li>📄 اضغط <b>Generate PDF</b> لتحصل على التصريح وتقوم بطباعته أو مشاركته.</li>
+        <li>اضغط <span class="mono">/</span> لتركيز البحث بسرعة.</li>
+        <li>انقر على نوع التصريح لفتحه في تبويب جديد.</li>
+        <li>استخدم زر <b>⬇️ تثبيت التطبيق</b> لإضافة البوابة كـPWA.</li>
       </ul>
     </div>
 
@@ -185,7 +191,7 @@
         name:'التصاريح المتاحة — إنشاء بوابات أمنية بمحطة كهرباء شرورة',
         links:[
           { title:"تصريح الأعمال العامة",            code:"GWP", icon:"gwp", desc:"أعمال عامة لا تندرج تحت تصاريح متخصصة.",                 url:"https://script.google.com/macros/s/AKfycbyjijxMu2kAyHEUGzLYnoskA2K0Q9Tlh2TZRegn6naNVhA8V7DfG-Z0Q2v4V_9bjnNcCQ/exec" },
-          { title:"تصريح الأماكن المحصورة",          code:"CSE", icon:"cse", desc:"دخول مناطق مغلقة التهوية أو ذات فتحات محدودة.",        url:"https://script.google.com/macros/s/AKfycbyMwmk_BiB6jxdV0IVK-s8Tvy90AmuWDXYa28J2fTW_3v1sjnt4DhfBWPO6ن1LueQkKeg/exec" },
+          { title:"تصريح الأماكن المحصورة",          code:"CSE", icon:"cse", desc:"دخول مناطق مغلقة التهوية أو ذات فتحات محدودة.",        url:"https://script.google.com/macros/s/AKfycbyMwmk_BiB6jxdV0IVK-s8Tvy90AmuWDXYa28J2fTW_3v1sjnt4DhfBWPO6n1LueQkKeg/exec" },
           { title:"تصريح أعمال الحفر",               code:"EXC", icon:"exc", desc:"أعمال حفر/خنادق ومجاورة خدمات مدفونة.",                 url:"https://script.google.com/macros/s/AKfycbzE39JEq2zdreAxLUiWw7GOzDtJ5Bs1ytUkRaX4DLOqt4vKg0hqqsNxG4n26sgzYDOZ/exec" },
           { title:"تصريح الأعمال الساخنة",           code:"HWP", icon:"hwp", desc:"لحام/قطع/جرايندر أو أي مصدر شرر/لهب.",                   url:"https://script.google.com/macros/s/AKfycbz2aQZRYG5_tTTk83P0-TrfX-jDXLFxhtm1ft28MgXUoYmIZzb0XcW2v2k8RdyPS9LbPQ/exec" },
           { title:"تصريح العمل في الأماكن المرتفعة", code:"WAH", icon:"wah", desc:"أعمال فوق مستوى الأرض تتطلب إجراءات وقاية من السقوط.", url:"https://script.google.com/macros/s/AKfycbwKAdP5ldeTnVG47ghWCu-BetIiHzAFGSYrXfCsoMX2QIdRnNAeSyXptMDdlpjl07Ks/exec" },
@@ -210,25 +216,66 @@
     function setParam(name,val){ const u=new URL(location.href); if(val==null){u.searchParams.delete(name)} else {u.searchParams.set(name,val)} history.replaceState({}, "", u.toString()); }
     function renderSkeletons(n=6){ skeleton.innerHTML=""; for(let i=0;i<n;i++){ const d=document.createElement('div'); d.className='skeleton'; skeleton.appendChild(d) } }
 
+    // بناء بطاقة مع زر نسخ + فحص رابط
     function createCard({title, code, icon, desc, url}){
       const a=document.createElement('a'); a.className='card'; a.href=url; a.target="_blank"; a.rel="noopener";
       a.setAttribute('data-title', (title+' '+code).toLowerCase());
-      const known = ['wah','hwp','exc','cse','gwp','lop','log','ra'];
+      const known=['wah','hwp','exc','cse','gwp','lop','log','ra'];
       const iconHtml = known.includes((icon||'').toLowerCase())
         ? `<svg class="ic" aria-hidden="true"><use href="#icon-${icon.toLowerCase()}"/></svg>`
         : `<span>${icon||''}</span>`;
-      a.innerHTML=`<div class="top"><span>${iconHtml}</span><span class="title">${title}</span><span class="badge">${code}</span></div><div class="desc">${desc}</div>`;
+
+      a.innerHTML=`
+        <div class="top">
+          <span>${iconHtml}</span>
+          <span class="title">${title}</span>
+          <span class="badge">${code}</span>
+        </div>
+        <div class="desc">${desc}</div>
+        <div class="actions" style="margin-top:10px;display:flex;gap:8px">
+          <button class="copy" type="button"
+            style="padding:6px 10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);border-radius:8px;color:#fff;cursor:pointer">
+            نسخ الرابط
+          </button>
+        </div>
+      `;
+
+      // زر نسخ الرابط مع UTM
+      a.querySelector('.copy').addEventListener('click', async (ev) => {
+        ev.preventDefault(); ev.stopPropagation();
+        const shareUrl = new URL(a.href);
+        shareUrl.searchParams.set('utm_source','ptw');
+        shareUrl.searchParams.set('utm_campaign', code);
+        try{
+          await navigator.clipboard.writeText(shareUrl.toString());
+          a.querySelector('.copy').textContent = '✔ تم النسخ';
+          setTimeout(()=> a.querySelector('.copy').textContent = 'نسخ الرابط', 1600);
+        }catch(_){}
+      });
+
+      // فحص لطيف للرابط قبل الفتح (لا يمنع الفتح لو no-cors)
+      a.addEventListener('click', async (e)=>{
+        try{
+          await fetch(url, { method:'HEAD', mode:'no-cors' });
+        }catch(_){
+          e.preventDefault();
+          const t=document.getElementById('linkToast'); if(t){ t.style.display='inline-block'; setTimeout(()=>t.style.display='none',2200); }
+        }
+      });
+
       return a;
     }
+
     function createResCard({label, code, icon, desc, href}){
       const a=document.createElement('a'); a.className='card'; a.href=href; a.target='_blank'; a.rel='noopener';
-      const known = ['wah','hwp','exc','cse','gwp','lop','log','ra'];
+      const known=['wah','hwp','exc','cse','gwp','lop','log','ra'];
       const iconHtml = known.includes((icon||'').toLowerCase())
         ? `<svg class="ic" aria-hidden="true"><use href="#icon-${icon.toLowerCase()}"/></svg>`
         : `<span>${icon||''}</span>`;
       a.innerHTML=`<div class="top"><span>${iconHtml}</span><span class="title">${label}</span><span class="badge">${code}</span></div><div class="desc">${desc}</div>`;
       return a;
     }
+
     function applyActive(projectId){
       document.querySelectorAll('.seg button').forEach(b=>{
         const active = b.dataset.project===projectId;
@@ -270,23 +317,31 @@
     }
     window.filterPermits = filterPermits;
 
+    // اختصار "/" للبحث
     window.addEventListener('keydown', e=>{
       if(e.key==='/' && !/input|textarea/i.test(document.activeElement.tagName)){
         e.preventDefault(); document.getElementById('searchInput').focus();
       }
     });
 
+    // تغييرات المشروع
     seg.addEventListener('click', (e)=>{
       const btn=e.target.closest('button[data-project]'); if(!btn) return;
       renderProject(btn.dataset.project);
     });
 
+    // تهيئة + الخلفية Lazy
     (function init(){
       const saved = localStorage.getItem('preferredProject');
       const first = getParam('project') || saved || 'najran';
       renderProject(first);
       const q = getParam('q');
       if(q){ const si=document.getElementById('searchInput'); si.value=q; filterPermits(); }
+
+      // تحميل مؤخر للصورة الخلفية
+      const img = new Image();
+      img.onload = ()=> document.body.style.background = "#0f172a url('https://i.postimg.cc/RVdVFtz0/hero.png') no-repeat center/cover fixed";
+      img.src = 'https://i.postimg.cc/RVdVFtz0/hero.png';
     })();
 
     // ==== PWA Install Button ====
@@ -343,7 +398,7 @@
       <path d="M9 12h6M9 16h6" />
     </symbol>
     <symbol id="icon-ra" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z" />
+      <path d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6ز" />
       <path d="M12 8v5" />
       <path d="M12 16h.01" />
     </symbol>
@@ -374,5 +429,10 @@
       document.getElementById('reloadBtn')?.addEventListener('click', () => location.reload());
     }
   </script>
+
+  <!-- توست خطأ الرابط -->
+  <div id="linkToast" style="position:fixed;inset-inline:16px;bottom:16px;background:rgba(0,0,0,.8);color:#fff;padding:10px 14px;border-radius:10px;display:none;z-index:9999">
+    ⚠️ الرابط غير متاح حاليًا. جرّب بعد قليل.
+  </div>
 </body>
 </html>

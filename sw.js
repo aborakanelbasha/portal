@@ -1,6 +1,12 @@
 const CACHE = "ptw-shell-v1";
-const ASSETS = [ "/index.html", "/favicon.png", "/manifest.webmanifest" ];
+const ASSETS = [
+  "./index.html",
+  "./favicon.png",
+  "./manifest.webmanifest",
+  "./offline.html"
+];
 
+// تثبيت الكاش
 self.addEventListener("install", (e) => {
   e.waitUntil(
     caches.open(CACHE)
@@ -9,6 +15,7 @@ self.addEventListener("install", (e) => {
   );
 });
 
+// تفعيل وإزالة الكاشات القديمة
 self.addEventListener("activate", (e) => {
   e.waitUntil(
     caches.keys().then(keys =>
@@ -17,10 +24,27 @@ self.addEventListener("activate", (e) => {
   );
 });
 
+// Cache-first بسيط للملفات المحلية + بديل أوفلاين لصفحات HTML
 self.addEventListener("fetch", (e) => {
   const url = new URL(e.request.url);
-  if (url.origin !== location.origin || /script.google.com\/macros/.test(url.href)) return;
+
+  // تجاهل الروابط الخارجية وطلبات Apps Script
+  if (url.origin !== location.origin || /script\.google\.com\/macros/.test(url.href)) return;
+
   if (e.request.method === "GET") {
-    e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+    e.respondWith(
+      caches.match(e.request).then(async (cached) => {
+        try {
+          return cached || await fetch(e.request);
+        } catch (err) {
+          // لو طلب HTML رجّع صفحة الأوفلاين
+          const accept = e.request.headers.get('accept') || '';
+          if (accept.includes('text/html')) {
+            return caches.match('./offline.html');
+          }
+          throw err;
+        }
+      })
+    );
   }
 });

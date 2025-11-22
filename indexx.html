@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>بوابة النجار - تسجيل الدخول</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    ::selection {
+      background-color: gray;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Tajawal", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color: #000;
+      color: #fff;
+    }
+
+    /* ===== الخلفية والكارت الرئيسي ===== */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem 1rem;
+      background:
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8)),
+        url("https://i.postimg.cc/RVdVFtz0/hero.png") center center / cover no-repeat;
+      /* انت كنت حاطط الخلفية خلاص، فضّل نفس الرابط هنا */
+    }
+
+    .hero-card {
+      width: min(1100px, 100%);
+      display: flex;
+      gap: 2rem;
+      padding: 2.5rem 2rem;
+      border-radius: 24px;
+      background: rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+    }
+
+    .hero-left,
+    .hero-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero-left {
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* ===== جزء الترحيب ===== */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.8rem;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      color: #e0e0e0;
+    }
+
+    .badge-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #1e90ff;
+    }
+
+    .hero-title {
+      font-size: 2.2rem;
+      margin: 0 0 0.5rem;
+    }
+
+    .hero-emoji {
+      margin-inline-start: 0.25rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1rem;
+      color: #e0e0e0;
+      margin: 0 0 1.5rem;
+      line-height: 1.8;
+    }
+
+    .hero-footer {
+      margin-top: auto;
+      font-size: 0.85rem;
+      color: #cccccc;
+    }
+
+    /* ===== فورم اللوجين (نفس التصميم بتاعك) ===== */
+    .login-container {
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+
+    .login-form {
+      width: 100%;
+      max-width: 400px;
+      height: 400px;
+      background-image: linear-gradient(to bottom, #424242, #212121);
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      border-radius: 0.5rem;
+    }
+
+    .login-title {
+      color: wheat;
+      margin: 3rem 0 1.5rem;
+      font-size: 2rem;
+    }
+
+    .login-input {
+      margin: 0.5rem 0;
+      padding: 1rem 0.5rem;
+      width: 20rem;
+      max-width: 90%;
+      background-color: inherit;
+      color: wheat;
+      border: none;
+      outline: none;
+      border-bottom: 1px solid wheat;
+      transition: all 400ms;
+    }
+
+    .login-input::placeholder {
+      color: rgba(245, 222, 179, 0.8);
+    }
+
+    .login-input:hover {
+      background-color: #424242;
+      border: none;
+      border-radius: 0.5rem;
+    }
+
+    .login-btn {
+      height: 3rem;
+      width: 20rem;
+      max-width: 90%;
+      margin-top: 2rem;
+      background-color: wheat;
+      border-radius: 0.5rem;
+      border: none;
+      font-size: 1.2rem;
+      transition: all 400ms;
+      cursor: pointer;
+      box-shadow:
+        0 0 10px antiquewhite,
+        0 0 10px antiquewhite;
+    }
+
+    .login-btn:hover {
+      background-color: antiquewhite;
+      box-shadow: none;
+    }
+
+    .login-error {
+      margin-top: 0.8rem;
+      font-size: 0.9rem;
+      color: #ff8080;
+      min-height: 1.2rem;
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 900px) {
+      .hero-card {
+        flex-direction: column-reverse;
+        padding: 1.8rem 1.2rem;
+      }
+
+      .hero-right {
+        text-align: center;
+        align-items: center;
+      }
+
+      .hero-footer {
+        margin-top: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <div class="hero-card">
+      <!-- ===== الجزء الشمال: اللوجين في المربع الأزرق ===== -->
+      <div class="hero-left">
+        <div class="login-container">
+          <form class="login-form" id="login-form">
+            <p class="login-title">تسجيل الدخول</p>
+            <input
+              placeholder="اسم المستخدم"
+              class="login-input"
+              type="text"
+              name="username"
+              id="username"
+              autocomplete="username"
+              required
+            />
+            <input
+              placeholder="كلمة المرور"
+              class="login-input"
+              type="password"
+              name="password"
+              id="password"
+              autocomplete="current-password"
+              required
+            />
+            <button class="login-btn" type="submit">دخول</button>
+            <p class="login-error" id="login-error"></p>
+          </form>
+        </div>
+      </div>
+
+      <!-- ===== الجزء اليمين: الترحيب ===== -->
+      <div class="hero-right">
+        <div class="badge">
+          <span class="badge-dot"></span>
+          <span>بوابة النجار — الوصول الآمن</span>
+        </div>
+
+        <h1 class="hero-title">
+          مرحبًا بك <span class="hero-emoji">👋</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          سيُسجَّل دخولك للوصول إلى التصاريح، تقييمات المخاطر، وتوليد ملفات
+          <strong>PDF</strong> الخاصة بمواقع العمل (نجران وشرورة) حسب صلاحياتك.
+        </p>
+
+        <div class="hero-footer">
+          Eng. Ahmed El-Basha ©
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // ================== تعريف المستخدمين (غيّر البيانات دي على مزاجك) ==================
+    const USERS = {
+      // أدمن - يشوف نجران وشرورة
+      "admin": { password: "Admin@123", role: "admin" },
+
+      // مستخدمين نجران
+      "saleh": { password: "Saleh@123", role: "najran" },
+      "tarek": { password: "Tarek@456", role: "najran" },
+
+      // مستخدمين شرورة
+      "moustafa": { password: "Moustafa@123", role: "sharurah" },
+      "dafaa": { password: "Dafaa@456", role: "sharurah" }
+    };
+
+    const form = document.getElementById("login-form");
+    const usernameInput = document.getElementById("username");
+    const passwordInput = document.getElementById("password");
+    const errorBox = document.getElementById("login-error");
+
+    // لو حد داخل وعنده سيشن جاهزة، دخّله مباشرة على البوابة
+    (function autoRedirectIfLoggedIn() {
+      try {
+        const stored = localStorage.getItem("aln_session");
+        if (!stored) return;
+        const session = JSON.parse(stored);
+        if (session && session.username && session.role) {
+          window.location.href = "portal.html"; // اسم صفحة البوابة القديمة
+        }
+      } catch (e) {
+        console.warn("Session parse error", e);
+      }
+    })();
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      errorBox.textContent = "";
+
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!username || !password) {
+        errorBox.textContent = "من فضلك أدخل اسم المستخدم وكلمة المرور.";
+        return;
+      }
+
+      const user = USERS[username];
+
+      if (!user || user.password !== password) {
+        errorBox.textContent = "بيانات الدخول غير صحيحة.";
+        return;
+      }
+
+      // تخزين السيشن في localStorage
+      const sessionData = {
+        username: username,
+        role: user.role,
+        loginTime: new Date().toISOString()
+      };
+
+      localStorage.setItem("aln_session", JSON.stringify(sessionData));
+
+      // تحويل للبوابة
+      window.location.href = "portal.html";
+    });
+  </script>
+</body>
+</html>

@@ -220,14 +220,14 @@
       try {
         const raw = localStorage.getItem("aln_session");
         if (!raw) {
-          window.location.href = "index.html";
+          window.location.href = "/";
           return;
         }
 
         const session = JSON.parse(raw);
         if (!session || !session.username || !session.role) {
           localStorage.removeItem("aln_session");
-          window.location.href = "index.html";
+          window.location.href = "/";
           return;
         }
 
@@ -242,7 +242,7 @@
         }
       } catch (e) {
         console.error(e);
-        window.location.href = "index.html";
+        window.location.href = "/";
       }
     })();
 
@@ -427,7 +427,7 @@
 
     btnLogout?.addEventListener('click', () => {
       localStorage.removeItem('aln_session');
-      window.location.href = 'index.html';
+      window.location.href = '/';
     });
 
     (function init(){

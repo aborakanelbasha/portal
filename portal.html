@@ -7,7 +7,6 @@
   <meta name="description" content="إنشاء تصاريح العمل وطباعتها PDF بسرعة.">
   <meta name="color-scheme" content="dark light" />
   <meta name="theme-color" content="#0f172a" />
-  <!-- Subfolder: روابط نسبية -->
   <link rel="manifest" href="./manifest.webmanifest">
 
   <link rel="icon" href="./favicon.ico" sizes="any">
@@ -95,7 +94,7 @@
     }
     .seg .badge-new{
       position:absolute; top:-8px; inset-inline-end:-8px;
-      font-size:.7rem; background:#22c55e; color:#04101ف; padding:3px 7px; border-radius:999px; border:1px solid #a7f3d0;
+      font-size:.7rem; background:#22c55e; color:#04101f; padding:3px 7px; border-radius:999px; border:1px solid #a7f3d0;
     }
 
     .toolbar{
@@ -190,7 +189,6 @@
       <div class="search" role="search">
         <input id="searchInput" type="text" placeholder="ابحث باسم التصريح أو الكود (… WAH-GWP …)" oninput="filterPermits()" aria-label="بحث في التصاريح">
       </div>
-      <!-- زر تثبيت التطبيق -->
       <button id="btnInstall" class="install-btn" hidden>⬇️ تثبيت التطبيق</button>
     </div>
 
@@ -435,7 +433,6 @@
     (function init(){
       applyRoleVisibility();
 
-      // رسالة الترحيب بالاسم والصلاحية
       if (CURRENT_USER && welcomeUser) {
         let roleText = '';
         if (CURRENT_USER.role === 'admin') {
@@ -523,7 +520,6 @@
     </symbol>
   </svg>
 
-  <!-- (PWA) تسجيل الـService Worker لمسار فرعي -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -532,7 +528,6 @@
     }
   </script>
 
-  <!-- Toast تحديث متاح -->
   <div id="updateToast" style="position:fixed; inset-inline:16px; bottom:16px; background:rgba(0,0,0,.75); color:#fff; padding:10px 14px; border-radius:10px; display:none; z-index:9999">
     🔄 توجد نسخة أحدث من التطبيق.
     <button id="reloadBtn" style="margin-inline-start:10px; padding:6px 10px; border-radius:8px; border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.12); color:#fff; cursor:pointer">
@@ -548,7 +543,6 @@
     }
   </script>
 
-  <!-- توست خطأ الرابط -->
   <div id="linkToast" style="position:fixed;inset-inline:16px;bottom:16px;background:rgba(0,0,0,.8);color:#fff;padding:10px 14px;border-radius:10px;display:none;z-index:9999">
     ⚠️ الرابط غير متاح حاليًا. جرّب بعد قليل.
   </div>

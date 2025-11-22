@@ -30,13 +30,48 @@
     *{box-sizing:border-box}
     body{
       font-family:'Segoe UI',system-ui,Tahoma; margin:0; color:var(--text);
-      background:#0f172a; /* تُستبدل لاحقًا بالصورة Lazy */
+      background:#0f172a;
       padding:0 16px 110px;
     }
     .overlay{position:fixed;inset:0;backdrop-filter:brightness(.55);z-index:0}
     .container{position:relative;z-index:1;max-width:1100px;margin:auto;padding:32px 0}
     h1{margin:0 0 8px;font-size:2.4rem;text-align:center}
     .subtitle{color:#cbd5e1;text-align:center;margin:0 0 18px}
+
+    /* شريط الترحيب + تسجيل الخروج أعلى يمين */
+    .user-bar {
+      max-width: 980px;
+      margin: 0 auto 12px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      background: var(--panel);
+      border: 1px solid var(--panel-brd);
+      padding: 10px 14px;
+      border-radius: 12px;
+    }
+    #welcomeUser {
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .logout-btn{
+      background:rgba(239,68,68,.18);
+      border:1px solid rgba(248,113,113,.8);
+      color:#fecaca;
+      padding:8px 12px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:0.9rem;
+    }
+    .logout-btn:hover{
+      box-shadow:0 0 0 2px rgba(248,113,113,.5) inset;
+    }
 
     .soft-note{
       text-align:center; margin:12px auto 18px; max-width:980px;
@@ -58,24 +93,6 @@
       border-color:rgba(255,255,255,.2);
       box-shadow:0 0 0 2px rgba(96,165,250,.25) inset;
     }
-    .user-bar {
-  max-width: 980px;
-  margin: 0 auto 12px;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 10px;
-  background: var(--panel);
-  border: 1px solid var(--panel-brd);
-  padding: 10px 14px;
-  border-radius: 12px;
-}
-
-#welcomeUser {
-  font-weight: 700;
-  color: #fff;
-}
-
     .seg .badge-new{
       position:absolute; top:-8px; inset-inline-end:-8px;
       font-size:.7rem; background:#22c55e; color:#04101ف; padding:3px 7px; border-radius:999px; border:1px solid #a7f3d0;
@@ -83,13 +100,8 @@
 
     .toolbar{
       display:grid; align-items:center; gap:10px;
-      grid-template-columns: 1fr 1fr auto; /* ترحيب | بحث | أزرار */
+      grid-template-columns: 1fr auto; /* بحث | تثبيت */
       max-width:980px; margin:0 auto 14px;
-    }
-    .welcome-inline{
-      background:var(--panel); border:1px solid var(--panel-brd);
-      padding:12px 14px; border-radius:12px; text-align:right; color:#e5e7eb;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
     .search{ display:flex; background:var(--panel); border:1px solid var(--panel-brd); border-radius:12px; padding:6px; }
     #searchInput{ flex:1; min-width:0; padding:10px 12px; border-radius:8px; border:none; background:rgba(255,255,255,.10); color:var(--text); text-align:right; }
@@ -100,25 +112,6 @@
       padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:700;
     }
     .install-btn:hover{ box-shadow:0 0 0 2px rgba(96,165,250,.25) inset }
-
-    .toolbar-actions{
-      display:flex;
-      gap:8px;
-      justify-content:flex-end;
-    }
-
-    .logout-btn{
-      background:rgba(239,68,68,.18);
-      border:1px solid rgba(248,113,113,.8);
-      color:#fecaca;
-      padding:10px 14px;
-      border-radius:10px;
-      cursor:pointer;
-      font-weight:700;
-    }
-    .logout-btn:hover{
-      box-shadow:0 0 0 2px rgba(248,113,113,.5) inset;
-    }
 
     .section-title{max-width:980px;margin:22px auto 10px; font-size:1.1rem; border-bottom:1px solid #475569; padding-bottom:8px}
     .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:18px; max-width:980px; margin:0 auto}
@@ -143,11 +136,7 @@
 
     @media(max-width:900px){
       .toolbar{
-        grid-template-columns: 1fr 1fr;
-      }
-      .toolbar-actions{
-        grid-column:1 / -1;
-        justify-content:flex-start;
+        grid-template-columns: 1fr;
       }
     }
     @media(max-width:600px){ h1{font-size:1.9rem} .subtitle{font-size:.95rem} }
@@ -161,8 +150,11 @@
     .card .ic{ color:#93c5fd }
     .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
 
-    /* وصولية إضافية */
-    .card:focus-visible, .seg button:focus-visible, .install-btn:focus-visible, #reloadBtn:focus-visible, .logout-btn:focus-visible {
+    .card:focus-visible,
+    .seg button:focus-visible,
+    .install-btn:focus-visible,
+    #reloadBtn:focus-visible,
+    .logout-btn:focus-visible {
       outline:3px solid var(--focus); outline-offset:2px;
     }
   </style>
@@ -172,16 +164,15 @@
   <div class="container">
 
     <h1>بوابة تصاريح العمل</h1>
-<p class="subtitle">مرحبًا بك في بوابة تصاريح العمل الخاصة بشركة النجار للمقاولات</p>
+    <p class="subtitle">مرحبًا بك في بوابة تصاريح العمل الخاصة بشركة النجار للمقاولات</p>
 
-<!-- شريط الترحيب + تسجيل الخروج -->
-<div class="user-bar">
-    <span id="welcomeUser"></span>
-    <button id="btnLogout" class="logout-btn">تسجيل الخروج</button>
-</div>
+    <!-- شريط الترحيب + تسجيل الخروج -->
+    <div class="user-bar">
+      <span id="welcomeUser">👋 أهلاً بك</span>
+      <button id="btnLogout" class="logout-btn">تسجيل الخروج</button>
+    </div>
 
-<div class="soft-note">🧭 يُرجى اختيار المشروع</div>
-
+    <div class="soft-note">🧭 يُرجى اختيار المشروع</div>
 
     <div class="seg" role="tablist" aria-label="اختيار المشروع">
       <button id="btn-najran" role="tab" aria-selected="true" class="active"
@@ -196,14 +187,11 @@
     </div>
 
     <div class="toolbar">
-            <div class="search" role="search">
+      <div class="search" role="search">
         <input id="searchInput" type="text" placeholder="ابحث باسم التصريح أو الكود (… WAH-GWP …)" oninput="filterPermits()" aria-label="بحث في التصاريح">
       </div>
-      <div class="toolbar-actions">
-        <button id="btnLogout" class="logout-btn">تسجيل الخروج</button>
-        <!-- زر تثبيت التطبيق -->
-        <button id="btnInstall" class="install-btn" hidden>⬇️ تثبيت التطبيق</button>
-      </div>
+      <!-- زر تثبيت التطبيق -->
+      <button id="btnInstall" class="install-btn" hidden>⬇️ تثبيت التطبيق</button>
     </div>
 
     <div id="projTitle" class="section-title"></div>
@@ -232,10 +220,9 @@
 
     (function protectPortal() {
       try {
-        // قراءة السيشن من localStorage (لازم يكون نفس المفتاح في index.html)
         const raw = localStorage.getItem("aln_session");
         if (!raw) {
-          window.location.href = "index.html"; // رجوع لصفحة اللوجين
+          window.location.href = "index.html";
           return;
         }
 
@@ -253,8 +240,7 @@
         } else if (session.role === "sharurah") {
           ALLOWED_PROJECTS = ["sharurah"];
         } else {
-          // admin أو أي صلاحية عامة
-          ALLOWED_PROJECTS = ["najran", "sharurah"];
+          ALLOWED_PROJECTS = ["najran", "sharurah"]; // admin
         }
       } catch (e) {
         console.error(e);
@@ -307,7 +293,7 @@
     const resourcesGrid = document.getElementById('resourcesGrid');
     const segNajranBtn = document.getElementById('btn-najran');
     const segSharurahBtn = document.getElementById('btn-sharurah');
-    const welcomeInline = document.querySelector('.welcome-inline');
+    const welcomeUser = document.getElementById('welcomeUser');
     const btnLogout = document.getElementById('btnLogout');
 
     // ===== Helpers =====
@@ -316,7 +302,6 @@
     function renderSkeletons(n=6){ skeleton.innerHTML=""; for(let i=0;i<n;i++){ const d=document.createElement('div'); d.className='skeleton'; skeleton.appendChild(d) } }
 
     function applyRoleVisibility(){
-      // لو المستخدم له مشروع واحد فقط، نخفي الزرار التاني
       if (ALLOWED_PROJECTS.length === 1) {
         const only = ALLOWED_PROJECTS[0];
         if (only === "najran" && segSharurahBtn) {
@@ -327,7 +312,6 @@
       }
     }
 
-    // بناء بطاقة مع زر نسخ + فحص رابط
     function createCard({title, code, icon, desc, url}){
       const a=document.createElement('a'); a.className='card'; a.href=url; a.target="_blank"; a.rel="noopener";
       a.setAttribute('data-title', (title+' '+code).toLowerCase());
@@ -351,7 +335,6 @@
         </div>
       `;
 
-      // زر نسخ الرابط مع UTM
       a.querySelector('.copy').addEventListener('click', async (ev) => {
         ev.preventDefault(); ev.stopPropagation();
         const shareUrl = new URL(a.href);
@@ -364,7 +347,6 @@
         }catch(_){}
       });
 
-      // فحص لطيف للرابط قبل الفتح (لا يمنع الفتح لو no-cors)
       a.addEventListener('click', async (e)=>{
         try{
           await fetch(url, { method:'HEAD', mode:'no-cors' });
@@ -396,7 +378,6 @@
     }
 
     function renderProject(id){
-      // لو المشروع مش مسموح به للمستخدم، اختار أول مشروع مسموح به
       if (!ALLOWED_PROJECTS.includes(id)) {
         id = ALLOWED_PROJECTS[0] || "najran";
       }
@@ -433,47 +414,29 @@
     }
     window.filterPermits = filterPermits;
 
-    // اختصار "/" للبحث
     window.addEventListener('keydown', e=>{
       if(e.key==='/' && !/input|textarea/i.test(document.activeElement.tagName)){
         e.preventDefault(); document.getElementById('searchInput').focus();
       }
     });
 
-    // تغييرات المشروع
     seg.addEventListener('click', (e)=>{
       const btn=e.target.closest('button[data-project]'); if(!btn) return;
       const projId = btn.dataset.project;
-      if (!ALLOWED_PROJECTS.includes(projId)) return; // أمان إضافي
+      if (!ALLOWED_PROJECTS.includes(projId)) return;
       renderProject(projId);
     });
 
-    // تسجيل الخروج
     btnLogout?.addEventListener('click', () => {
       localStorage.removeItem('aln_session');
       window.location.href = 'index.html';
     });
 
-    // تهيئة + الخلفية Lazy + تحديث رسالة الترحيب
     (function init(){
       applyRoleVisibility();
 
-      // تحديث رسالة الترحيب باسم المستخدم والصلاحية
-// تحديث رسالة الترحيب أعلى اليمين
-const welcomeUser = document.getElementById("welcomeUser");
-
-if (CURRENT_USER && welcomeUser) {
-  let roleText = '';
-  if (CURRENT_USER.role === 'admin') {
-    roleText = 'صلاحياتك: نجران وشرورة';
-  } else if (CURRENT_USER.role === 'najran') {
-    roleText = 'صلاحياتك: مشروع نجران فقط';
-  } else if (CURRENT_USER.role === 'sharurah') {
-    roleText = 'صلاحياتك: مشروع شرورة فقط';
-  }
-
-  welcomeUser.textContent = `👋 أهلاً ${CURRENT_USER.username} — ${roleText}`;
-}
+      // رسالة الترحيب بالاسم والصلاحية
+      if (CURRENT_USER && welcomeUser) {
         let roleText = '';
         if (CURRENT_USER.role === 'admin') {
           roleText = 'صلاحياتك: نجران وشرورة';
@@ -482,13 +445,11 @@ if (CURRENT_USER && welcomeUser) {
         } else if (CURRENT_USER.role === 'sharurah') {
           roleText = 'صلاحياتك: مشروع شرورة فقط';
         }
-        welcomeInline.textContent = `👋 أهلاً ${CURRENT_USER.username} — ${roleText}`;
+        welcomeUser.textContent = `👋 أهلاً ${CURRENT_USER.username} — ${roleText}`;
       }
 
       const saved = localStorage.getItem('preferredProject');
       let first = getParam('project') || saved || 'najran';
-
-      // تأكد أن المشروع الافتراضي ضمن المسموح
       if (!ALLOWED_PROJECTS.includes(first)) {
         first = ALLOWED_PROJECTS[0] || 'najran';
       }
@@ -497,7 +458,6 @@ if (CURRENT_USER && welcomeUser) {
       const q = getParam('q');
       if(q){ const si=document.getElementById('searchInput'); si.value=q; filterPermits(); }
 
-      // تحميل مؤخر للصورة الخلفية
       const img = new Image();
       img.onload = ()=> document.body.style.background = "#0f172a url('https://i.postimg.cc/RVdVFtz0/hero.png') no-repeat center/cover fixed";
       img.src = 'https://i.postimg.cc/RVdVFtz0/hero.png';
@@ -557,7 +517,7 @@ if (CURRENT_USER && welcomeUser) {
       <path d="M9 12h6M9 16h6" />
     </symbol>
     <symbol id="icon-ra" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 3ل7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6ز" />
+      <path d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z" />
       <path d="M12 8v5" />
       <path d="M12 16h.01" />
     </symbol>
@@ -580,7 +540,6 @@ if (CURRENT_USER && welcomeUser) {
     </button>
   </div>
   <script>
-    // إظهار التوست عند ترقية الـSW
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.addEventListener('controllerchange', () => {
         const t = document.getElementById('updateToast'); if (t) t.style.display='inline-block';

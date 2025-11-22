@@ -156,6 +156,97 @@
     .logout-btn:focus-visible {
       outline:3px solid var(--focus); outline-offset:2px;
     }
+    /* --- تحسينات شكل إضافية (آمنة) --- */
+
+/* خلفية أغمق شوية مع إحساس زجاج */
+body{
+  background: radial-gradient(circle at top, #1e293b 0, #020617 55%, #000 100%);
+}
+
+.overlay{
+  backdrop-filter: blur(5px) brightness(0.55);
+}
+
+/* الكونتينر ياخد مساحة أكتر فوق وتحت */
+.container{
+  padding: 40px 0 120px;
+}
+
+/* شريط الترحيب */
+.user-bar{
+  background: linear-gradient(135deg, rgba(15,23,42,.95), rgba(30,64,175,.92));
+  border: 1px solid rgba(148,163,184,.7);
+  box-shadow: 0 18px 40px rgba(15,23,42,.8);
+}
+
+/* زر تسجيل الخروج بشكل أوضح */
+.logout-btn{
+  background: rgba(239,68,68,.15);
+  border-color: rgba(248,113,113,1);
+  color: #fee2e2;
+}
+.logout-btn:hover{
+  background: rgba(239,68,68,.25);
+}
+
+/* أزرار اختيار المشروع */
+.seg{
+  background: rgba(15,23,42,.9);
+  border-color: rgba(148,163,184,.5);
+}
+.seg button{
+  font-size: 0.95rem;
+}
+.seg button.active{
+  background: radial-gradient(circle at top, rgba(96,165,250,.2), rgba(15,23,42,1));
+  box-shadow: 0 0 0 1px rgba(148,163,184,.8);
+}
+
+/* الكروت */
+.card{
+  border-radius: 20px;
+  border: 1px solid rgba(148,163,184,.45);
+  box-shadow: 0 18px 45px rgba(15,23,42,.7);
+}
+.card:hover{
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 26px 65px rgba(59,130,246,.6);
+}
+
+/* زر نسخ الرابط داخل الكارت */
+.card .actions .copy{
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+.card .actions .copy:hover{
+  opacity: 1;
+  background: rgba(148,163,184,.35);
+}
+
+/* صندوق طريقة الاستخدام */
+.tiny{
+  background: rgba(15,23,42,.9);
+  border-color: rgba(148,163,184,.7);
+}
+
+/* حبة ضبط للموبايل */
+@media (max-width: 640px){
+  .user-bar{
+    justify-content: space-between;
+    gap: 6px;
+    padding: 8px 10px;
+  }
+  #welcomeUser{
+    font-size: 0.8rem;
+  }
+  h1{
+    font-size: 1.8rem;
+  }
+  .subtitle{
+    font-size: 0.9rem;
+  }
+}
+
   </style>
 </head>
 <body>

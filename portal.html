@@ -168,13 +168,49 @@
   </div>
 
   <script>
+    // ===== حماية البوابة + بيانات المستخدم =====
+    let CURRENT_USER = null;
+    let ALLOWED_PROJECTS = ["najran", "sharurah"];
+
+    (function protectPortal() {
+      try {
+        // اقرأ السيشن من localStorage (لازم يكون نفس المفتاح في index.html)
+        const raw = localStorage.getItem("aln_session");
+        if (!raw) {
+          window.location.href = "index.html"; // رجوع لصفحة اللوجين
+          return;
+        }
+
+        const session = JSON.parse(raw);
+        if (!session || !session.username || !session.role) {
+          localStorage.removeItem("aln_session");
+          window.location.href = "index.html";
+          return;
+        }
+
+        CURRENT_USER = session;
+
+        if (session.role === "najran") {
+          ALLOWED_PROJECTS = ["najran"];
+        } else if (session.role === "sharurah") {
+          ALLOWED_PROJECTS = ["sharurah"];
+        } else {
+          // admin أو أي صلاحية عامة
+          ALLOWED_PROJECTS = ["najran", "sharurah"];
+        }
+      } catch (e) {
+        console.error(e);
+        window.location.href = "index.html";
+      }
+    })();
+
     // ===== البيانات =====
     const PROJECTS = {
       najran: {
         id:'najran',
         name:'التصاريح المتاحة — مبنى إداري ومبنى التحكم بمحطة كهرباء نجران',
         links:[
-           { title:"تصريح الأعمال العامة",            code:"GWP", icon:"gwp", desc:"أعمال عامة لا تندرج تحت تصاريح متخصصة.",                 url:"https://ptw-ung.pages.dev/" },
+          { title:"تصريح الأعمال العامة",            code:"GWP", icon:"gwp", desc:"أعمال عامة لا تندرج تحت تصاريح متخصصة.",                 url:"https://ptw-ung.pages.dev/" },
           { title:"تصريح العمل في الأماكن المرتفعة", code:"WAH", icon:"wah", desc:"أعمال فوق مستوى الأرض تتطلب إجراءات وقاية من السقوط.",            url:"https://wah-8vl.pages.dev/" },
           { title:"تصريح أعمال الحفر",               code:"EXC", icon:"exc", desc:"أعمال حفر/خنادق ومجاورة خدمات مدفونة.",                   url:"https://exc-ewd.pages.dev/" },
           { title:"تصريح الأعمال الساخنة",           code:"HWP", icon:"hwp", desc:"لحام/قطع/جرايندر أو أي مصدر شرر/لهب.",                    url:"https://hwp-4gj.pages.dev/" },
@@ -211,11 +247,25 @@
     const seg = document.querySelector('.seg');
     const resourcesSection = document.getElementById('resourcesSection');
     const resourcesGrid = document.getElementById('resourcesGrid');
+    const segNajranBtn = document.getElementById('btn-najran');
+    const segSharurahBtn = document.getElementById('btn-sharurah');
 
     // ===== Helpers =====
     function getParam(name){ const u=new URL(location.href); return u.searchParams.get(name) }
     function setParam(name,val){ const u=new URL(location.href); if(val==null){u.searchParams.delete(name)} else {u.searchParams.set(name,val)} history.replaceState({}, "", u.toString()); }
     function renderSkeletons(n=6){ skeleton.innerHTML=""; for(let i=0;i<n;i++){ const d=document.createElement('div'); d.className='skeleton'; skeleton.appendChild(d) } }
+
+    function applyRoleVisibility(){
+      // لو المستخدم له مشروع واحد فقط، نخفي الزرار التاني
+      if (ALLOWED_PROJECTS.length === 1) {
+        const only = ALLOWED_PROJECTS[0];
+        if (only === "najran" && segSharurahBtn) {
+          segSharurahBtn.style.display = "none";
+        } else if (only === "sharurah" && segNajranBtn) {
+          segNajranBtn.style.display = "none";
+        }
+      }
+    }
 
     // بناء بطاقة مع زر نسخ + فحص رابط
     function createCard({title, code, icon, desc, url}){
@@ -286,6 +336,11 @@
     }
 
     function renderProject(id){
+      // لو المشروع مش مسموح به للمستخدم، اختار أول مشروع مسموح به
+      if (!ALLOWED_PROJECTS.includes(id)) {
+        id = ALLOWED_PROJECTS[0] || "najran";
+      }
+
       const p = PROJECTS[id] || PROJECTS.najran;
       projTitle.textContent = p.name;
       renderSkeletons(p.links.length);
@@ -328,13 +383,23 @@
     // تغييرات المشروع
     seg.addEventListener('click', (e)=>{
       const btn=e.target.closest('button[data-project]'); if(!btn) return;
-      renderProject(btn.dataset.project);
+      const projId = btn.dataset.project;
+      if (!ALLOWED_PROJECTS.includes(projId)) return; // أمان إضافي
+      renderProject(projId);
     });
 
     // تهيئة + الخلفية Lazy
     (function init(){
+      applyRoleVisibility();
+
       const saved = localStorage.getItem('preferredProject');
-      const first = getParam('project') || saved || 'najran';
+      let first = getParam('project') || saved || 'najran';
+
+      // تأكد أن المشروع الافتراضي ضمن المسموح
+      if (!ALLOWED_PROJECTS.includes(first)) {
+        first = ALLOWED_PROJECTS[0] || 'najran';
+      }
+
       renderProject(first);
       const q = getParam('q');
       if(q){ const si=document.getElementById('searchInput'); si.value=q; filterPermits(); }

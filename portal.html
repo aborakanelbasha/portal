@@ -58,6 +58,24 @@
       border-color:rgba(255,255,255,.2);
       box-shadow:0 0 0 2px rgba(96,165,250,.25) inset;
     }
+    .user-bar {
+  max-width: 980px;
+  margin: 0 auto 12px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  background: var(--panel);
+  border: 1px solid var(--panel-brd);
+  padding: 10px 14px;
+  border-radius: 12px;
+}
+
+#welcomeUser {
+  font-weight: 700;
+  color: #fff;
+}
+
     .seg .badge-new{
       position:absolute; top:-8px; inset-inline-end:-8px;
       font-size:.7rem; background:#22c55e; color:#04101ف; padding:3px 7px; border-radius:999px; border:1px solid #a7f3d0;
@@ -154,9 +172,16 @@
   <div class="container">
 
     <h1>بوابة تصاريح العمل</h1>
-    <p class="subtitle">مرحبًا بك في بوابة تصاريح العمل الخاصة بشركة النجار للمقاولات</p>
+<p class="subtitle">مرحبًا بك في بوابة تصاريح العمل الخاصة بشركة النجار للمقاولات</p>
 
-    <div class="soft-note">🧭 يُرجى اختيار المشروع</div>
+<!-- شريط الترحيب + تسجيل الخروج -->
+<div class="user-bar">
+    <span id="welcomeUser"></span>
+    <button id="btnLogout" class="logout-btn">تسجيل الخروج</button>
+</div>
+
+<div class="soft-note">🧭 يُرجى اختيار المشروع</div>
+
 
     <div class="seg" role="tablist" aria-label="اختيار المشروع">
       <button id="btn-najran" role="tab" aria-selected="true" class="active"
@@ -171,8 +196,7 @@
     </div>
 
     <div class="toolbar">
-      <div class="welcome-inline" aria-live="polite">👋 أهلاً بك — اكتب اسم التصريح أو الكود للبحث السريع</div>
-      <div class="search" role="search">
+            <div class="search" role="search">
         <input id="searchInput" type="text" placeholder="ابحث باسم التصريح أو الكود (… WAH-GWP …)" oninput="filterPermits()" aria-label="بحث في التصاريح">
       </div>
       <div class="toolbar-actions">
@@ -435,7 +459,21 @@
       applyRoleVisibility();
 
       // تحديث رسالة الترحيب باسم المستخدم والصلاحية
-      if (CURRENT_USER && welcomeInline) {
+// تحديث رسالة الترحيب أعلى اليمين
+const welcomeUser = document.getElementById("welcomeUser");
+
+if (CURRENT_USER && welcomeUser) {
+  let roleText = '';
+  if (CURRENT_USER.role === 'admin') {
+    roleText = 'صلاحياتك: نجران وشرورة';
+  } else if (CURRENT_USER.role === 'najran') {
+    roleText = 'صلاحياتك: مشروع نجران فقط';
+  } else if (CURRENT_USER.role === 'sharurah') {
+    roleText = 'صلاحياتك: مشروع شرورة فقط';
+  }
+
+  welcomeUser.textContent = `👋 أهلاً ${CURRENT_USER.username} — ${roleText}`;
+}
         let roleText = '';
         if (CURRENT_USER.role === 'admin') {
           roleText = 'صلاحياتك: نجران وشرورة';

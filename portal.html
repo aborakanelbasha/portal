@@ -65,7 +65,7 @@
 
     .toolbar{
       display:grid; align-items:center; gap:10px;
-      grid-template-columns: 1fr 1fr auto; /* ترحيب | بحث | تثبيت */
+      grid-template-columns: 1fr 1fr auto; /* ترحيب | بحث | أزرار */
       max-width:980px; margin:0 auto 14px;
     }
     .welcome-inline{
@@ -82,6 +82,25 @@
       padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:700;
     }
     .install-btn:hover{ box-shadow:0 0 0 2px rgba(96,165,250,.25) inset }
+
+    .toolbar-actions{
+      display:flex;
+      gap:8px;
+      justify-content:flex-end;
+    }
+
+    .logout-btn{
+      background:rgba(239,68,68,.18);
+      border:1px solid rgba(248,113,113,.8);
+      color:#fecaca;
+      padding:10px 14px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:700;
+    }
+    .logout-btn:hover{
+      box-shadow:0 0 0 2px rgba(248,113,113,.5) inset;
+    }
 
     .section-title{max-width:980px;margin:22px auto 10px; font-size:1.1rem; border-bottom:1px solid #475569; padding-bottom:8px}
     .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:18px; max-width:980px; margin:0 auto}
@@ -104,16 +123,28 @@
     .tiny{ max-width:980px; margin:10px auto; color:#e5e7eb; text-align:right; background:var(--panel); border:1px solid var(--panel-brd); padding:12px 14px; border-radius:12px; }
     footer{margin-top:36px; text-align:center; color:#a3a3a3}
 
-    @media(max-width:900px){ .toolbar{ grid-template-columns: 1fr 1fr; } .install-btn{grid-column:1 / -1} }
+    @media(max-width:900px){
+      .toolbar{
+        grid-template-columns: 1fr 1fr;
+      }
+      .toolbar-actions{
+        grid-column:1 / -1;
+        justify-content:flex-start;
+      }
+    }
     @media(max-width:600px){ h1{font-size:1.9rem} .subtitle{font-size:.95rem} }
-    @media (prefers-reduced-motion: reduce){ .card{ transition:none } .card:hover{ transform:none; box-shadow:0 6px 20px rgba(0,0,0,.18) } .skeleton::after{ animation:none } }
+    @media (prefers-reduced-motion: reduce){
+      .card{ transition:none }
+      .card:hover{ transform:none; box-shadow:0 6px 20px rgba(0,0,0,.18) }
+      .skeleton::after{ animation:none }
+    }
 
     .ic{ width:22px; height:22px; display:inline-block; vertical-align:-3px; color:inherit }
     .card .ic{ color:#93c5fd }
     .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
 
     /* وصولية إضافية */
-    .card:focus-visible, .seg button:focus-visible, .install-btn:focus-visible, #reloadBtn:focus-visible {
+    .card:focus-visible, .seg button:focus-visible, .install-btn:focus-visible, #reloadBtn:focus-visible, .logout-btn:focus-visible {
       outline:3px solid var(--focus); outline-offset:2px;
     }
   </style>
@@ -144,8 +175,11 @@
       <div class="search" role="search">
         <input id="searchInput" type="text" placeholder="ابحث باسم التصريح أو الكود (… WAH-GWP …)" oninput="filterPermits()" aria-label="بحث في التصاريح">
       </div>
-      <!-- زر تثبيت التطبيق -->
-      <button id="btnInstall" class="install-btn" hidden>⬇️ تثبيت التطبيق</button>
+      <div class="toolbar-actions">
+        <button id="btnLogout" class="logout-btn">تسجيل الخروج</button>
+        <!-- زر تثبيت التطبيق -->
+        <button id="btnInstall" class="install-btn" hidden>⬇️ تثبيت التطبيق</button>
+      </div>
     </div>
 
     <div id="projTitle" class="section-title"></div>
@@ -174,7 +208,7 @@
 
     (function protectPortal() {
       try {
-        // اقرأ السيشن من localStorage (لازم يكون نفس المفتاح في index.html)
+        // قراءة السيشن من localStorage (لازم يكون نفس المفتاح في index.html)
         const raw = localStorage.getItem("aln_session");
         if (!raw) {
           window.location.href = "index.html"; // رجوع لصفحة اللوجين
@@ -249,6 +283,8 @@
     const resourcesGrid = document.getElementById('resourcesGrid');
     const segNajranBtn = document.getElementById('btn-najran');
     const segSharurahBtn = document.getElementById('btn-sharurah');
+    const welcomeInline = document.querySelector('.welcome-inline');
+    const btnLogout = document.getElementById('btnLogout');
 
     // ===== Helpers =====
     function getParam(name){ const u=new URL(location.href); return u.searchParams.get(name) }
@@ -388,9 +424,28 @@
       renderProject(projId);
     });
 
-    // تهيئة + الخلفية Lazy
+    // تسجيل الخروج
+    btnLogout?.addEventListener('click', () => {
+      localStorage.removeItem('aln_session');
+      window.location.href = 'index.html';
+    });
+
+    // تهيئة + الخلفية Lazy + تحديث رسالة الترحيب
     (function init(){
       applyRoleVisibility();
+
+      // تحديث رسالة الترحيب باسم المستخدم والصلاحية
+      if (CURRENT_USER && welcomeInline) {
+        let roleText = '';
+        if (CURRENT_USER.role === 'admin') {
+          roleText = 'صلاحياتك: نجران وشرورة';
+        } else if (CURRENT_USER.role === 'najran') {
+          roleText = 'صلاحياتك: مشروع نجران فقط';
+        } else if (CURRENT_USER.role === 'sharurah') {
+          roleText = 'صلاحياتك: مشروع شرورة فقط';
+        }
+        welcomeInline.textContent = `👋 أهلاً ${CURRENT_USER.username} — ${roleText}`;
+      }
 
       const saved = localStorage.getItem('preferredProject');
       let first = getParam('project') || saved || 'najran';
@@ -464,7 +519,7 @@
       <path d="M9 12h6M9 16h6" />
     </symbol>
     <symbol id="icon-ra" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6ز" />
+      <path d="M12 3ل7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6ز" />
       <path d="M12 8v5" />
       <path d="M12 16h.01" />
     </symbol>

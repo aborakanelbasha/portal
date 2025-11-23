@@ -352,7 +352,7 @@ body{
         ],
         resources:[
           { label:"جالري تصاريح الأعمال", code:"LOG", icon:"log", desc:"عرض وتتبع التصاريح الصادرة.", href:"https://gwp-gallery.pages.dev/" },
-          { label:"تقييم المخاطر",    code:"RA",  icon:"ra",  desc:"نماذج وإرشادات تقييم المخاطر.", href:"https://sites.google.com/view/najran-ra/home" },
+          { label:"تقييم المخاطر",    code:"RA",  icon:"ra",  desc:"نماذج وإرشادات تقييم المخاطر.", href:"https://sites.google.com/view/najran-ra/home" }
         ]
       },
       sharurah: {
@@ -369,6 +369,7 @@ body{
         resources:[
           { label:"جالري تصاريح الأعمال", code:"LOG", icon:"log", desc:"عرض وتتبع التصاريح الصادرة.", href:"https://sharura-gallery.pages.dev/" },
           { label:"تقييم المخاطر ", code:"RA", icon:"ra", desc:"نماذج وإرشادات تقييم المخاطر لمشروع شرورة.", href:"https://sites.google.com/d/1GcTU71M0DlHm8LBQZ_osejInCnqfdOUq/p/1CslJgVDImOo_PSOLHpDuvoe2HfdpIUfF/edit" },
+          { label:"اجتماع السلامة",   code:"TBT", icon:"tbt", desc:"إنشاء وطباعة نموذج اجتماع السلامة (Toolbox Talk).", href:"https://sharura-tbt.pages.dev/" }
         ]
       }
     };
@@ -404,7 +405,7 @@ body{
     function createCard({title, code, icon, desc, url}){
       const a=document.createElement('a'); a.className='card'; a.href=url; a.target="_blank"; a.rel="noopener";
       a.setAttribute('data-title', (title+' '+code).toLowerCase());
-      const known=['wah','hwp','exc','cse','gwp','lop','log','ra'];
+      const known=['wah','hwp','exc','cse','gwp','lop','log','ra','tbt'];
       const iconHtml = known.includes((icon||'').toLowerCase())
         ? `<svg class="ic" aria-hidden="true"><use href="#icon-${icon.toLowerCase()}"/></svg>`
         : `<span>${icon||''}</span>`;
@@ -450,7 +451,7 @@ body{
 
     function createResCard({label, code, icon, desc, href}){
       const a=document.createElement('a'); a.className='card'; a.href=href; a.target='_blank'; a.rel='noopener';
-      const known=['wah','hwp','exc','cse','gwp','lop','log','ra'];
+      const known=['wah','hwp','exc','cse','gwp','lop','log','ra','tbt'];
       const iconHtml = known.includes((icon||'').toLowerCase())
         ? `<svg class="ic" aria-hidden="true"><use href="#icon-${icon.toLowerCase()}"/></svg>`
         : `<span>${icon||''}</span>`;
@@ -608,6 +609,14 @@ body{
       <path d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z" />
       <path d="M12 8v5" />
       <path d="M12 16h.01" />
+    </symbol>
+    <!-- أيقونة اجتماع السلامة (TBT) -->
+    <symbol id="icon-tbt" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="5" y="3" width="14" height="18" rx="2" />
+      <path d="M9 3v2.5h6V3" />
+      <path d="M8 10h5" />
+      <path d="M8 14h3" />
+      <path d="M11.5 18l2-2 3 3" />
     </symbol>
   </svg>
 

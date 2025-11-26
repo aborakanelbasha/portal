@@ -162,44 +162,41 @@
 
     .password-wrapper .login-input {
       width: 100%;
-      padding-inline-end: 2.7rem; /* مساحة للعين من جوّه الحقل */
+      padding-inline-end: 2.7rem;
     }
 
-       .password-eye {
+    .password-eye {
       position: absolute;
-      inset-inline-end: 1.4rem; /* جوّه المستطيل الأبيض */
+      inset-inline-end: 1.4rem;
       top: 50%;
       transform: translateY(-50%);
       width: 22px;
       height: 22px;
       border: none;
-      background: transparent;   /* مفيش خلفية ولا بوردر */
+      background: transparent;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       padding: 0;
       outline: none;
-      transition:
-        transform 80ms ease;
+      transition: transform 80ms ease;
     }
 
     .eye-icon {
       width: 18px;
       height: 18px;
-      stroke: #9ca3af; /* رمادي افتراضي */
+      stroke: #9ca3af;
       transition: stroke 120ms ease;
     }
 
-    /* فعلناها = تغير لون العين بس */
     .password-eye.active .eye-icon {
-      stroke: #2563eb; /* أزرق */
+      stroke: #2563eb;
     }
 
     .password-eye:active {
-      transform: translateY(-50%) scale(0.96); /* إحساس ضغط بسيط */
+      transform: translateY(-50%) scale(0.96);
     }
-
 
     .login-btn {
       height: 3rem;
@@ -255,59 +252,52 @@
           <form class="login-form" id="login-form">
             <p class="login-title">تسجيل الدخول</p>
 
-           <!-- حقل اسم المستخدم جوّه نفس العرض بتاع الباسورد -->
-<div class="field-wrapper">
-  <input
-    placeholder="اسم المستخدم"
-    class="login-input"
-    type="text"
-    name="username"
-    id="username"
-    autocomplete="username"
-    required
-  />
-</div>
+            <div class="field-wrapper">
+              <input
+                placeholder="اسم المستخدم"
+                class="login-input"
+                type="text"
+                name="username"
+                id="username"
+                autocomplete="username"
+                required
+              />
+            </div>
 
-<!-- حقل الباسورد + العين بنفس الكونتينر -->
-<div class="field-wrapper password-wrapper">
-  <input
-    placeholder="كلمة المرور"
-    class="login-input"
-    type="password"
-    name="password"
-    id="password"
-    autocomplete="current-password"
-    required
-  />
-  <button
-    type="button"
-    id="togglePassword"
-    class="password-eye"
-    aria-label="إظهار كلمة المرور مؤقتًا"
-  >
-    <svg
-      class="eye-icon"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path
-        d="M2.5 12C4 8.5 7.5 6 12 6s8 2.5 9.5 6c-1.5 3.5-5 6-9.5 6s-8-2.5-9.5-6z"
-        fill="none"
-        stroke-width="1.8"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-      <circle
-        cx="12"
-        cy="12"
-        r="3"
-        fill="none"
-        stroke-width="1.8"
-      />
-    </svg>
-  </button>
-</div>
-
+            <div class="field-wrapper password-wrapper">
+              <input
+                placeholder="كلمة المرور"
+                class="login-input"
+                type="password"
+                name="password"
+                id="password"
+                autocomplete="current-password"
+                required
+              />
+              <button
+                type="button"
+                id="togglePassword"
+                class="password-eye"
+                aria-label="إظهار كلمة المرور مؤقتًا"
+              >
+                <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M2.5 12C4 8.5 7.5 6 12 6s8 2.5 9.5 6c-1.5 3.5-5 6-9.5 6s-8-2.5-9.5-6z"
+                    fill="none"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="3"
+                    fill="none"
+                    stroke-width="1.8"
+                  />
+                </svg>
+              </button>
+            </div>
 
             <button class="login-btn" type="submit">دخول</button>
             <p class="login-error" id="login-error"></p>
@@ -374,7 +364,6 @@
     }
 
     if (togglePasswordBtn) {
-      // ماوس
       togglePasswordBtn.addEventListener("mousedown", (e) => {
         e.preventDefault();
         showPasswordTemp();
@@ -387,7 +376,6 @@
 
       togglePasswordBtn.addEventListener("mouseleave", hidePassword);
 
-      // لمس للموبايل
       togglePasswordBtn.addEventListener("touchstart", (e) => {
         e.preventDefault();
         showPasswordTemp();
@@ -415,7 +403,7 @@
       }
     })();
 
-      /* ===== تعطيل نظام اللوجين القديم (ptw_users + FALLBACK_USERS) مؤقتًا =====
+    // ===== اللوجين القديم بالـ ptw_users (رجّعناه زي الأول) =====
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       errorBox.textContent = "";
@@ -478,82 +466,6 @@
       localStorage.setItem("aln_session", JSON.stringify(sessionData));
       window.location.href = "portal.html";
     });
-    ===== نهاية تعطيل اللوجين القديم ===== */
-
-    </script>
-<script type="module">
-  // 1) استيراد Firebase App + Auth + دالة تسجيل الدخول
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-
-  // 2) إعدادات مشروعك من Firebase (نفس اللي عندك دلوقتي)
-  const firebaseConfig = {
-    apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
-    authDomain: "ptw-najran-sharurah.firebaseapp.com",
-    projectId: "ptw-najran-sharurah",
-    storageBucket: "ptw-najran-sharurah.firebasestorage.app",
-    messagingSenderId: "848619550286",
-    appId: "1:848619550286:web:fe5c470f67236b2519751f",
-    measurementId: "G-PQED2DCRL1"
-  };
-
-  // 3) تهيئة Firebase
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  // 4) عناصر الفورم
-  const form = document.getElementById("login-form");
-  const usernameInput = document.getElementById("username");   // المستخدم يكتب هنا "يوزر أو إيميل"
-  const passwordInput = document.getElementById("password");
-  const errorBox = document.getElementById("login-error");
-
-  if (form && usernameInput && passwordInput) {
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      errorBox.textContent = "";
-
-      const identifier = usernameInput.value.trim(); // ممكن يكون username أو email
-      const password = passwordInput.value;
-
-      if (!identifier || !password) {
-        errorBox.textContent = "من فضلك أدخل اسم المستخدم/الإيميل وكلمة المرور.";
-        return;
-      }
-
-      // لو فيه @ → هنعتبره إيميل حقيقي (زي eng.moustafa3013@gmail.com)
-      // لو مفيش @ → هنحوّله لإيميل سيستم username@al-naggar.portal
-      const email = identifier.includes("@")
-        ? identifier
-        : `${identifier}@al-naggar.portal`;
-
-      try {
-        // 5) تسجيل الدخول عن طريق Firebase
-        const cred = await signInWithEmailAndPassword(auth, email, password);
-        const user = cred.user;
-        console.log("Logged in with Firebase:", user);
-
-        // 6) نحفظ سيشن بالـ format اللي portal.html مستنيّه
-        // حالياً هنعامل أي حد يدخل كـ admin مؤقتاً (تقدر تغيّرها بعدين لكل يوزر)
-        const sessionData = {
-          uid: user.uid,
-          email: user.email,
-          username: user.email,   // عشان autoRedirectIfLoggedIn يشتغل
-          role: "admin",          // مؤقتاً: نخليه admin، تقدر تعدّلها حسب كل يوزر
-          loginTime: new Date().toISOString()
-        };
-        localStorage.setItem("aln_session", JSON.stringify(sessionData));
-
-        // 7) تحويل لبوابة التصاريح
-        window.location.href = "portal.html";
-      } catch (err) {
-        console.error("Firebase login error:", err);
-        errorBox.textContent = "تسجيل الدخول فشل، تأكد من الإيميل/اسم المستخدم والباسورد أو اطلب من الأدمن يضيفك في Firebase.";
-      }
-    });
-  } else {
-    console.warn("مش لاقي عناصر فورم اللوجين (login-form / username / password).");
-  }
-</script>
+  </script>
 </body>
 </html>
-

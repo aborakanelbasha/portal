@@ -306,22 +306,22 @@
       }
 
       // 1) نقرأ المستخدمين من ptw_users
+           // 1) نقرأ المستخدمين من ptw_users
       const usersList = readStoredUsers();
 
       // نحاول نلاقي المستخدم
       let foundUser = usersList.find(u => u.username === username);
 
-      // 2) لو مش موجود في ptw_users، نجرب المصدر الاحتياطي (admin فقط مثلاً)
-      if (!foundUser) {
+      // لو مش موجود أو موجود بس مفيهوش password
+      // ساعتها نرجع للمصدر الاحتياطي (مثلاً admin)
+      if ((!foundUser || !foundUser.password) && FALLBACK_USERS[username]) {
         const fb = FALLBACK_USERS[username];
-        if (fb) {
-          foundUser = {
-            username,
-            password: fb.password,
-            role: fb.role,
-            active: fb.active ?? true
-          };
-        }
+        foundUser = {
+          username,
+          password: fb.password,
+          role: fb.role,
+          active: fb.active ?? true
+        };
       }
 
       // 3) مفيش مستخدم خالص

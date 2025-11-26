@@ -479,12 +479,10 @@
     });
  <script type="module">
   // 1) استيراد Firebase App + Auth
- import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
+ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-
-  // 2) إعدادات مشروعك من Firebase (انسخها من الـ Console بتاعك)
-  const firebaseConfig = {
+    const firebaseConfig = {
     // apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
     // authDomain: "ptw-najran-sharurah.firebaseapp.com",
     // projectId: "ptw-najran-sharurah",
@@ -492,12 +490,11 @@
     // messagingSenderId: "848619550286",
     // appId: "1:848619550286:web:fe5c470f67236b2519751f",
     // measurementId: "G-PQED2DCRL1"
-
   };
 
   // 3) تهيئة Firebase
   const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
+  const auth = getAuth(app);
 
 
   // نخليها متاحة لو احتجنا نستخدمها في سكربت تاني

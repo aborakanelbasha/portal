@@ -34,7 +34,6 @@
       background:
         linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8)),
         url("https://i.postimg.cc/RVdVFtz0/hero.png") center center / cover no-repeat;
-      /* انت كنت حاطط الخلفية خلاص، فضّل نفس الرابط هنا */
     }
 
     .hero-card {
@@ -104,7 +103,7 @@
       color: #cccccc;
     }
 
-    /* ===== فورم اللوجين (نفس التصميم بتاعك) ===== */
+    /* ===== فورم اللوجين ===== */
     .login-container {
       margin: 0 auto;
       display: flex;
@@ -142,34 +141,6 @@
       border-bottom: 1px solid wheat;
       transition: all 400ms;
     }
-    .password-wrapper {
-      position: relative;
-      width: 20rem;
-      max-width: 90%;
-    }
-
-    .password-wrapper .login-input {
-      width: 100%;
-      padding-inline-end: 2.5rem; /* مساحة للزر */
-    }
-
-    .toggle-password {
-      position: absolute;
-      inset-inline-end: 0.5rem;
-      top: 50%;
-      transform: translateY(-50%);
-      background: transparent;
-      border: none;
-      color: wheat;
-      cursor: pointer;
-      font-size: 1.1rem;
-      padding: 0;
-    }
-
-    .toggle-password:focus {
-      outline: 2px solid #fff;
-      outline-offset: 2px;
-    }
 
     .login-input::placeholder {
       color: rgba(245, 222, 179, 0.8);
@@ -179,6 +150,63 @@
       background-color: #424242;
       border: none;
       border-radius: 0.5rem;
+    }
+
+    /* ===== العين داخل حقل الباسورد ===== */
+    .password-wrapper {
+      position: relative;
+      width: 20rem;
+      max-width: 90%;
+      margin: 0.5rem 0;
+    }
+
+    .password-wrapper .login-input {
+      width: 100%;
+      padding-inline-end: 2.7rem; /* مساحة للعين من جوّه الحقل */
+    }
+
+    .password-eye {
+      position: absolute;
+      inset-inline-end: 0.5rem; /* يمين في RTL */
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(31, 41, 55, 0.9); /* رمادي غامق */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      outline: none;
+      transition:
+        background 120ms ease,
+        border-color 120ms ease,
+        box-shadow 120ms ease,
+        transform 80ms ease;
+    }
+
+    .eye-icon {
+      width: 16px;
+      height: 16px;
+      stroke: #9ca3af; /* رمادي */
+      transition: stroke 120ms ease;
+    }
+
+    .password-eye.active {
+      background: #e0f2fe;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.5) inset;
+    }
+
+    .password-eye.active .eye-icon {
+      stroke: #2563eb;
+    }
+
+    .password-eye:active {
+      transform: translateY(-50%) scale(0.96);
     }
 
     .login-btn {
@@ -209,7 +237,6 @@
       min-height: 1.2rem;
     }
 
-    /* ===== Responsive ===== */
     @media (max-width: 900px) {
       .hero-card {
         flex-direction: column-reverse;
@@ -230,11 +257,13 @@
 <body>
   <section class="hero">
     <div class="hero-card">
-      <!-- ===== الجزء الشمال: اللوجين في المربع الأزرق ===== -->
+      <!-- ===== الجزء الشمال: اللوجين ===== -->
       <div class="hero-left">
         <div class="login-container">
           <form class="login-form" id="login-form">
             <p class="login-title">تسجيل الدخول</p>
+
+            <!-- حقل اسم المستخدم -->
             <input
               placeholder="اسم المستخدم"
               class="login-input"
@@ -244,20 +273,46 @@
               autocomplete="username"
               required
             />
+
+            <!-- حقل الباسورد + العين -->
             <div class="password-wrapper">
-  <input
-    placeholder="كلمة المرور"
-    class="login-input"
-    type="password"
-    name="password"
-    id="password"
-    autocomplete="current-password"
-    required
-  />
-  <button type="button" id="togglePassword" class="toggle-password" aria-label="إظهار/إخفاء كلمة المرور">
-    👁️
-  </button>
-</div>
+              <input
+                placeholder="كلمة المرور"
+                class="login-input"
+                type="password"
+                name="password"
+                id="password"
+                autocomplete="current-password"
+                required
+              />
+              <button
+                type="button"
+                id="togglePassword"
+                class="password-eye"
+                aria-label="إظهار كلمة المرور مؤقتًا"
+              >
+                <svg
+                  class="eye-icon"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M2.5 12C4 8.5 7.5 6 12 6s8 2.5 9.5 6c-1.5 3.5-5 6-9.5 6s-8-2.5-9.5-6z"
+                    fill="none"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="3"
+                    fill="none"
+                    stroke-width="1.8"
+                  />
+                </svg>
+              </button>
+            </div>
 
             <button class="login-btn" type="submit">دخول</button>
             <p class="login-error" id="login-error"></p>
@@ -288,14 +343,12 @@
     </div>
   </section>
 
-     <script>
+  <script>
     // ===== مستخدم احتياطي ثابت لو الـ ptw_users مش متظبط =====
-    // تقدر تغيّر الباسورد هنا لو حابب
     const FALLBACK_USERS = {
       admin: { password: "Admin@123", role: "admin", active: true }
     };
 
-    // قراءة المستخدمين من ptw_users
     function readStoredUsers() {
       try {
         const raw = localStorage.getItem("ptw_users");
@@ -314,12 +367,43 @@
     const errorBox = document.getElementById("login-error");
     const togglePasswordBtn = document.getElementById("togglePassword");
 
+    // العين – إظهار الباسورد أثناء الضغط فقط
+    function showPasswordTemp() {
+      passwordInput.type = "text";
+      togglePasswordBtn.classList.add("active");
+    }
+
+    function hidePassword() {
+      passwordInput.type = "password";
+      togglePasswordBtn.classList.remove("active");
+    }
+
     if (togglePasswordBtn) {
-      togglePasswordBtn.addEventListener("click", () => {
-        const isHidden = passwordInput.type === "password";
-        passwordInput.type = isHidden ? "text" : "password";
-        togglePasswordBtn.textContent = isHidden ? "🙈" : "👁️";
+      // ماوس
+      togglePasswordBtn.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        showPasswordTemp();
       });
+
+      togglePasswordBtn.addEventListener("mouseup", (e) => {
+        e.preventDefault();
+        hidePassword();
+      });
+
+      togglePasswordBtn.addEventListener("mouseleave", hidePassword);
+
+      // لمس للموبايل
+      togglePasswordBtn.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        showPasswordTemp();
+      });
+
+      togglePasswordBtn.addEventListener("touchend", (e) => {
+        e.preventDefault();
+        hidePassword();
+      });
+
+      togglePasswordBtn.addEventListener("touchcancel", hidePassword);
     }
 
     // لو فيه جلسة جاهزة دخّل على طول
@@ -349,10 +433,9 @@
       }
 
       const usersList = readStoredUsers();
-
       let foundUser = null;
 
-      // لو الأدمن: دايمًا استخدم FALLBACK مهما كان موجود في ptw_users
+      // الأدمن من FALLBACK دايماً
       if (username === "admin" && FALLBACK_USERS.admin) {
         const fb = FALLBACK_USERS.admin;
         foundUser = {
@@ -362,10 +445,8 @@
           active: fb.active ?? true
         };
       } else {
-        // باقي المستخدمين: نحاول نلاقيهم في ptw_users
         foundUser = usersList.find(u => u.username === username);
 
-        // لو مش موجودين في ptw_users وجايين من FALLBACK (مستقبلاً)
         if (!foundUser && FALLBACK_USERS[username]) {
           const fb = FALLBACK_USERS[username];
           foundUser = {
@@ -377,25 +458,21 @@
         }
       }
 
-      // مفيش مستخدم خالص
       if (!foundUser) {
         errorBox.textContent = "هذا المستخدم غير موجود. برجاء مراجعة مسؤول النظام.";
         return;
       }
 
-      // مستخدم موقوف
       if (foundUser.active === false) {
         errorBox.textContent = "هذا المستخدم موقوف. برجاء مراجعة مسؤول النظام.";
         return;
       }
 
-      // باسورد غلط
       if (!foundUser.password || foundUser.password !== password) {
         errorBox.textContent = "كلمة المرور غير صحيحة.";
         return;
       }
 
-      // نجاح – إنشاء الجلسة
       const sessionData = {
         username: foundUser.username,
         role: foundUser.role || "najran",
@@ -405,9 +482,6 @@
       localStorage.setItem("aln_session", JSON.stringify(sessionData));
       window.location.href = "portal.html";
     });
-  </script>
-
-
   </script>
 </body>
 </html>

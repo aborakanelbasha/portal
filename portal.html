@@ -614,17 +614,41 @@
       }
     });
 
-    seg.addEventListener('click', (e)=>{
-      const btn=e.target.closest('button[data-project]'); if(!btn) return;
+        seg.addEventListener('click', (e)=>{
+      const btn = e.target.closest('button[data-project]');
+      if (!btn) return;
+
       const projId = btn.dataset.project;
       if (!ALLOWED_PROJECTS.includes(projId)) return;
+
+      // نجيب المشروع الحالي (لو موجود في اللينك أو في localStorage)
+      const currentProj =
+        getParam('project') ||
+        localStorage.getItem('preferredProject') ||
+        'najran';
+
+      // لو فعلاً غير المشروع، نسجل الحركة
+      if (projId !== currentProj) {
+        logAction("switch_project", {
+          from: currentProj,
+          to: projId
+        });
+      }
+
       renderProject(projId);
     });
 
-    btnLogout?.addEventListener('click', () => {
+
+        btnLogout?.addEventListener('click', () => {
+      // نسجل في سجل النشاط إن المستخدم عمل تسجيل خروج
+      logAction("logout", {
+        username: CURRENT_USER ? CURRENT_USER.username : null
+      });
+
       localStorage.removeItem('aln_session');
       window.location.href = '/';
     });
+
 
     // إغلاق شريط التنويه
     announceCloseBtn?.addEventListener('click', () => {

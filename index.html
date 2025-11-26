@@ -255,56 +255,59 @@
           <form class="login-form" id="login-form">
             <p class="login-title">تسجيل الدخول</p>
 
-            <!-- حقل اسم المستخدم -->
-            <input
-              placeholder="اسم المستخدم"
-              class="login-input"
-              type="text"
-              name="username"
-              id="username"
-              autocomplete="username"
-              required
-            />
+           <!-- حقل اسم المستخدم جوّه نفس العرض بتاع الباسورد -->
+<div class="field-wrapper">
+  <input
+    placeholder="اسم المستخدم"
+    class="login-input"
+    type="text"
+    name="username"
+    id="username"
+    autocomplete="username"
+    required
+  />
+</div>
 
-            <!-- حقل الباسورد + العين -->
-            <div class="password-wrapper">
-              <input
-                placeholder="كلمة المرور"
-                class="login-input"
-                type="password"
-                name="password"
-                id="password"
-                autocomplete="current-password"
-                required
-              />
-              <button
-                type="button"
-                id="togglePassword"
-                class="password-eye"
-                aria-label="إظهار كلمة المرور مؤقتًا"
-              >
-                <svg
-                  class="eye-icon"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M2.5 12C4 8.5 7.5 6 12 6s8 2.5 9.5 6c-1.5 3.5-5 6-9.5 6s-8-2.5-9.5-6z"
-                    fill="none"
-                    stroke-width="1.8"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="3"
-                    fill="none"
-                    stroke-width="1.8"
-                  />
-                </svg>
-              </button>
-            </div>
+<!-- حقل الباسورد + العين بنفس الكونتينر -->
+<div class="field-wrapper password-wrapper">
+  <input
+    placeholder="كلمة المرور"
+    class="login-input"
+    type="password"
+    name="password"
+    id="password"
+    autocomplete="current-password"
+    required
+  />
+  <button
+    type="button"
+    id="togglePassword"
+    class="password-eye"
+    aria-label="إظهار كلمة المرور مؤقتًا"
+  >
+    <svg
+      class="eye-icon"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path
+        d="M2.5 12C4 8.5 7.5 6 12 6s8 2.5 9.5 6c-1.5 3.5-5 6-9.5 6s-8-2.5-9.5-6z"
+        fill="none"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <circle
+        cx="12"
+        cy="12"
+        r="3"
+        fill="none"
+        stroke-width="1.8"
+      />
+    </svg>
+  </button>
+</div>
+
 
             <button class="login-btn" type="submit">دخول</button>
             <p class="login-error" id="login-error"></p>

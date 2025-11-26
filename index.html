@@ -484,20 +484,20 @@
   import { getAuth } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
     const firebaseConfig = {
-    // apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
-    // authDomain: "ptw-najran-sharurah.firebaseapp.com",
-    // projectId: "ptw-najran-sharurah",
-    // storageBucket: "ptw-najran-sharurah.firebasestorage.app",
-    // messagingSenderId: "848619550286",
-    // appId: "1:848619550286:web:fe5c470f67236b2519751f",
-    // measurementId: "G-PQED2DCRL1"
+   apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
+   authDomain: "ptw-najran-sharurah.firebaseapp.com",
+   projectId: "ptw-najran-sharurah",
+   storageBucket: "ptw-najran-sharurah.firebasestorage.app",
+   messagingSenderId: "848619550286",
+   appId: "1:848619550286:web:fe5c470f67236b2519751f",
+   measurementId: "G-PQED2DCRL1"
   };
 
-  // 3) تهيئة Firebase
+3) تهيئة Firebase
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
     
-  // نخليها متاحة لو احتجنا نستخدمها في سكربت تاني
+ نخليها متاحة لو احتجنا نستخدمها في سكربت تاني
   window.firebaseAuth = auth;
   console.log("Firebase Auth جاهز ✅");
     

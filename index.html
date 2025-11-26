@@ -477,6 +477,7 @@
       localStorage.setItem("aln_session", JSON.stringify(sessionData));
       window.location.href = "portal.html";
     });
+    </script>
  <script type="module">
   // 1) استيراد Firebase App + Auth
  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
@@ -495,13 +496,11 @@
   // 3) تهيئة Firebase
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-
-
+    
   // نخليها متاحة لو احتجنا نستخدمها في سكربت تاني
   window.firebaseAuth = auth;
-
   console.log("Firebase Auth جاهز ✅");
+    
 </script>
-
 </body>
 </html>

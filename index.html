@@ -415,6 +415,7 @@
       }
     })();
 
+      /* ===== تعطيل نظام اللوجين القديم (ptw_users + FALLBACK_USERS) مؤقتًا =====
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       errorBox.textContent = "";
@@ -477,13 +478,15 @@
       localStorage.setItem("aln_session", JSON.stringify(sessionData));
       window.location.href = "portal.html";
     });
+    ===== نهاية تعطيل اللوجين القديم ===== */
+
     </script>
 <script type="module">
   // 1) استيراد Firebase App + Auth + دالة تسجيل الدخول
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-  // 2) إعدادات مشروعك من Firebase (نفس اللي عندك دلوقتي)
+  // 2) إعدادات مشروعك من Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
     authDomain: "ptw-najran-sharurah.firebaseapp.com",
@@ -498,49 +501,51 @@
   // 3) تهيئة Firebase
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-  window.firebaseAuth = auth; // علشان لو حبينا نستخدمه من الـ Console
 
-  // 4) نجيب عناصر الفورم (مؤقتًا هنا بفترض إن عندك input text و input password وحيدين)
-  const form = document.querySelector("form");
-  const emailInput = document.querySelector('input[type="text"]');
-  const passwordInput = document.querySelector('input[type="password"]');
+  // 4) عناصر الفورم
+  const form = document.getElementById("login-form");
+  const usernameInput = document.getElementById("username");   // هنستعمله كـ Email
+  const passwordInput = document.getElementById("password");
+  const errorBox = document.getElementById("login-error");
 
-  if (form && emailInput && passwordInput) {
+  if (form && usernameInput && passwordInput) {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      errorBox.textContent = "";
 
-      const email = emailInput.value.trim();
+      const email = usernameInput.value.trim();   // الإيميل اللي في Firebase
       const password = passwordInput.value;
 
       if (!email || !password) {
-        alert("من فضلك أدخل الإيميل والباسورد");
+        errorBox.textContent = "من فضلك أدخل الإيميل وكلمة المرور.";
         return;
       }
 
       try {
-        // 5) تسجيل الدخول عبر Firebase
+        // 5) تسجيل الدخول عن طريق Firebase
         const cred = await signInWithEmailAndPassword(auth, email, password);
         const user = cred.user;
-        console.log("Logged in:", user);
+        console.log("Logged in with Firebase:", user);
 
-        // 6) نحفظ سيشن بسيط زي ما كنت عامل
+        // 6) نحفظ سيشن بسيط في localStorage
         const sessionData = {
           uid: user.uid,
           email: user.email,
+          loginTime: new Date().toISOString()
         };
         localStorage.setItem("aln_session", JSON.stringify(sessionData));
 
-        // 7) نحوله على البوابة
+        // 7) تحويل لبوابة التصاريح
         window.location.href = "portal.html";
-      } catch (error) {
-        console.error(error);
-        alert("تسجيل الدخول فشل: تأكد من الإيميل والباسورد أو اطلب من الأدمن يضيفك في Firebase.");
+      } catch (err) {
+        console.error(err);
+        errorBox.textContent = "تسجيل الدخول فشل، تأكد من الإيميل والباسورد أو اطلب من الأدمن يضيفك في Firebase.";
       }
     });
   } else {
-    console.warn("مش لاقي عناصر فورم اللوجين (input text/password أو form).");
+    console.warn("مش لاقي عناصر فورم اللوجين (login-form / username / password).");
   }
 </script>
-
 </body>
 </html>
+

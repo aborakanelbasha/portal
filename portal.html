@@ -433,6 +433,34 @@
         ]
       }
     };
+    // ===== سجل نشاط بسيط في localStorage =====
+    function logAction(type, details) {
+      try {
+        const key = "ptw_activity_log";
+        const raw = localStorage.getItem(key);
+        let list = [];
+        if (raw) {
+          try { list = JSON.parse(raw); } catch(e) { list = []; }
+        }
+
+        list.push({
+          user: CURRENT_USER ? CURRENT_USER.username : null,
+          role: CURRENT_USER ? CURRENT_USER.role : null,
+          type: type,
+          details: details || null,
+          time: new Date().toISOString()
+        });
+
+        // نخلي آخر 100 حركة بس علشان ما يكبرش قوي
+        if (list.length > 100) {
+          list = list.slice(-100);
+        }
+
+        localStorage.setItem(key, JSON.stringify(list));
+      } catch (e) {
+        console.error("logAction error", e);
+      }
+    }
 
     // ===== DOM =====
     const grid = document.getElementById('grid');
@@ -499,7 +527,14 @@
         }catch(_){}
       });
 
-      a.addEventListener('click', async (e)=>{
+           a.addEventListener('click', async (e)=>{
+        // نسجل في سجل النشاط إن المستخدم حاول يفتح التصريح
+        logAction("open_permit", {
+          title: title,
+          code: code,
+          url: url
+        });
+
         try{
           await fetch(url, { method:'HEAD', mode:'no-cors' });
         }catch(_){
@@ -507,6 +542,7 @@
           const t=document.getElementById('linkToast'); if(t){ t.style.display='inline-block'; setTimeout(()=>t.style.display='none',2200); }
         }
       });
+
 
       return a;
     }

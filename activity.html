@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>سجل النشاط | بوابة تصاريح العمل</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark light" />
+  <style>
+    :root{
+      --panel-bg: rgba(15,23,42,.98);
+      --panel-brd: rgba(148,163,184,.7);
+      --accent: #38bdf8;
+      --text:#f9fafb;
+      --muted:#cbd5f5;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:'Segoe UI',system-ui,Tahoma;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 55%, #000 100%);
+      color:var(--text);
+      padding:20px 12px 60px;
+    }
+    .container{
+      max-width:1100px;
+      margin:0 auto;
+    }
+    h1{
+      margin:0 0 8px;
+      font-size:1.8rem;
+      text-align:right;
+    }
+    .subtitle{
+      margin:0 0 18px;
+      color:var(--muted);
+      font-size:.95rem;
+      text-align:right;
+    }
+    .user-bar{
+      margin:0 0 18px;
+      padding:10px 14px;
+      border-radius:12px;
+      background:linear-gradient(135deg, rgba(15,23,42,.95), rgba(30,64,175,.92));
+      border:1px solid var(--panel-brd);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      box-shadow:0 18px 40px rgba(15,23,42,.8);
+      font-size:.9rem;
+    }
+    .btn{
+      border-radius:10px;
+      border:1px solid rgba(148,163,184,.8);
+      background:rgba(15,23,42,.9);
+      color:var(--text);
+      padding:6px 12px;
+      cursor:pointer;
+      font-weight:600;
+      font-size:.9rem;
+    }
+    .btn:hover{
+      box-shadow:0 0 0 1px rgba(56,189,248,.7);
+    }
+    .panel{
+      background:var(--panel-bg);
+      border-radius:16px;
+      border:1px solid var(--panel-brd);
+      padding:14px 14px 10px;
+      box-shadow:0 16px 40px rgba(15,23,42,.8);
+    }
+    .panel-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:10px;
+      gap:10px;
+      font-size:.9rem;
+    }
+    .panel-head h2{
+      margin:0;
+      font-size:1rem;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:3px 9px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.8);
+      font-size:.8rem;
+      background:rgba(15,23,42,.9);
+    }
+    .badge-dot{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:#22c55e;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:.86rem;
+      direction:rtl;
+    }
+    thead{
+      background:rgba(15,23,42,1);
+    }
+    th,td{
+      padding:8px 6px;
+      border-bottom:1px solid rgba(51,65,85,.9);
+      text-align:right;
+      vertical-align:top;
+    }
+    th{
+      font-weight:700;
+      color:#e5e7eb;
+      position:sticky;
+      top:0;
+      background:rgba(15,23,42,.98);
+      z-index:1;
+    }
+    tbody tr:nth-child(even){
+      background:rgba(15,23,42,.7);
+    }
+    .mono{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      direction:ltr;
+      text-align:left;
+    }
+    .small{
+      font-size:.78rem;
+    }
+    .empty{
+      text-align:center;
+      padding:20px 6px;
+      color:var(--muted);
+      font-size:.9rem;
+    }
+    .time-cell{
+      white-space:nowrap;
+    }
+    .scroll-wrap{
+      max-height:65vh;
+      overflow:auto;
+      border-radius:10px;
+      border:1px solid rgba(30,64,175,.6);
+    }
+    @media(max-width:700px){
+      th:nth-child(1),
+      td:nth-child(1){
+        display:none;
+      }
+      .panel-head{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .user-bar{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="user-bar">
+      <div id="userInfo">👋 جاري التحقق من المستخدم…</div>
+      <div style="display:flex;gap:8px">
+        <button type="button" class="btn" onclick="goPortal()">الرجوع للبوابة</button>
+        <button type="button" class="btn" onclick="clearLog()">مسح السجل من هذا الجهاز</button>
+      </div>
+    </div>
+
+    <h1>سجل النشاط</h1>
+    <p class="subtitle">
+      هذه الصفحة تعرض سجل النشاط المخزّن محليًا في هذا المتصفح
+      (<span class="mono small">ptw_activity_log</span>).
+    </p>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>أحدث الأحداث المسجّلة</h2>
+        <span id="countBadge" class="badge">
+          <span class="badge-dot"></span>
+          <span id="eventsCount">0</span> حركات
+        </span>
+      </div>
+
+      <div class="scroll-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>الوقت</th>
+              <th>المستخدم</th>
+              <th>الدور</th>
+              <th>نوع الحدث</th>
+              <th>تفاصيل إضافية</th>
+            </tr>
+          </thead>
+          <tbody id="logBody">
+            <tr id="emptyRow">
+              <td colspan="6" class="empty">لا توجد بيانات في سجل النشاط على هذا المتصفح حتى الآن.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let CURRENT_USER = null;
+
+    // حماية الصفحة - مسموح للـ admin فقط
+    (function protectActivityPage(){
+      try{
+        const raw = localStorage.getItem("aln_session");
+        if (!raw){
+          alert("يجب تسجيل الدخول أولاً.");
+          window.location.href = "/";
+          return;
+        }
+        const session = JSON.parse(raw);
+        if (!session || !session.username || !session.role){
+          localStorage.removeItem("aln_session");
+          alert("جلسة غير صالحة، الرجاء تسجيل الدخول مرة أخرى.");
+          window.location.href = "/";
+          return;
+        }
+
+        // لو حابب تخليها مفتوحة للجميع، شيل الشرط ده
+        if (session.role !== "admin"){
+          alert("هذه الصفحة متاحة لمسؤول النظام (admin) فقط.");
+          window.location.href = "/portal";
+          return;
+        }
+
+        CURRENT_USER = session;
+        const userInfo = document.getElementById("userInfo");
+        if (userInfo){
+          userInfo.textContent = `👋 مرحبًا ${session.username} — دورك: ${session.role}`;
+        }
+      } catch(e){
+        console.error(e);
+        alert("حدث خطأ في قراءة جلسة المستخدم.");
+        window.location.href = "/";
+      }
+    })();
+
+    function goPortal(){
+      window.location.href = "/portal";
+    }
+
+    function formatTime(iso){
+      if (!iso) return "-";
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return iso;
+      return d.toLocaleString("ar-EG");
+    }
+
+    function loadLog(){
+      const key = "ptw_activity_log";
+      const raw = localStorage.getItem(key);
+      const tbody = document.getElementById("logBody");
+      const emptyRow = document.getElementById("emptyRow");
+      const countSpan = document.getElementById("eventsCount");
+
+      if (!tbody) return;
+
+      let list = [];
+      if (raw){
+        try{
+          list = JSON.parse(raw) || [];
+        }catch(e){
+          console.error("Error parsing log", e);
+          list = [];
+        }
+      }
+
+      // لو مفيش بيانات
+      if (!list.length){
+        if (emptyRow) emptyRow.style.display = "";
+        if (countSpan) countSpan.textContent = "0";
+        return;
+      }
+
+      // نخلي الأحدث فوق
+      list = list.slice().reverse();
+
+      tbody.innerHTML = "";
+      list.forEach((item, index) => {
+        const tr = document.createElement("tr");
+
+        const detailsText = item.details ? JSON.stringify(item.details) : "";
+
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td class="time-cell">${formatTime(item.time)}</td>
+          <td>${item.user || "-"}</td>
+          <td>${item.role || "-"}</td>
+          <td class="mono small">${item.type || "-"}</td>
+          <td class="mono small">${detailsText}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      if (countSpan) countSpan.textContent = String(list.length);
+    }
+
+    function clearLog(){
+      if (!confirm("هل أنت متأكد من مسح سجل النشاط من هذا المتصفح؟")) return;
+      localStorage.removeItem("ptw_activity_log");
+      loadLog();
+    }
+
+    // تحميل السجل عند فتح الصفحة
+    loadLog();
+  </script>
+</body>
+</html>

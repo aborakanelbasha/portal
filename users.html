@@ -389,6 +389,7 @@
           <td class="small">${u.createdAt ? new Date(u.createdAt).toLocaleString("ar-EG") : "-"}</td>
           <td>
             <div class="actions-cell">
+            <button type="button" onclick="handleChangePassword(${idx})"> باسورد </button>
               <button type="button" class="btn small-btn" onclick="toggleActive('${u.username}')">
                 ${u.active ? "إيقاف" : "تفعيل"}
               </button>
@@ -465,6 +466,37 @@
       roleSelect.value = "najran";
       loadUsers();
       alert("تم إضافة المستخدم إلى القائمة (محليًا).");
+    // تغيير / إظهار كلمة المرور لمستخدم معين (لـ admin فقط)
+    function handleChangePassword(index) {
+      const list = readUsers();
+      const user = list[index];
+      if (!user) return;
+
+      // هنستخدم الباسورد الحالي كقيمة مبدئية → كده إنت شايفه وتقدر تعدّله
+      const current = user.password || "";
+
+      const newPass = prompt(
+        `أدخل كلمة المرور الجديدة للمستخدم: ${user.username}`,
+        current
+      );
+
+      // لو ضغط Cancel نخرج بدون تغييرات
+      if (newPass === null) return;
+
+      const trimmed = newPass.trim();
+      if (!trimmed) {
+        alert("كلمة المرور لا يمكن أن تكون فارغة.");
+        return;
+      }
+
+      user.password = trimmed;
+      list[index] = user;
+
+      writeUsers(list);
+      loadUsers();
+
+      alert("تم تحديث كلمة المرور بنجاح.");
+    }
 
   </script>
 </body>

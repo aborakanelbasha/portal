@@ -165,16 +165,15 @@
       padding-inline-end: 2.7rem; /* مساحة للعين من جوّه الحقل */
     }
 
-    .password-eye {
+       .password-eye {
       position: absolute;
-      inset-inline-end: 0.5rem; /* يمين في RTL */
+      inset-inline-end: 0.75rem; /* جوّه المستطيل الأبيض */
       top: 50%;
       transform: translateY(-50%);
-      width: 28px;
-      height: 28px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(31, 41, 55, 0.9); /* رمادي غامق */
+      width: 22px;
+      height: 22px;
+      border: none;
+      background: transparent;   /* مفيش خلفية ولا بوردر */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -182,32 +181,25 @@
       padding: 0;
       outline: none;
       transition:
-        background 120ms ease,
-        border-color 120ms ease,
-        box-shadow 120ms ease,
         transform 80ms ease;
     }
 
     .eye-icon {
-      width: 16px;
-      height: 16px;
-      stroke: #9ca3af; /* رمادي */
+      width: 18px;
+      height: 18px;
+      stroke: #9ca3af; /* رمادي افتراضي */
       transition: stroke 120ms ease;
     }
 
-    .password-eye.active {
-      background: #e0f2fe;
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.5) inset;
-    }
-
+    /* فعلناها = تغير لون العين بس */
     .password-eye.active .eye-icon {
-      stroke: #2563eb;
+      stroke: #2563eb; /* أزرق */
     }
 
     .password-eye:active {
-      transform: translateY(-50%) scale(0.96);
+      transform: translateY(-50%) scale(0.96); /* إحساس ضغط بسيط */
     }
+
 
     .login-btn {
       height: 3rem;

@@ -275,107 +275,119 @@
     </div>
   </div>
 
-  <script>
-    let CURRENT_USER = null;
+   <script>
     const USERS_KEY = "ptw_users";
+    let CURRENT_USER = null;
 
-    // حماية الصفحة - admin فقط
-    (function protectUsersPage(){
-      try{
+    // ===== حماية الصفحة: admin فقط =====
+    (function protectUsersPage() {
+      try {
         const raw = localStorage.getItem("aln_session");
-        if (!raw){
+        if (!raw) {
           alert("يجب تسجيل الدخول أولاً.");
           window.location.href = "/";
           return;
         }
+
         const session = JSON.parse(raw);
-        if (!session || !session.username || !session.role){
+        if (!session || !session.username || !session.role) {
           localStorage.removeItem("aln_session");
           alert("جلسة غير صالحة، الرجاء تسجيل الدخول مرة أخرى.");
           window.location.href = "/";
           return;
         }
-        if (session.role !== "admin"){
+
+        if (session.role !== "admin") {
           alert("هذه الصفحة متاحة لمسؤول النظام (admin) فقط.");
           window.location.href = "/portal";
           return;
         }
+
         CURRENT_USER = session;
         const userInfo = document.getElementById("userInfo");
-        if (userInfo){
+        if (userInfo) {
           userInfo.textContent = `👋 مرحبًا ${session.username} — دورك: ${session.role}`;
         }
 
-        // لو مفيش مستخدمين في القائمة، نضمن إضافة الـ admin الحالي
         ensureCurrentAdminInUsers();
-      } catch(e){
+        loadUsers();
+      } catch (e) {
         console.error(e);
         alert("حدث خطأ في قراءة جلسة المستخدم.");
         window.location.href = "/";
       }
-
-      loadUsers();
     })();
 
-    function goPortal(){
+    function goPortal() {
       window.location.href = "/portal";
     }
-    function goActivity(){
+
+    function goActivity() {
       window.location.href = "/activity.html";
     }
 
-    function readUsers(){
+    // ===== التعامل مع ptw_users في localStorage =====
+    function readUsers() {
       const raw = localStorage.getItem(USERS_KEY);
       if (!raw) return [];
-      try{
+      try {
         const list = JSON.parse(raw);
         return Array.isArray(list) ? list : [];
-      }catch(e){
+      } catch (e) {
         console.error("parse users error", e);
         return [];
       }
     }
 
-    function writeUsers(list){
+    function writeUsers(list) {
       localStorage.setItem(USERS_KEY, JSON.stringify(list));
     }
 
-    function ensureCurrentAdminInUsers(){
+    // نتأكد إن الأدمن الحالي موجود في القائمة
+    function ensureCurrentAdminInUsers() {
       if (!CURRENT_USER) return;
       const list = readUsers();
-      const exists = list.some(u => u.username === CURRENT_USER.username);
-      if (!exists){
+      const exists = list.some((u) => u.username === CURRENT_USER.username);
+      if (!exists) {
         list.push({
           username: CURRENT_USER.username,
-           password: null,
+          password: null,
           role: CURRENT_USER.role || "admin",
           active: true,
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
         });
         writeUsers(list);
       }
     }
 
-    function loadUsers(){
+    // ===== تحميل وعرض المستخدمين =====
+    function loadUsers() {
       const tbody = document.getElementById("usersBody");
       const emptyRow = document.getElementById("emptyRow");
       if (!tbody) return;
 
       const list = readUsers();
 
-      if (!list.length){
+      if (!list.length) {
         if (emptyRow) emptyRow.style.display = "";
         return;
+      } else if (emptyRow) {
+        emptyRow.style.display = "none";
       }
 
       tbody.innerHTML = "";
+
       list.forEach((u, index) => {
         const tr = document.createElement("tr");
 
         const roleLabel =
-          u.role === "admin" ? "Admin" :
-          u.role === "najran" ? "Najran" :
-          u.role === "sharurah" ? "Sharurah" : u.role;
+          u.role === "admin"
+            ? "Admin"
+            : u.role === "najran"
+            ? "Najran"
+            : u.role === "sharurah"
+            ? "Sharurah"
+            : u.role;
 
         tr.innerHTML = `
           <td>${index + 1}</td>
@@ -386,8 +398,14 @@
               ${u.active ? "مفعل" : "موقوف"}
             </span>
           </td>
-          <td class="small">${u.createdAt ? new Date(u.createdAt).toLocaleString("ar-EG") : "-"}</td>
-                   <td>
+          <td class="small">
+            ${
+              u.createdAt
+                ? new Date(u.createdAt).toLocaleString("ar-EG")
+                : "-"
+            }
+          </td>
+          <td>
             <div class="actions-cell">
               <button
                 type="button"
@@ -411,13 +429,13 @@
               </button>
             </div>
           </td>
-
         `;
         tbody.appendChild(tr);
       });
     }
 
-       function handleAddUser(evt){
+    // ===== إضافة مستخدم جديد =====
+    function handleAddUser(evt) {
       evt.preventDefault();
       const usernameInput = document.getElementById("usernameInput");
       const passwordInput = document.getElementById("passwordInput");
@@ -429,14 +447,13 @@
       const role = roleSelect.value;
       const active = !!activeCheck.checked;
 
-
-      if (!username){
+      if (!username) {
         alert("من فضلك أدخل اسم المستخدم.");
         return;
       }
 
       let list = readUsers();
-      if (list.some(u => u.username === username)){
+      if (list.some((u) => u.username === username)) {
         alert("هذا الاسم موجود بالفعل في القائمة.");
         return;
       }
@@ -446,39 +463,41 @@
         password,
         role,
         active,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       });
 
       writeUsers(list);
       usernameInput.value = "";
       passwordInput.value = "";
-
       activeCheck.checked = true;
       roleSelect.value = "najran";
       loadUsers();
       alert("تم إضافة المستخدم إلى القائمة (محليًا).");
     }
 
-    function toggleActive(username){
+    // ===== تفعيل/إيقاف مستخدم =====
+    function toggleActive(username) {
       let list = readUsers();
-      const idx = list.findIndex(u => u.username === username);
+      const idx = list.findIndex((u) => u.username === username);
       if (idx === -1) return;
       list[idx].active = !list[idx].active;
       writeUsers(list);
       loadUsers();
     }
 
-    function deleteUser(username){
+    // ===== حذف مستخدم =====
+    function deleteUser(username) {
       if (!confirm("هل أنت متأكد من حذف هذا المستخدم من هذه القائمة؟")) return;
       let list = readUsers();
-      list = list.filter(u => u.username !== username);
+      list = list.filter((u) => u.username !== username);
       writeUsers(list);
       loadUsers();
     }
-         // تغيير / إظهار كلمة المرور لمستخدم معين (لـ admin فقط)
+
+    // ===== تغيير / إظهار كلمة المرور لمستخدم معين =====
     function handleChangePassword(username) {
       const list = readUsers();
-      const idx = list.findIndex(u => u.username === username);
+      const idx = list.findIndex((u) => u.username === username);
       if (idx === -1) {
         alert("هذا المستخدم غير موجود في القائمة.");
         return;
@@ -492,7 +511,8 @@
         current
       );
 
-      if (newPass === null) return; // Cancel
+      // Cancel
+      if (newPass === null) return;
 
       const trimmed = newPass.trim();
       if (!trimmed) {
@@ -508,39 +528,7 @@
 
       alert("تم تحديث كلمة المرور بنجاح.");
     }
-
-    // تغيير / إظهار كلمة المرور لمستخدم معين (لـ admin فقط)
-    function handleChangePassword(index) {
-      const list = readUsers();
-      const user = list[index];
-      if (!user) return;
-
-      // هنستخدم الباسورد الحالي كقيمة مبدئية → كده إنت شايفه وتقدر تعدّله
-      const current = user.password || "";
-
-      const newPass = prompt(
-        `أدخل كلمة المرور الجديدة للمستخدم: ${user.username}`,
-        current
-      );
-
-      // لو ضغط Cancel نخرج بدون تغييرات
-      if (newPass === null) return;
-
-      const trimmed = newPass.trim();
-      if (!trimmed) {
-        alert("كلمة المرور لا يمكن أن تكون فارغة.");
-        return;
-      }
-
-      user.password = trimmed;
-      list[index] = user;
-
-      writeUsers(list);
-      loadUsers();
-
-      alert("تم تحديث كلمة المرور بنجاح.");
-    }
-
   </script>
+
 </body>
 </html>

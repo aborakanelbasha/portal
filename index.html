@@ -254,14 +254,14 @@
     </div>
   </section>
 
-    <script>
-    // ===== مصدر احتياطي بسيط لو ptw_users مش موجود (مثلاً بعد مسح المتصفح) =====
-    // تقدر تعدل الباسورد أو تشيل الـ fallback ده بعد ما تطمن إن كل حاجة شغالة.
+     <script>
+    // ===== مستخدم احتياطي ثابت لو الـ ptw_users مش متظبط =====
+    // تقدر تغيّر الباسورد هنا لو حابب
     const FALLBACK_USERS = {
-      "admin": { password: "Admin@123", role: "admin", active: true }
+      admin: { password: "Admin@123", role: "admin", active: true }
     };
 
-    // قراءة المستخدمين من ptw_users في localStorage
+    // قراءة المستخدمين من ptw_users
     function readStoredUsers() {
       try {
         const raw = localStorage.getItem("ptw_users");
@@ -279,7 +279,7 @@
     const passwordInput = document.getElementById("password");
     const errorBox = document.getElementById("login-error");
 
-    // لو حد داخل وعنده سيشن جاهزة، دخّله مباشرة على البوابة
+    // لو فيه جلسة جاهزة دخّل على طول
     (function autoRedirectIfLoggedIn() {
       try {
         const stored = localStorage.getItem("aln_session");
@@ -305,56 +305,65 @@
         return;
       }
 
-      // 1) نقرأ المستخدمين من ptw_users
-           // 1) نقرأ المستخدمين من ptw_users
       const usersList = readStoredUsers();
 
-      // نحاول نلاقي المستخدم
-      let foundUser = usersList.find(u => u.username === username);
+      let foundUser = null;
 
-      // لو مش موجود أو موجود بس مفيهوش password
-      // ساعتها نرجع للمصدر الاحتياطي (مثلاً admin)
-      if ((!foundUser || !foundUser.password) && FALLBACK_USERS[username]) {
-        const fb = FALLBACK_USERS[username];
+      // لو الأدمن: دايمًا استخدم FALLBACK مهما كان موجود في ptw_users
+      if (username === "admin" && FALLBACK_USERS.admin) {
+        const fb = FALLBACK_USERS.admin;
         foundUser = {
-          username,
+          username: "admin",
           password: fb.password,
           role: fb.role,
           active: fb.active ?? true
         };
+      } else {
+        // باقي المستخدمين: نحاول نلاقيهم في ptw_users
+        foundUser = usersList.find(u => u.username === username);
+
+        // لو مش موجودين في ptw_users وجايين من FALLBACK (مستقبلاً)
+        if (!foundUser && FALLBACK_USERS[username]) {
+          const fb = FALLBACK_USERS[username];
+          foundUser = {
+            username,
+            password: fb.password,
+            role: fb.role,
+            active: fb.active ?? true
+          };
+        }
       }
 
-      // 3) مفيش مستخدم خالص
+      // مفيش مستخدم خالص
       if (!foundUser) {
         errorBox.textContent = "هذا المستخدم غير موجود. برجاء مراجعة مسؤول النظام.";
         return;
       }
 
-      // 4) المستخدم موقوف
+      // مستخدم موقوف
       if (foundUser.active === false) {
         errorBox.textContent = "هذا المستخدم موقوف. برجاء مراجعة مسؤول النظام.";
         return;
       }
 
-      // 5) الباسورد غلط
+      // باسورد غلط
       if (!foundUser.password || foundUser.password !== password) {
         errorBox.textContent = "كلمة المرور غير صحيحة.";
         return;
       }
 
-      // 6) نجاح – إنشاء جلسة aln_session بنفس الشكل القديم
+      // نجاح – إنشاء الجلسة
       const sessionData = {
-        username: foundUser.username || username,
+        username: foundUser.username,
         role: foundUser.role || "najran",
         loginTime: new Date().toISOString()
       };
 
       localStorage.setItem("aln_session", JSON.stringify(sessionData));
-
-      // تحويل للبوابة
       window.location.href = "portal.html";
     });
   </script>
+
 
   </script>
 </body>

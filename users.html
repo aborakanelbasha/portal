@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>إدارة المستخدمين | بوابة تصاريح العمل</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark light" />
+  <style>
+    :root{
+      --panel-bg: rgba(15,23,42,.98);
+      --panel-brd: rgba(148,163,184,.7);
+      --accent: #38bdf8;
+      --text:#f9fafb;
+      --muted:#cbd5f5;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:'Segoe UI',system-ui,Tahoma;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 55%, #000 100%);
+      color:var(--text);
+      padding:20px 12px 60px;
+    }
+    .container{
+      max-width:1100px;
+      margin:0 auto;
+    }
+    h1{
+      margin:0 0 8px;
+      font-size:1.8rem;
+      text-align:right;
+    }
+    .subtitle{
+      margin:0 0 18px;
+      color:var(--muted);
+      font-size:.95rem;
+      text-align:right;
+    }
+    .user-bar{
+      margin:0 0 18px;
+      padding:10px 14px;
+      border-radius:12px;
+      background:linear-gradient(135deg, rgba(15,23,42,.95), rgba(30,64,175,.92));
+      border:1px solid var(--panel-brd);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      box-shadow:0 18px 40px rgba(15,23,42,.8);
+      font-size:.9rem;
+    }
+    .btn{
+      border-radius:10px;
+      border:1px solid rgba(148,163,184,.8);
+      background:rgba(15,23,42,.9);
+      color:var(--text);
+      padding:6px 12px;
+      cursor:pointer;
+      font-weight:600;
+      font-size:.9rem;
+    }
+    .btn:hover{
+      box-shadow:0 0 0 1px rgba(56,189,248,.7);
+    }
+    .btn-danger{
+      border-color:#f97373;
+      color:#fee2e2;
+    }
+    .btn-danger:hover{
+      box-shadow:0 0 0 1px rgba(248,113,113,.8);
+      background:rgba(248,113,113,.15);
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1.3fr);
+      gap:16px;
+    }
+    @media(max-width:900px){
+      .layout{
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel{
+      background:var(--panel-bg);
+      border-radius:16px;
+      border:1px solid var(--panel-brd);
+      padding:14px 14px 10px;
+      box-shadow:0 16px 40px rgba(15,23,42,.8);
+    }
+    .panel h2{
+      margin:0 0 10px;
+      font-size:1.05rem;
+    }
+    .panel small{
+      color:var(--muted);
+      font-size:.8rem;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:.86rem;
+      direction:rtl;
+    }
+    thead{
+      background:rgba(15,23,42,1);
+    }
+    th,td{
+      padding:7px 6px;
+      border-bottom:1px solid rgba(51,65,85,.9);
+      text-align:right;
+      vertical-align:middle;
+    }
+    th{
+      font-weight:700;
+      color:#e5e7eb;
+      position:sticky;
+      top:0;
+      background:rgba(15,23,42,.98);
+      z-index:1;
+    }
+    tbody tr:nth-child(even){
+      background:rgba(15,23,42,.7);
+    }
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      padding:2px 8px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.8);
+      font-size:.75rem;
+    }
+    .tag.green{
+      border-color:#4ade80;
+      color:#bbf7d0;
+    }
+    .tag.red{
+      border-color:#f97373;
+      color:#fecaca;
+    }
+    .small{
+      font-size:.78rem;
+    }
+    .mono{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+    .form-group{
+      margin-bottom:10px;
+    }
+    label{
+      display:block;
+      margin-bottom:4px;
+      font-size:.86rem;
+    }
+    input[type="text"],
+    select{
+      width:100%;
+      padding:7px 8px;
+      border-radius:8px;
+      border:1px solid rgba(148,163,184,.7);
+      background:rgba(15,23,42,.9);
+      color:var(--text);
+      font-size:.88rem;
+    }
+    input[type="checkbox"]{
+      vertical-align:middle;
+    }
+    .hint{
+      font-size:.78rem;
+      color:var(--muted);
+      margin-top:3px;
+    }
+    .actions-cell{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+    .empty{
+      text-align:center;
+      padding:18px 6px;
+      color:var(--muted);
+      font-size:.9rem;
+    }
+    .scroll-wrap{
+      max-height:65vh;
+      overflow:auto;
+      border-radius:10px;
+      border:1px solid rgba(30,64,175,.6);
+      margin-top:6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="user-bar">
+      <div id="userInfo">👋 جاري التحقق من المستخدم…</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button type="button" class="btn" onclick="goPortal()">الرجوع للبوابة</button>
+        <button type="button" class="btn" onclick="goActivity()">عرض سجل النشاط</button>
+      </div>
+    </div>
+
+    <h1>إدارة المستخدمين</h1>
+    <p class="subtitle">
+      هذه الصفحة لإدارة المستخدمين محليًا على هذا المتصفح (تجريبية). لاحقًا يمكن ربطها بقاعدة بيانات حقيقية.
+    </p>
+
+    <div class="layout">
+      <!-- قائمة المستخدمين -->
+      <div class="panel">
+        <h2>قائمة المستخدمين</h2>
+        <small>الأدوار المستخدمة حاليًا: <span class="mono small">admin</span>، <span class="mono small">najran</span>، <span class="mono small">sharurah</span></small>
+
+        <div class="scroll-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>اسم المستخدم</th>
+                <th>الدور</th>
+                <th>الحالة</th>
+                <th>أضيف في</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="usersBody">
+              <tr id="emptyRow">
+                <td colspan="6" class="empty">لا يوجد مستخدمون مسجلون بعد.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- إضافة / تعديل -->
+      <div class="panel">
+        <h2>إضافة مستخدم جديد</h2>
+        <p class="small" style="margin:0 0 10px">
+          هذه المرحلة لتجريب إدارة الأدوار والحالة. كلمة المرور ما زالت تدار من صفحة تسجيل الدخول حتى نربطهم لاحقًا.
+        </p>
+
+        <form onsubmit="handleAddUser(event)">
+          <div class="form-group">
+            <label for="usernameInput">اسم المستخدم (يستخدم في تسجيل الدخول)</label>
+            <input id="usernameInput" type="text" required />
+            <div class="hint">مثال: <span class="mono">ahmed</span> أو <span class="mono">hse_najran</span></div>
+          </div>
+
+          <div class="form-group">
+            <label for="roleSelect">الدور (Role)</label>
+            <select id="roleSelect" required>
+              <option value="najran">Najran فقط</option>
+              <option value="sharurah">Sharurah فقط</option>
+              <option value="admin">Admin (كل المشاريع)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>
+              <input id="activeCheck" type="checkbox" checked />
+              مستخدم مفعل
+            </label>
+          </div>
+
+          <button type="submit" class="btn">➕ إضافة المستخدم</button>
+        </form>
+
+        <hr style="margin:14px 0;border-color:rgba(30,64,175,.7)">
+
+        <p class="hint">
+          لاحقًا يمكن ربط هذه القائمة مع صفحة تسجيل الدخول بحيث تتم قراءة المستخدمين من
+          <span class="mono">ptw_users</span> بدل ما يكونوا ثابتين في الكود.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let CURRENT_USER = null;
+    const USERS_KEY = "ptw_users";
+
+    // حماية الصفحة - admin فقط
+    (function protectUsersPage(){
+      try{
+        const raw = localStorage.getItem("aln_session");
+        if (!raw){
+          alert("يجب تسجيل الدخول أولاً.");
+          window.location.href = "/";
+          return;
+        }
+        const session = JSON.parse(raw);
+        if (!session || !session.username || !session.role){
+          localStorage.removeItem("aln_session");
+          alert("جلسة غير صالحة، الرجاء تسجيل الدخول مرة أخرى.");
+          window.location.href = "/";
+          return;
+        }
+        if (session.role !== "admin"){
+          alert("هذه الصفحة متاحة لمسؤول النظام (admin) فقط.");
+          window.location.href = "/portal";
+          return;
+        }
+        CURRENT_USER = session;
+        const userInfo = document.getElementById("userInfo");
+        if (userInfo){
+          userInfo.textContent = `👋 مرحبًا ${session.username} — دورك: ${session.role}`;
+        }
+
+        // لو مفيش مستخدمين في القائمة، نضمن إضافة الـ admin الحالي
+        ensureCurrentAdminInUsers();
+      } catch(e){
+        console.error(e);
+        alert("حدث خطأ في قراءة جلسة المستخدم.");
+        window.location.href = "/";
+      }
+
+      loadUsers();
+    })();
+
+    function goPortal(){
+      window.location.href = "/portal";
+    }
+    function goActivity(){
+      window.location.href = "/activity.html";
+    }
+
+    function readUsers(){
+      const raw = localStorage.getItem(USERS_KEY);
+      if (!raw) return [];
+      try{
+        const list = JSON.parse(raw);
+        return Array.isArray(list) ? list : [];
+      }catch(e){
+        console.error("parse users error", e);
+        return [];
+      }
+    }
+
+    function writeUsers(list){
+      localStorage.setItem(USERS_KEY, JSON.stringify(list));
+    }
+
+    function ensureCurrentAdminInUsers(){
+      if (!CURRENT_USER) return;
+      const list = readUsers();
+      const exists = list.some(u => u.username === CURRENT_USER.username);
+      if (!exists){
+        list.push({
+          username: CURRENT_USER.username,
+          role: CURRENT_USER.role || "admin",
+          active: true,
+          createdAt: new Date().toISOString()
+        });
+        writeUsers(list);
+      }
+    }
+
+    function loadUsers(){
+      const tbody = document.getElementById("usersBody");
+      const emptyRow = document.getElementById("emptyRow");
+      if (!tbody) return;
+
+      const list = readUsers();
+
+      if (!list.length){
+        if (emptyRow) emptyRow.style.display = "";
+        return;
+      }
+
+      tbody.innerHTML = "";
+      list.forEach((u, index) => {
+        const tr = document.createElement("tr");
+
+        const roleLabel =
+          u.role === "admin" ? "Admin" :
+          u.role === "najran" ? "Najran" :
+          u.role === "sharurah" ? "Sharurah" : u.role;
+
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td class="mono">${u.username}</td>
+          <td><span class="tag">${roleLabel}</span></td>
+          <td>
+            <span class="tag ${u.active ? "green" : "red"}">
+              ${u.active ? "مفعل" : "موقوف"}
+            </span>
+          </td>
+          <td class="small">${u.createdAt ? new Date(u.createdAt).toLocaleString("ar-EG") : "-"}</td>
+          <td>
+            <div class="actions-cell">
+              <button type="button" class="btn small-btn" onclick="toggleActive('${u.username}')">
+                ${u.active ? "إيقاف" : "تفعيل"}
+              </button>
+              <button type="button" class="btn btn-danger small-btn" onclick="deleteUser('${u.username}')">
+                حذف
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function handleAddUser(evt){
+      evt.preventDefault();
+      const usernameInput = document.getElementById("usernameInput");
+      const roleSelect = document.getElementById("roleSelect");
+      const activeCheck = document.getElementById("activeCheck");
+
+      const username = (usernameInput.value || "").trim();
+      const role = roleSelect.value;
+      const active = !!activeCheck.checked;
+
+      if (!username){
+        alert("من فضلك أدخل اسم المستخدم.");
+        return;
+      }
+
+      let list = readUsers();
+      if (list.some(u => u.username === username)){
+        alert("هذا الاسم موجود بالفعل في القائمة.");
+        return;
+      }
+
+      list.push({
+        username,
+        role,
+        active,
+        createdAt: new Date().toISOString()
+      });
+
+      writeUsers(list);
+      usernameInput.value = "";
+      activeCheck.checked = true;
+      roleSelect.value = "najran";
+      loadUsers();
+      alert("تم إضافة المستخدم إلى القائمة (محليًا).");
+    }
+
+    function toggleActive(username){
+      let list = readUsers();
+      const idx = list.findIndex(u => u.username === username);
+      if (idx === -1) return;
+      list[idx].active = !list[idx].active;
+      writeUsers(list);
+      loadUsers();
+    }
+
+    function deleteUser(username){
+      if (!confirm("هل أنت متأكد من حذف هذا المستخدم من هذه القائمة؟")) return;
+      let list = readUsers();
+      list = list.filter(u => u.username !== username);
+      writeUsers(list);
+      loadUsers();
+    }
+  </script>
+</body>
+</html>

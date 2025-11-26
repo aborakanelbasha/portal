@@ -387,17 +387,31 @@
             </span>
           </td>
           <td class="small">${u.createdAt ? new Date(u.createdAt).toLocaleString("ar-EG") : "-"}</td>
-          <td>
+                   <td>
             <div class="actions-cell">
-            <button type="button" onclick="handleChangePassword(${idx})"> باسورد </button>
-              <button type="button" class="btn small-btn" onclick="toggleActive('${u.username}')">
+              <button
+                type="button"
+                class="btn small-btn"
+                onclick="handleChangePassword('${u.username}')">
+                باسورد
+              </button>
+
+              <button
+                type="button"
+                class="btn small-btn"
+                onclick="toggleActive('${u.username}')">
                 ${u.active ? "إيقاف" : "تفعيل"}
               </button>
-              <button type="button" class="btn btn-danger small-btn" onclick="deleteUser('${u.username}')">
+
+              <button
+                type="button"
+                class="btn btn-danger small-btn"
+                onclick="deleteUser('${u.username}')">
                 حذف
               </button>
             </div>
           </td>
+
         `;
         tbody.appendChild(tr);
       });
@@ -437,6 +451,8 @@
 
       writeUsers(list);
       usernameInput.value = "";
+      passwordInput.value = "";
+
       activeCheck.checked = true;
       roleSelect.value = "najran";
       loadUsers();
@@ -459,13 +475,40 @@
       writeUsers(list);
       loadUsers();
     }
-          writeUsers(list);
-      usernameInput.value = "";
-      passwordInput.value = "";
-      activeCheck.checked = true;
-      roleSelect.value = "najran";
+         // تغيير / إظهار كلمة المرور لمستخدم معين (لـ admin فقط)
+    function handleChangePassword(username) {
+      const list = readUsers();
+      const idx = list.findIndex(u => u.username === username);
+      if (idx === -1) {
+        alert("هذا المستخدم غير موجود في القائمة.");
+        return;
+      }
+
+      const user = list[idx];
+      const current = user.password || "";
+
+      const newPass = prompt(
+        `أدخل كلمة المرور الجديدة للمستخدم: ${user.username}`,
+        current
+      );
+
+      if (newPass === null) return; // Cancel
+
+      const trimmed = newPass.trim();
+      if (!trimmed) {
+        alert("كلمة المرور لا يمكن أن تكون فارغة.");
+        return;
+      }
+
+      user.password = trimmed;
+      list[idx] = user;
+
+      writeUsers(list);
       loadUsers();
-      alert("تم إضافة المستخدم إلى القائمة (محليًا).");
+
+      alert("تم تحديث كلمة المرور بنجاح.");
+    }
+
     // تغيير / إظهار كلمة المرور لمستخدم معين (لـ admin فقط)
     function handleChangePassword(index) {
       const list = readUsers();

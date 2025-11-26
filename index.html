@@ -478,27 +478,69 @@
       window.location.href = "portal.html";
     });
     </script>
- <script type="module">
-  // 1) استيراد Firebase App + Auth
+<script type="module">
+  // 1) استيراد Firebase App + Auth + دالة تسجيل الدخول
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getAuth } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-    const firebaseConfig = {
-   apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
-   authDomain: "ptw-najran-sharurah.firebaseapp.com",
-   projectId: "ptw-najran-sharurah",
-   storageBucket: "ptw-najran-sharurah.firebasestorage.app",
-   messagingSenderId: "848619550286",
-   appId: "1:848619550286:web:fe5c470f67236b2519751f",
-   measurementId: "G-PQED2DCRL1"
+  // 2) إعدادات مشروعك من Firebase (نفس اللي عندك دلوقتي)
+  const firebaseConfig = {
+    apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
+    authDomain: "ptw-najran-sharurah.firebaseapp.com",
+    projectId: "ptw-najran-sharurah",
+    storageBucket: "ptw-najran-sharurah.firebasestorage.app",
+    messagingSenderId: "848619550286",
+    appId: "1:848619550286:web:fe5c470f67236b2519751f",
+    measurementId: "G-PQED2DCRL1"
+
   };
 
+  // 3) تهيئة Firebase
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-    
-  window.firebaseAuth = auth;
-  console.log("Firebase Auth جاهز ✅");
-    
+  window.firebaseAuth = auth; // علشان لو حبينا نستخدمه من الـ Console
+
+  // 4) نجيب عناصر الفورم (مؤقتًا هنا بفترض إن عندك input text و input password وحيدين)
+  const form = document.querySelector("form");
+  const emailInput = document.querySelector('input[type="text"]');
+  const passwordInput = document.querySelector('input[type="password"]');
+
+  if (form && emailInput && passwordInput) {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!email || !password) {
+        alert("من فضلك أدخل الإيميل والباسورد");
+        return;
+      }
+
+      try {
+        // 5) تسجيل الدخول عبر Firebase
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        const user = cred.user;
+        console.log("Logged in:", user);
+
+        // 6) نحفظ سيشن بسيط زي ما كنت عامل
+        const sessionData = {
+          uid: user.uid,
+          email: user.email,
+        };
+        localStorage.setItem("aln_session", JSON.stringify(sessionData));
+
+        // 7) نحوله على البوابة
+        window.location.href = "portal.html";
+      } catch (error) {
+        console.error(error);
+        alert("تسجيل الدخول فشل: تأكد من الإيميل والباسورد أو اطلب من الأدمن يضيفك في Firebase.");
+      }
+    });
+  } else {
+    console.warn("مش لاقي عناصر فورم اللوجين (input text/password أو form).");
+  }
 </script>
+
 </body>
 </html>

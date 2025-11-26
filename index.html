@@ -486,7 +486,7 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-  // 2) إعدادات مشروعك من Firebase
+  // 2) إعدادات مشروعك من Firebase (نفس اللي عندك دلوقتي)
   const firebaseConfig = {
     apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
     authDomain: "ptw-najran-sharurah.firebaseapp.com",
@@ -495,7 +495,6 @@
     messagingSenderId: "848619550286",
     appId: "1:848619550286:web:fe5c470f67236b2519751f",
     measurementId: "G-PQED2DCRL1"
-
   };
 
   // 3) تهيئة Firebase
@@ -504,7 +503,7 @@
 
   // 4) عناصر الفورم
   const form = document.getElementById("login-form");
-  const usernameInput = document.getElementById("username");   // هنستعمله كـ Email
+  const usernameInput = document.getElementById("username");   // المستخدم يكتب هنا "يوزر أو إيميل"
   const passwordInput = document.getElementById("password");
   const errorBox = document.getElementById("login-error");
 
@@ -513,13 +512,19 @@
       e.preventDefault();
       errorBox.textContent = "";
 
-      const email = usernameInput.value.trim();   // الإيميل اللي في Firebase
+      const identifier = usernameInput.value.trim(); // ممكن يكون username أو email
       const password = passwordInput.value;
 
-      if (!email || !password) {
-        errorBox.textContent = "من فضلك أدخل الإيميل وكلمة المرور.";
+      if (!identifier || !password) {
+        errorBox.textContent = "من فضلك أدخل اسم المستخدم/الإيميل وكلمة المرور.";
         return;
       }
+
+      // لو فيه @ → هنعتبره إيميل حقيقي (زي eng.moustafa3013@gmail.com)
+      // لو مفيش @ → هنحوّله لإيميل سيستم username@al-naggar.portal
+      const email = identifier.includes("@")
+        ? identifier
+        : `${identifier}@al-naggar.portal`;
 
       try {
         // 5) تسجيل الدخول عن طريق Firebase
@@ -527,10 +532,13 @@
         const user = cred.user;
         console.log("Logged in with Firebase:", user);
 
-        // 6) نحفظ سيشن بسيط في localStorage
+        // 6) نحفظ سيشن بالـ format اللي portal.html مستنيّه
+        // حالياً هنعامل أي حد يدخل كـ admin مؤقتاً (تقدر تغيّرها بعدين لكل يوزر)
         const sessionData = {
           uid: user.uid,
           email: user.email,
+          username: user.email,   // عشان autoRedirectIfLoggedIn يشتغل
+          role: "admin",          // مؤقتاً: نخليه admin، تقدر تعدّلها حسب كل يوزر
           loginTime: new Date().toISOString()
         };
         localStorage.setItem("aln_session", JSON.stringify(sessionData));
@@ -538,8 +546,8 @@
         // 7) تحويل لبوابة التصاريح
         window.location.href = "portal.html";
       } catch (err) {
-        console.error(err);
-        errorBox.textContent = "تسجيل الدخول فشل، تأكد من الإيميل والباسورد أو اطلب من الأدمن يضيفك في Firebase.";
+        console.error("Firebase login error:", err);
+        errorBox.textContent = "تسجيل الدخول فشل، تأكد من الإيميل/اسم المستخدم والباسورد أو اطلب من الأدمن يضيفك في Firebase.";
       }
     });
   } else {

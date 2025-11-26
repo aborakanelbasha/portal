@@ -9,177 +9,139 @@
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
 
   <style>
-    * { box-sizing: border-box; }
-
     body {
       margin: 0;
-      font-family: "Tajawal", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: "Tajawal";
       background:
         linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8)),
-        url("https://i.postimg.cc/RVdVFtz0/hero.png") center center / cover no-repeat;
+        url("https://i.postimg.cc/RVdVFtz0/hero.png") center/cover no-repeat;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
     }
-
     .card {
       width: 100%;
       max-width: 420px;
       background: rgba(0, 0, 0, 0.75);
       border-radius: 20px;
-      padding: 2rem 1.8rem;
+      padding: 2rem;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
       backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
     }
-
-    h1 {
-      margin: 0 0 0.5rem;
-      font-size: 1.6rem;
-      text-align: center;
-    }
-
-    .subtitle {
-      text-align: center;
-      font-size: 0.9rem;
-      color: #ddd;
-      margin-bottom: 1.5rem;
-    }
-
-    .input {
-      width: 100%;
-      margin: 0.6rem 0;
-      padding: 0.8rem 0.6rem;
-      border-radius: 0.5rem;
-      border: 1px solid #555;
-      background: rgba(0, 0, 0, 0.6);
-      color: #fff;
-      outline: none;
-    }
-
-    .input::placeholder {
-      color: #aaa;
-    }
-
-    .btn {
-      margin-top: 1.2rem;
+    .input, .btn {
       width: 100%;
       padding: 0.9rem;
+      margin-top: 0.8rem;
       border-radius: 0.6rem;
       border: none;
+      font-size: 1rem;
+    }
+    .input {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid #555;
+      color: #fff;
+    }
+    .btn {
       background: #f5deb3;
       color: #000;
-      font-size: 1rem;
       cursor: pointer;
-      transition: background 180ms, transform 80ms;
     }
-
-    .btn:hover {
-      background: #ffe7b8;
-    }
-
-    .btn:active {
-      transform: scale(0.97);
-    }
-
-    .error {
-      margin-top: 0.8rem;
-      font-size: 0.9rem;
-      min-height: 1.2rem;
-      color: #ff9494;
-    }
-
-    .info {
-      margin-top: 1rem;
-      font-size: 0.85rem;
-      color: #a5f3fc;
-      word-break: break-all;
-    }
+    .error { color: #ff7f7f; margin-top: 0.8rem; }
+    .info  { color: #7fffb1; margin-top: 1rem; white-space: pre-line; }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>تجربة تسجيل الدخول بـ Firebase</h1>
-    <p class="subtitle">
-      دي صفحة اختبار منفصلة، مش بتأثر على بوابة النجار الأصلية.
-    </p>
 
-    <form id="firebase-login-form">
-      <input
-        id="email"
-        type="email"
-        class="input"
-        placeholder="الإيميل المسجَّل في Firebase"
-        autocomplete="email"
-        required
-      />
-      <input
-        id="password"
-        type="password"
-        class="input"
-        placeholder="كلمة المرور"
-        autocomplete="current-password"
-        required
-      />
-      <button class="btn" type="submit">تجربة تسجيل الدخول</button>
-      <p class="error" id="error-box"></p>
-      <div class="info" id="user-info"></div>
-    </form>
-  </div>
+<div class="card">
+  <h2 style="text-align:center;">🔥 تجربة تسجيل الدخول بـ Firebase</h2>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  <input id="identifier" class="input" placeholder="اسم المستخدم أو الإيميل" />
+  <input id="password" type="password" class="input" placeholder="كلمة المرور" />
 
-    // نفس config بتاع مشروعك
-    const firebaseConfig = {
-      apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
-      authDomain: "ptw-najran-sharurah.firebaseapp.com",
-      projectId: "ptw-najran-sharurah",
-      storageBucket: "ptw-najran-sharurah.firebasestorage.app",
-      messagingSenderId: "848619550286",
-      appId: "1:848619550286:web:fe5c470f67236b2519751f",
-      measurementId: "G-PQED2DCRL1"
-    };
+  <button id="loginBtn" class="btn">تجربة تسجيل الدخول</button>
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+  <div id="errorBox" class="error"></div>
+  <div id="infoBox" class="info"></div>
+</div>
 
-    const form = document.getElementById("firebase-login-form");
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const errorBox = document.getElementById("error-box");
-    const userInfo = document.getElementById("user-info");
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      errorBox.textContent = "";
-      userInfo.textContent = "";
+  // Firebase setup
+  const firebaseConfig = {
+    apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
+    authDomain: "ptw-najran-sharurah.firebaseapp.com",
+    projectId: "ptw-najran-sharurah",
+    storageBucket: "ptw-najran-sharurah.firebasestorage.app",
+    messagingSenderId: "848619550286",
+    appId: "1:848619550286:web:fe5c470f67236b2519751f"
+  };
 
-      const email = emailInput.value.trim();
-      const password = passwordInput.value;
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
-      if (!email || !password) {
-        errorBox.textContent = "من فضلك أدخل الإيميل وكلمة المرور.";
+  // مباريات ptw_users
+  function readStoredUsers() {
+    try {
+      const raw = localStorage.getItem("ptw_users");
+      if (!raw) return [];
+      const list = JSON.parse(raw);
+      return Array.isArray(list) ? list : [];
+    } catch {
+      return [];
+    }
+  }
+
+  const btn       = document.getElementById("loginBtn");
+  const idInput   = document.getElementById("identifier");
+  const pwInput   = document.getElementById("password");
+  const errorBox  = document.getElementById("errorBox");
+  const infoBox   = document.getElementById("infoBox");
+
+  btn.addEventListener("click", async () => {
+    errorBox.textContent = "";
+    infoBox.textContent = "";
+
+    const identifier = idInput.value.trim();
+    const password   = pwInput.value.trim();
+
+    if (!identifier || !password) {
+      errorBox.textContent = "من فضلك أدخل البيانات كاملة.";
+      return;
+    }
+
+    let loginEmail = identifier;
+
+    // username → email
+    if (!identifier.includes("@")) {
+      const usersList = readStoredUsers();
+      const userObj = usersList.find(u => u.username === identifier);
+
+      if (!userObj || !userObj.email) {
+        errorBox.textContent = "هذا اليوزر غير مرتبط بإيميل. عدّله من صفحة إدارة المستخدمين.";
         return;
       }
 
-      try {
-        const cred = await signInWithEmailAndPassword(auth, email, password);
-        const user = cred.user;
+      loginEmail = userObj.email;
+    }
 
-        userInfo.textContent =
-          "تم تسجيل الدخول بنجاح ✅\\n" +
-          "UID: " + user.uid + "\\n" +
-          "Email: " + user.email;
+    try {
+      const cred = await signInWithEmailAndPassword(auth, loginEmail, password);
+      const user = cred.user;
 
-      } catch (err) {
-        console.error("Firebase login error:", err);
-        errorBox.textContent = "فشل تسجيل الدخول. تأكد من الإيميل والباسورد، أو أن الحساب مضاف في Firebase.";
-      }
-    });
-  </script>
+      infoBox.textContent =
+        "✔️ تسجيل الدخول ناجح\n" +
+        "UID: " + user.uid + "\n" +
+        "Email: " + user.email + "\n";
+    } catch (err) {
+      errorBox.textContent = "❌ فشل تسجيل الدخول.";
+      console.error(err);
+    }
+  });
+</script>
+
 </body>
 </html>

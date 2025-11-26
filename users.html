@@ -219,6 +219,7 @@
               <tr>
                 <th>#</th>
                 <th>اسم المستخدم</th>
+                <th>الإيميل</th>
                 <th>الدور</th>
                 <th>الحالة</th>
                 <th>أضيف في</th>
@@ -241,14 +242,21 @@
         </p>
 
         <form onsubmit="handleAddUser(event)">
-          <div class="form-group">
-            <label for="usernameInput">اسم المستخدم (يستخدم في تسجيل الدخول)</label>
-            <input id="usernameInput" type="text" required />
-                      </div>
-  <div class="form-group">
-    <label for="passwordInput">كلمة المرور</label>
-    <input id="passwordInput" type="password" required />
-     </div>
+         <div class="form-group">
+  <label for="usernameInput">اسم المستخدم (يستخدم في تسجيل الدخول)</label>
+  <input id="usernameInput" type="text" required />
+</div>
+
+<div class="form-group">
+  <label for="emailInput">الإيميل (المستخدم في Firebase)</label>
+  <input id="emailInput" type="email" required />
+  <div class="hint">مثال: eng.moustafa3013@gmail.com</div>
+</div>
+
+<div class="form-group">
+  <label for="passwordInput">كلمة المرور</label>
+  <input id="passwordInput" type="password" required />
+</div>
 
           <div class="form-group">
             <label for="roleSelect">الدور (Role)</label>
@@ -351,6 +359,7 @@
       if (!exists) {
         list.push({
           username: CURRENT_USER.username,
+          email: null,
           password: null,
           role: CURRENT_USER.role || "admin",
           active: true,
@@ -389,47 +398,49 @@
             ? "Sharurah"
             : u.role;
 
-        tr.innerHTML = `
-          <td>${index + 1}</td>
-          <td class="mono">${u.username}</td>
-          <td><span class="tag">${roleLabel}</span></td>
-          <td>
-            <span class="tag ${u.active ? "green" : "red"}">
-              ${u.active ? "مفعل" : "موقوف"}
-            </span>
-          </td>
-          <td class="small">
-            ${
-              u.createdAt
-                ? new Date(u.createdAt).toLocaleString("ar-EG")
-                : "-"
-            }
-          </td>
-          <td>
-            <div class="actions-cell">
-              <button
-                type="button"
-                class="btn small-btn"
-                onclick="handleChangePassword('${u.username}')">
-                باسورد
-              </button>
+       tr.innerHTML = `
+  <td>${index + 1}</td>
+  <td class="mono">${u.username}</td>
+  <td class="mono small">${u.email || "-"}</td>
+  <td><span class="tag">${roleLabel}</span></td>
+  <td>
+    <span class="tag ${u.active ? "green" : "red"}">
+      ${u.active ? "مفعل" : "موقوف"}
+    </span>
+  </td>
+  <td class="small">
+    ${
+      u.createdAt
+        ? new Date(u.createdAt).toLocaleString("ar-EG")
+        : "-"
+    }
+  </td>
+  <td>
+    <div class="actions-cell">
+      <button
+        type="button"
+        class="btn small-btn"
+        onclick="handleChangePassword('${u.username}')">
+        باسورد
+      </button>
 
-              <button
-                type="button"
-                class="btn small-btn"
-                onclick="toggleActive('${u.username}')">
-                ${u.active ? "إيقاف" : "تفعيل"}
-              </button>
+      <button
+        type="button"
+        class="btn small-btn"
+        onclick="toggleActive('${u.username}')">
+        ${u.active ? "إيقاف" : "تفعيل"}
+      </button>
 
-              <button
-                type="button"
-                class="btn btn-danger small-btn"
-                onclick="deleteUser('${u.username}')">
-                حذف
-              </button>
-            </div>
-          </td>
-        `;
+      <button
+        type="button"
+        class="btn btn-danger small-btn"
+        onclick="deleteUser('${u.username}')">
+        حذف
+      </button>
+    </div>
+  </td>
+`;
+
         tbody.appendChild(tr);
       });
     }
@@ -437,34 +448,55 @@
     // ===== إضافة مستخدم جديد =====
     function handleAddUser(evt) {
       evt.preventDefault();
-      const usernameInput = document.getElementById("usernameInput");
-      const passwordInput = document.getElementById("passwordInput");
-      const roleSelect = document.getElementById("roleSelect");
-      const activeCheck = document.getElementById("activeCheck");
+     const usernameInput = document.getElementById("usernameInput");
+const emailInput    = document.getElementById("emailInput");
+const passwordInput = document.getElementById("passwordInput");
+const roleSelect    = document.getElementById("roleSelect");
+const activeCheck   = document.getElementById("activeCheck");
 
-      const username = (usernameInput.value || "").trim();
-      const password = passwordInput.value || "";
-      const role = roleSelect.value;
-      const active = !!activeCheck.checked;
+const username = (usernameInput.value || "").trim();
+const email    = (emailInput.value || "").trim();
+const password = passwordInput.value || "";
+const role     = roleSelect.value;
+const active   = !!activeCheck.checked;
 
-      if (!username) {
-        alert("من فضلك أدخل اسم المستخدم.");
-        return;
-      }
+if (!username) {
+  alert("من فضلك أدخل اسم المستخدم.");
+  return;
+}
+if (!email || !email.includes("@")) {
+  alert("من فضلك أدخل إيميل صحيح (يُستخدم في Firebase).");
+  return;
+}
 
-      let list = readUsers();
-      if (list.some((u) => u.username === username)) {
-        alert("هذا الاسم موجود بالفعل في القائمة.");
-        return;
-      }
+let list = readUsers();
+if (list.some((u) => u.username === username)) {
+  alert("هذا الاسم موجود بالفعل في القائمة.");
+  return;
+}
+if (list.some((u) => u.email === email)) {
+  alert("هذا الإيميل مستخدم بالفعل لمستخدم آخر.");
+  return;
+}
 
-      list.push({
-        username,
-        password,
-        role,
-        active,
-        createdAt: new Date().toISOString(),
-      });
+list.push({
+  username,
+  email,
+  password,
+  role,
+  active,
+  createdAt: new Date().toISOString(),
+});
+
+writeUsers(list);
+
+usernameInput.value = "";
+emailInput.value    = "";
+passwordInput.value = "";
+activeCheck.checked = true;
+roleSelect.value    = "najran";
+loadUsers();
+alert("تم إضافة المستخدم إلى القائمة (محليًا).");
 
       writeUsers(list);
       usernameInput.value = "";

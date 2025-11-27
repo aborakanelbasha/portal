@@ -278,6 +278,32 @@
         </form>
 
         <hr style="margin:14px 0;border-color:rgba(30,64,175,.7)">
+        <h2 style="margin-top:10px;">طلبات التسجيل من البوابة</h2>
+        <small>
+          البيانات التالية قادمة من
+          <span class="mono small">Firestore → collection: signup_requests</span>
+        </small>
+
+        <div class="scroll-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>اسم المستخدم</th>
+                <th>الإيميل</th>
+                <th>الجوال</th>
+                <th>الرسالة</th>
+                <th>الحالة</th>
+                <th>تم الإرسال في</th>
+              </tr>
+            </thead>
+            <tbody id="signupRequestsBody">
+              <tr id="signupEmptyRow">
+                <td colspan="7" class="empty">لا توجد طلبات تسجيل حتى الآن.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
        </div>
     </div>
@@ -561,6 +587,96 @@ alert("تم إضافة المستخدم إلى القائمة (محليًا).");
       alert("تم تحديث كلمة المرور بنجاح.");
     }
   </script>
+  <!-- سكربت Firebase / Firestore لعرض signup_requests -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      query,
+      orderBy,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    // نفس config بتاع index.html بالظبط
+    const firebaseConfig = {
+      apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
+      authDomain: "ptw-najran-sharurah.firebaseapp.com",
+      projectId: "ptw-najran-sharurah",
+      storageBucket: "ptw-najran-sharurah.firebasestorage.app",
+      messagingSenderId: "848619550286",
+      appId: "1:848619550286:web:fe5c470f67236b2519751f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+
+    const tbody    = document.getElementById("signupRequestsBody");
+    const emptyRow = document.getElementById("signupEmptyRow");
+
+    function renderRequests(docs) {
+      if (!tbody) return;
+
+      if (!docs.length) {
+        if (emptyRow) emptyRow.style.display = "";
+        tbody.innerHTML = emptyRow ? emptyRow.outerHTML : "";
+        return;
+      }
+
+      if (emptyRow) emptyRow.style.display = "none";
+      tbody.innerHTML = "";
+
+      docs.forEach((docSnap, index) => {
+        const data = docSnap.data() || {};
+        const tr   = document.createElement("tr");
+
+        const createdAt =
+          data.createdAt && data.createdAt.toDate
+            ? data.createdAt.toDate().toLocaleString("ar-EG")
+            : "-";
+
+        const status = (data.status || "pending").toLowerCase();
+        let statusClass = "tag";
+        if (status === "approved") statusClass += " green";
+        else if (status === "rejected") statusClass += " red";
+
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td class="mono small">${data.username || "-"}</td>
+          <td class="mono small">${data.email || "-"}</td>
+          <td class="mono small">${data.phone || "-"}</td>
+          <td class="small">${data.message || "-"}</td>
+          <td><span class="${statusClass}">${status === "pending" ? "معلق" : status === "approved" ? "موافق عليه" : "مرفوض"}</span></td>
+          <td class="small">${createdAt}</td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    // اشتراك لايف في collection signup_requests
+    try {
+      const q = query(
+        collection(db, "signup_requests"),
+        orderBy("createdAt", "desc")
+      );
+
+      onSnapshot(
+        q,
+        (snapshot) => {
+          const docs = snapshot.docs || [];
+          renderRequests(docs);
+        },
+        (err) => {
+          console.error("signup_requests snapshot error:", err);
+        }
+      );
+    } catch (e) {
+      console.error("Firestore init / query error:", e);
+    }
+  </script>
+</body>
+</html>
 
 </body>
 </html>

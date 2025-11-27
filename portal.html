@@ -317,39 +317,34 @@
           return;
         }
 
-        // نطبّع الـ role ونحلّلها
-        const roleRawLower = (session.role || "").toLowerCase();
-        const normalizedRole = roleRawLower.replace(/\s+/g, "_");
+        // توحيد الـ role: lowercase + استبدال المسافات بـ Underscore
+        const rawRole = String(session.role || "")
+          .trim()
+          .toLowerCase();
+
+        const normalizedRole = rawRole.replace(/\s+/g, "_");
 
         CURRENT_USER = {
           ...session,
-          role: normalizedRole,
-          roleRaw: session.role || normalizedRole
+          role: normalizedRole,   // هنا بنتعامل في البوابة كلها بالـ normalized role
+          _rawRole: rawRole       // للاحتياط لو حبيت تستخدمه بعدين
         };
 
-        const isViewer = roleRawLower.includes("viewer");
+        const role = normalizedRole;
 
-        if (isViewer) {
+        if (role === "najran") {
+          ALLOWED_PROJECTS = ["najran"];
+        } else if (role === "sharurah") {
+          ALLOWED_PROJECTS = ["sharurah"];
+        } else if (role === "najran_viewer") {
+          ALLOWED_PROJECTS = ["najran"];
           VIEW_ONLY_MODE = true;
-
-          if (roleRawLower.includes("najran")) {
-            ALLOWED_PROJECTS = ["najran"];
-          } else if (roleRawLower.includes("sharurah")) {
-            ALLOWED_PROJECTS = ["sharurah"];
-          } else {
-            // لو viewer عام من غير تحديد مشروع
-            ALLOWED_PROJECTS = ["najran", "sharurah"];
-          }
+        } else if (role === "sharurah_viewer") {
+          ALLOWED_PROJECTS = ["sharurah"];
+          VIEW_ONLY_MODE = true;
         } else {
-          // أدوار عادية
-          if (normalizedRole === "najran") {
-            ALLOWED_PROJECTS = ["najran"];
-          } else if (normalizedRole === "sharurah") {
-            ALLOWED_PROJECTS = ["sharurah"];
-          } else {
-            // admin أو أي رول عام
-            ALLOWED_PROJECTS = ["najran", "sharurah"];
-          }
+          // admin أو أي رول عام
+          ALLOWED_PROJECTS = ["najran", "sharurah"];
         }
       } catch (e) {
         console.error(e);
@@ -529,7 +524,7 @@
       // إظهار/إخفاء تنويه اجتماع السلامة حسب المشروع
       if (tbtNotice) {
         const role = (CURRENT_USER?.role || "").toLowerCase();
-        const showTbtNotice = (id === 'sharurah' && !role.includes("viewer"));
+        const showTbtNotice = (id === 'sharurah' && role !== 'sharurah_viewer');
         tbtNotice.hidden = !showTbtNotice;
       }
 
@@ -541,6 +536,7 @@
       let linksToRender = p.links || [];
       let resourcesToRender = p.resources || [];
 
+      const role = (CURRENT_USER?.role || "").toLowerCase();
       if (VIEW_ONLY_MODE) {
         // viewer → مفيش generators خالص
         linksToRender = [];
@@ -630,26 +626,21 @@
       applyRoleVisibility();
 
       if (CURRENT_USER && welcomeUser) {
-        const roleLower = (CURRENT_USER.role || "").toLowerCase();
-        const roleRawLower = (CURRENT_USER.roleRaw || CURRENT_USER.role || "").toLowerCase();
+        const role = (CURRENT_USER.role || "").toLowerCase();
         let roleText = '';
 
-        if (roleRawLower.includes("viewer")) {
-          if (roleRawLower.includes("najran")) {
-            roleText = 'وضع عرض فقط: جالري + تقييم مخاطر نجران';
-          } else if (roleRawLower.includes("sharurah")) {
-            roleText = 'وضع عرض فقط: جالري + تقييم مخاطر شرورة';
-          } else {
-            roleText = 'وضع عرض فقط: جالري + تقييم مخاطر (كل المشاريع المتاحة)';
-          }
-        } else if (roleLower === 'admin') {
+        if (role === 'admin') {
           roleText = 'صلاحياتك: نجران وشرورة';
-        } else if (roleLower === 'najran') {
+        } else if (role === 'najran') {
           roleText = 'صلاحياتك: مشروع نجران فقط';
-        } else if (roleLower === 'sharurah') {
+        } else if (role === 'sharurah') {
           roleText = 'صلاحياتك: مشروع شرورة فقط';
+        } else if (role === 'najran_viewer') {
+          roleText = 'وضع عرض فقط: جالري + تقييم مخاطر نجران';
+        } else if (role === 'sharurah_viewer') {
+          roleText = 'وضع عرض فقط: جالري + تقييم مخاطر شرورة';
         } else {
-          roleText = `دورك: ${CURRENT_USER.roleRaw || CURRENT_USER.role}`;
+          roleText = `دورك: ${CURRENT_USER.role}`;
         }
 
         welcomeUser.textContent = `👋 أهلاً ${CURRENT_USER.username} — ${roleText}`;

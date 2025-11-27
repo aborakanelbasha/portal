@@ -859,6 +859,39 @@
 
         // 3) إضافة المستخدم في ptw_users محليًا
         addLocalUserFromRequest(data, role);
+        // 3) إضافة المستخدم في ptw_users محليًا
+        addLocalUserFromRequest(data, role);
+
+        // 3.5) إضافة / تحديث المستخدم في Firestore collection: app_users
+        try {
+          const username = (data.username || "").trim();
+          const email    = (data.email || "").trim().toLowerCase();
+          const nowIso   = new Date().toISOString();
+
+          if (username && email) {
+            const appUserRef = doc(db, "app_users", username.toLowerCase());
+            await setDoc(appUserRef, {
+              username,
+              email,
+              role,
+              active: true,
+              createdAt: data.createdAt || nowIso,
+              updatedAt: nowIso,
+              source: "signup_approve"
+            }, { merge: true });
+
+            console.log("app_users updated for", username);
+          } else {
+            console.warn("بيانات ناقصة لكتابة app_users (username/email).");
+          }
+        } catch (errAppUser) {
+          console.error("app_users setDoc error:", errAppUser);
+          // مش هنوقّف الاعتماد علشان المشكلة دي، بس بنسجّلها في الكونسول
+        }
+
+        // 4) إنشاء مستخدم في Firebase Auth (اختياري)
+        const email = (data.email || "").trim();
+        ...
 
         // 4) إنشاء مستخدم في Firebase Auth (اختياري)
         const email = (data.email || "").trim();

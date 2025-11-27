@@ -609,23 +609,27 @@
        - Approve / Reject
        - إنشاء مستخدم في Firebase Auth
        - مزامنة ptw_users → app_users -->
+   <!-- سكربت Firebase / Firestore لطلبات التسجيل + Approve/Reject + app_users -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      onSnapshot,
-      doc,
-      updateDoc,
-      serverTimestamp,
-      setDoc
-    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
     import {
       getAuth,
       createUserWithEmailAndPassword
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      query,
+      orderBy,
+      onSnapshot,
+      doc,
+      updateDoc,
+      deleteDoc,
+      setDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-    // نفس إعدادات Firebase بتاعة المشروع
+    // نفس config بتاع المشروع
     const firebaseConfig = {
       apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
       authDomain: "ptw-najran-sharurah.firebaseapp.com",
@@ -635,8 +639,6 @@
       appId: "1:848619550286:web:fe5c470f67236b2519751f"
     };
 
-    console.log("🔥 users.html Firestore + Auth module loaded");
-
     const app  = initializeApp(firebaseConfig);
     const db   = getFirestore(app);
     const auth = getAuth(app);
@@ -644,189 +646,115 @@
     const tbody    = document.getElementById("signupRequestsBody");
     const emptyRow = document.getElementById("signupEmptyRow");
 
-    // كاش للطلبات عشان نستخدمها في approve/reject
+    // نخزن الطلبات هنا علشان نستخدمها في approve/reject
     const requestsCache = new Map();
+    window._signupRequestsCache = requestsCache; // لو حبّيت تشوفها من الكونسول
 
-    // ===== عرض جدول طلبات التسجيل =====
+    // ========= دالة عرض الطلبات في الجدول =========
     function renderRequests(docs) {
       if (!tbody) return;
 
       requestsCache.clear();
 
       if (!docs.length) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="8" class="empty">لا توجد طلبات تسجيل حتى الآن.</td>
-          </tr>
-        `;
+        if (emptyRow) {
+          emptyRow.style.display = "";
+          tbody.innerHTML = "";
+          tbody.appendChild(emptyRow);
+        }
         return;
       }
 
+      if (emptyRow) emptyRow.style.display = "none";
       tbody.innerHTML = "";
 
       docs.forEach((docSnap, index) => {
         const data = docSnap.data() || {};
         const id   = docSnap.id;
 
-        // نحفظ الداتا في الكاش
+        // نخزن الداتا في الكاش
         requestsCache.set(id, data);
 
-        let createdAtText = "-";
-        try {
-          if (data.createdAt && data.createdAt.toDate) {
-            createdAtText = data.createdAt.toDate().toLocaleString("ar-EG");
-          }
-        } catch (_) {}
+        const tr = document.createElement("tr");
+
+        const createdAt =
+          data.createdAt && data.createdAt.toDate
+            ? data.createdAt.toDate().toLocaleString("ar-EG")
+            : "-";
 
         const status = (data.status || "pending").toLowerCase();
+
         let statusClass = "tag";
-        if (status === "approved") statusClass += " green";
-        else if (status === "rejected") statusClass += " red";
+        let statusLabel = "";
+        if (status === "approved") {
+          statusClass += " green";
+          statusLabel = "موافق عليه";
+        } else if (status === "rejected") {
+          statusClass += " red";
+          statusLabel = "مرفوض";
+        } else {
+          statusLabel = "معلق";
+        }
 
-        const statusLabel =
-          status === "pending"
-            ? "معلق"
-            : status === "approved"
-            ? "موافق عليه"
-            : "مرفوض";
-
-        let actionsHtml = "-";
+        // أزرار الاعتماد/الرفض تظهر فقط لو الطلب معلق
+        let actionsHtml = "";
         if (status === "pending") {
           actionsHtml = `
-            <div class="actions-cell">
-              <button
-                type="button"
-                class="btn small-btn"
-                onclick="approveSignup('${id}')">
-                ✔ اعتماد
-              </button>
-              <button
-                type="button"
-                class="btn btn-danger small-btn"
-                onclick="rejectSignup('${id}')">
-                ✖ رفض
-              </button>
-            </div>
+            <button type="button"
+              class="btn small-btn"
+              onclick="approveSignup('${id}')">
+              اعتماد
+            </button>
+            <button type="button"
+              class="btn btn-danger small-btn"
+              onclick="rejectSignup('${id}')">
+              رفض
+            </button>
           `;
         }
 
-        const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${index + 1}</td>
           <td class="mono small">${data.username || "-"}</td>
           <td class="mono small">${data.email || "-"}</td>
           <td class="mono small">${data.phone || "-"}</td>
           <td class="small">${data.message || "-"}</td>
-          <td><span class="${statusClass}">${statusLabel}</span></td>
-          <td class="small">${createdAtText}</td>
-          <td>${actionsHtml}</td>
+          <td>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+              <span class="${statusClass}">${statusLabel}</span>
+              ${actionsHtml}
+            </div>
+          </td>
+          <td class="small">${createdAt}</td>
         `;
 
         tbody.appendChild(tr);
       });
     }
 
-    // ===== إضافة يوزر في ptw_users من الطلب =====
-    function addLocalUserFromRequest(data, role) {
-      if (!window.readUsers || !window.writeUsers || !window.loadUsers) {
-        console.warn("readUsers/writeUsers/loadUsers not available on window.");
-        return;
-      }
-
-      const list = window.readUsers() || [];
-
-      const username = (data.username || "").trim();
-      const email    = (data.email || "").trim().toLowerCase();
-
-      if (!username || !email) {
-        alert("بيانات الطلب غير مكتملة (اسم المستخدم أو الإيميل مفقود).");
-        return;
-      }
-
-      const exists = list.some(
-        (u) =>
-          (u.username || "").toLowerCase() === username.toLowerCase() ||
-          (u.email || "").toLowerCase() === email
+    // ========= الاشتراك اللايف في collection signup_requests =========
+    try {
+      const qSignup = query(
+        collection(db, "signup_requests"),
+        orderBy("createdAt", "desc")
       );
-      if (exists) {
-        console.log("user already exists in ptw_users, skip adding.");
-        return;
-      }
 
-      list.push({
-        username,
-        email,
-        password: "",         // مش مهم دلوقتي
-        role,
-        active: true,
-        createdAt: new Date().toISOString(),
-      });
-
-      window.writeUsers(list);
-      window.loadUsers();
+      onSnapshot(
+        qSignup,
+        (snapshot) => {
+          const docs = snapshot.docs || [];
+          renderRequests(docs);
+        },
+        (err) => {
+          console.error("signup_requests snapshot error:", err);
+          alert("لا توجد صلاحية لقراءة signup_requests من Firestore. راجع قواعد Firestore.");
+        }
+      );
+    } catch (e) {
+      console.error("Firestore init / query error:", e);
     }
 
-    // ===== مزامنة ptw_users → Firestore collection: app_users =====
-    window.syncLocalUsersToFirestore = async function () {
-      if (!window.readUsers) {
-        alert("دالة readUsers غير متاحة على هذه الصفحة.");
-        return;
-      }
-
-      const list = window.readUsers() || [];
-      if (!list.length) {
-        alert("لا يوجد مستخدمون في ptw_users لمزامنتهم.");
-        return;
-      }
-
-      if (!confirm("هل أنت متأكد من مزامنة جميع المستخدمين الحاليين إلى Firestore (collection: app_users)؟")) {
-        return;
-      }
-
-      let success = 0;
-      let skipped = 0;
-      let failed  = 0;
-
-      for (const u of list) {
-        try {
-          const username = (u.username || "").trim();
-          const email    = (u.email || "").trim().toLowerCase();
-
-          if (!username || !email) {
-            skipped++;
-            continue;
-          }
-
-          const docId  = username.toLowerCase(); // نخلي doc id = username
-          const docRef = doc(db, "app_users", docId);
-          const nowIso = new Date().toISOString();
-
-          await setDoc(docRef, {
-            username,
-            email,
-            role:   u.role || "najran",
-            active: u.active !== false,
-            createdAt: u.createdAt || nowIso,
-            updatedAt: nowIso,
-            source: "local_migration",
-          }, { merge: true });
-
-          success++;
-        } catch (err) {
-          console.error("sync user error:", err);
-          failed++;
-        }
-      }
-
-      alert(
-        "تمت عملية المزامنة مع Firestore.\n" +
-        "نجاح: " + success + "\n" +
-        "تخطي (بيانات ناقصة): " + skipped + "\n" +
-        "فشل: " + failed
-      );
-    };
-
-    // ===== Approve Signup =====
+    // ========= دالة APPROVE =========
     window.approveSignup = async function (id) {
       const data = requestsCache.get(id);
       if (!data) {
@@ -837,7 +765,7 @@
       // 1) نحدد الدور
       let role = prompt(
         'حدد الدور للمستخدم الجديد (admin / najran / sharurah):',
-        'najran'
+        data.role || 'najran'
       );
       if (role === null) return; // Cancel
 
@@ -847,108 +775,99 @@
         return;
       }
 
+      const username = (data.username || "").trim();
+      const email    = (data.email || "").trim().toLowerCase();
+
+      if (!username || !email) {
+        alert("الطلب لا يحتوي على اسم مستخدم أو إيميل صحيح.");
+        return;
+      }
+
       try {
-        // 2) تحديث الطلب في Firestore
-        const docRef = doc(db, "signup_requests", id);
-        await updateDoc(docRef, {
+        // 2) تحديث حالة الطلب في signup_requests
+        const reqRef = doc(db, "signup_requests", id);
+        await updateDoc(reqRef, {
           status: "approved",
           role: role,
           processedAt: serverTimestamp(),
-          processedBy: (window.CURRENT_USER && window.CURRENT_USER.username) || null
+          processedBy:
+            (window.CURRENT_USER && window.CURRENT_USER.username) || null
         });
 
-        // 3) إضافة المستخدم في ptw_users محليًا
-        addLocalUserFromRequest(data, role);
-        // 3) إضافة المستخدم في ptw_users محليًا
-        addLocalUserFromRequest(data, role);
-
-        // 3.5) إضافة / تحديث المستخدم في Firestore collection: app_users
+        // 3) إضافة / تحديث المستخدم في app_users
         try {
-          const username = (data.username || "").trim();
-          const email    = (data.email || "").trim().toLowerCase();
-          const nowIso   = new Date().toISOString();
-
-          if (username && email) {
-            const appUserRef = doc(db, "app_users", username.toLowerCase());
-            await setDoc(appUserRef, {
+          const now = new Date().toISOString();
+          const appUserRef = doc(db, "app_users", username.toLowerCase());
+          await setDoc(
+            appUserRef,
+            {
               username,
               email,
               role,
               active: true,
-              createdAt: data.createdAt || nowIso,
-              updatedAt: nowIso,
+              createdAt: data.createdAt || now,
+              updatedAt: now,
               source: "signup_approve"
-            }, { merge: true });
-
-            console.log("app_users updated for", username);
-          } else {
-            console.warn("بيانات ناقصة لكتابة app_users (username/email).");
-          }
+            },
+            { merge: true }
+          );
+          console.log("✅ app_users updated for", username);
         } catch (errAppUser) {
           console.error("app_users setDoc error:", errAppUser);
-          // مش هنوقّف الاعتماد علشان المشكلة دي، بس بنسجّلها في الكونسول
+          alert("تم اعتماد الطلب، لكن حدث خطأ أثناء حفظ بيانات المستخدم في app_users. راجع الكونسول.");
         }
 
-        // 4) إنشاء مستخدم في Firebase Auth (اختياري)
-        const email = (data.email || "").trim();
-        ...
-
-        // 4) إنشاء مستخدم في Firebase Auth (اختياري)
-        const email = (data.email || "").trim();
-        if (!email) {
-          alert("✅ تم اعتماد الطلب وإضافة المستخدم محليًا.\n⚠ لكن الإيميل غير موجود، فلن يتم إنشاء مستخدم في Firebase Auth.");
-          return;
-        }
-
-        let tempPassword = prompt(
-          "اختياري: اكتب كلمة مرور مؤقتة لهذا المستخدم في Firebase (على الأقل 6 حروف/أرقام).\nلو سيبتها فاضية هنعدّي بدون إنشاء مستخدم في Firebase:",
-          ""
+        // 4) عرض اختيار إنشاء مستخدم في Firebase Auth
+        const createAuth = confirm(
+          "تم اعتماد الطلب.\nهل تريد إنشاء مستخدم في Firebase Auth لهذا الإيميل الآن؟"
         );
-        if (tempPassword !== null) {
-          tempPassword = tempPassword.trim();
-        }
 
-        if (!tempPassword) {
-          alert("✅ تم اعتماد الطلب وإضافة المستخدم محليًا (لم يتم إنشاء مستخدم في Firebase Auth).");
-          return;
-        }
-
-        if (tempPassword.length < 6) {
-          alert("كلمة المرور المؤقتة لازم تكون 6 حروف/أرقام على الأقل. سيتم الاكتفاء بالاعتماد المحلي فقط.");
-          return;
-        }
-
-        try {
-          await createUserWithEmailAndPassword(auth, email, tempPassword);
-          alert("✅ تم اعتماد الطلب + إضافة المستخدم محليًا + إنشاء مستخدم في Firebase Auth بنجاح.");
-        } catch (errAuth) {
-          console.error("createUserWithEmailAndPassword error:", errAuth);
-          if (errAuth.code === "auth/email-already-in-use") {
-            alert("✅ تم اعتماد الطلب وإضافة المستخدم محليًا.\n⚠ هذا الإيميل مسجّل بالفعل في Firebase Auth.");
-          } else {
-            alert("✅ تم اعتماد الطلب وإضافة المستخدم محليًا.\n⚠ لكن تعذر إنشاء مستخدم في Firebase Auth، راجع الكونسول للخطأ.");
+        if (createAuth) {
+          const pwd = prompt(
+            `أدخل كلمة المرور للمستخدم ${username} (ستُستخدم في Firebase Auth):`
+          );
+          if (pwd && pwd.trim().length >= 6) {
+            try {
+              await createUserWithEmailAndPassword(auth, email, pwd.trim());
+              alert("✅ تم إنشاء المستخدم في Firebase Auth بنجاح.");
+            } catch (errAuth) {
+              console.error("createUser error:", errAuth);
+              alert("تم اعتماد الطلب، لكن تعذر إنشاء المستخدم في Firebase Auth. راجع الكونسول.");
+            }
+          } else if (pwd !== null) {
+            alert("كلمة المرور قصيرة. (الحد الأدنى 6 حروف).");
           }
+        } else {
+          alert("تم اعتماد الطلب بدون إنشاء مستخدم في Firebase Auth.");
         }
-
       } catch (err) {
         console.error("approveSignup error:", err);
         alert("تعذر اعتماد الطلب الآن. حاول مرة أخرى.");
       }
     };
 
-    // ===== Reject Signup =====
+    // ========= دالة REJECT =========
     window.rejectSignup = async function (id) {
-      const data = requestsCache.get(id) || {};
-      if (!confirm(`هل أنت متأكد من رفض طلب المستخدم: ${data.username || ""} ؟`)) {
+      const data = requestsCache.get(id);
+      if (!data) {
+        alert("تعذر قراءة بيانات هذا الطلب.");
         return;
       }
 
+      const reason = prompt(
+        "سبب رفض الطلب (اختياري):",
+        data.rejectReason || ""
+      );
+      if (reason === null) return; // Cancel
+
       try {
-        const docRef = doc(db, "signup_requests", id);
-        await updateDoc(docRef, {
+        const reqRef = doc(db, "signup_requests", id);
+        await updateDoc(reqRef, {
           status: "rejected",
+          rejectReason: reason || null,
           processedAt: serverTimestamp(),
-          processedBy: (window.CURRENT_USER && window.CURRENT_USER.username) || null
+          processedBy:
+            (window.CURRENT_USER && window.CURRENT_USER.username) || null
         });
 
         alert("تم رفض الطلب.");
@@ -957,25 +876,6 @@
         alert("تعذر رفض الطلب الآن. حاول مرة أخرى.");
       }
     };
-
-    // ===== الاشتراك اللايف في signup_requests =====
-    try {
-      const colRef = collection(db, "signup_requests");
-
-      onSnapshot(
-        colRef,
-        (snapshot) => {
-          console.log("signup_requests docs count:", snapshot.size);
-          const docs = snapshot.docs || [];
-          renderRequests(docs);
-        },
-        (err) => {
-          console.error("signup_requests snapshot error:", err);
-        }
-      );
-    } catch (e) {
-      console.error("Firestore init / query error:", e);
-    }
   </script>
 </body>
 </html>

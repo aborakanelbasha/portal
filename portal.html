@@ -31,45 +31,58 @@
       font-family:'Segoe UI',system-ui,Tahoma; margin:0; color:var(--text);
       background:#0f172a;
       padding:0 16px 110px;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 55%, #000 100%);
     }
-    .overlay{position:fixed;inset:0;backdrop-filter:brightness(.55);z-index:0}
-    .container{position:relative;z-index:1;max-width:1100px;margin:auto;padding:32px 0}
+    .overlay{position:fixed;inset:0;backdrop-filter:blur(5px) brightness(.55);z-index:0}
+    .container{
+      position:relative;
+      z-index:1;
+      max-width:1100px;
+      margin:auto;
+      padding:40px 0 120px;
+    }
     h1{margin:0 0 8px;font-size:2.4rem;text-align:center}
     .subtitle{color:#cbd5e1;text-align:center;margin:0 0 18px}
 
-    /* شريط الترحيب + تسجيل الخروج أعلى يمين */
+    /* ===== شريط الترحيب الصغير في الكورنر ===== */
     .user-bar {
-      max-width: 980px;
-      margin: 0 auto 12px;
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 10px;
-      background: var(--panel);
-      border: 1px solid var(--panel-brd);
-      padding: 10px 14px;
-      border-radius: 12px;
+      position:absolute;
+      top:12px;
+      inset-inline-end:16px;
+      max-width:320px;
+      margin:0;
+      display:flex;
+      justify-content:flex-start;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background: linear-gradient(135deg, rgba(15,23,42,.98), rgba(30,64,175,.92));
+      border:1px solid rgba(148,163,184,.7);
+      box-shadow:0 18px 40px rgba(15,23,42,.8);
+      font-size:0.82rem;
+      direction:rtl;
     }
     #welcomeUser {
-      font-weight: 700;
-      color: #fff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-weight:600;
+      color:#e5e7eb;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
-
     .logout-btn{
-      background:rgba(239,68,68,.18);
-      border:1px solid rgba(248,113,113,.8);
-      color:#fecaca;
-      padding:8px 12px;
-      border-radius:10px;
+      background: rgba(239,68,68,.15);
+      border:1px solid rgba(248,113,113,1);
+      color:#fee2e2;
+      padding:5px 10px;
+      border-radius:999px;
       cursor:pointer;
       font-weight:700;
-      font-size:0.9rem;
+      font-size:0.78rem;
+      white-space:nowrap;
     }
     .logout-btn:hover{
-      box-shadow:0 0 0 2px rgba(248,113,113,.5) inset;
+      background: rgba(239,68,68,.25);
     }
 
     .soft-note{
@@ -80,17 +93,17 @@
 
     .seg{
       display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
-      background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);
+      background:rgba(15,23,42,.9); border:1px solid rgba(148,163,184,.5);
       border-radius:12px; padding:8px; margin:12px auto 16px; max-width:980px;
     }
     .seg button{
       position:relative; padding:12px 14px; border-radius:10px; border:1px solid transparent;
-      background:transparent; color:var(--text); cursor:pointer; font-weight:700; font-size:0.98rem;
+      background:transparent; color:var(--text); cursor:pointer; font-weight:700; font-size:0.95rem;
     }
     .seg button.active{
-      background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.06));
-      border-color:rgba(255,255,255,.2);
-      box-shadow:0 0 0 2px rgba(96,165,250,.25) inset;
+      background: radial-gradient(circle at top, rgba(96,165,250,.2), rgba(15,23,42,1));
+      border-color:rgba(148,163,184,.8);
+      box-shadow:0 0 0 1px rgba(148,163,184,.8);
     }
     .seg .badge-new{
       position:absolute; top:-8px; inset-inline-end:-8px;
@@ -99,7 +112,7 @@
 
     .toolbar{
       display:grid; align-items:center; gap:10px;
-      grid-template-columns: 1fr auto; /* بحث | تثبيت */
+      grid-template-columns: 1fr auto;
       max-width:980px; margin:0 auto 14px;
     }
     .search{ display:flex; background:var(--panel); border:1px solid var(--panel-brd); border-radius:12px; padding:6px; }
@@ -116,10 +129,10 @@
     .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:18px; max-width:980px; margin:0 auto}
     .card{
       display:block; text-decoration:none; color:var(--text); text-align:right;
-      background:var(--card-bg); border-radius:12px; padding:16px 18px; backdrop-filter:blur(6px);
-      transition:.25s; border:1px solid rgba(255,255,255,.12); box-shadow:0 6px 20px rgba(0,0,0,.18);
+      background:var(--card-bg); border-radius:20px; padding:16px 18px; backdrop-filter:blur(6px);
+      transition:.25s; border:1px solid rgba(148,163,184,.45); box-shadow:0 18px 45px rgba(15,23,42,.7);
     }
-    .card:hover{ transform:translateY(-2px); background:var(--card-bg-hover); box-shadow:0 14px 34px rgba(2,132,199,.35)}
+    .card:hover{ transform:translateY(-4px) scale(1.01); background:var(--card-bg-hover); box-shadow:0 26px 65px rgba(59,130,246,.6)}
     .card:focus{ outline:3px solid rgba(96,165,250,.6); outline-offset:2px }
     .top{display:flex; gap:10px; align-items:center; margin-bottom:6px}
     .title{font-weight:700}
@@ -130,7 +143,7 @@
     @keyframes shimmer{100%{transform:translateX(100%)}}
     [hidden]{display:none !important}
 
-    .tiny{ max-width:980px; margin:10px auto; color:#e5e7eb; text-align:right; background:var(--panel); border:1px solid var(--panel-brd); padding:12px 14px; border-radius:12px; }
+    .tiny{ max-width:980px; margin:10px auto; color:#e5e7eb; text-align:right; background:rgba(15,23,42,.9); border:1px solid rgba(148,163,184,.7); padding:12px 14px; border-radius:12px; }
     footer{margin-top:36px; text-align:center; color:#a3a3a3}
 
     @media(max-width:900px){
@@ -138,7 +151,19 @@
         grid-template-columns: 1fr;
       }
     }
-    @media(max-width:600px){ h1{font-size:1.9rem} .subtitle{font-size:.95rem} }
+    @media(max-width:640px){
+      h1{font-size:1.8rem}
+      .subtitle{font-size:.9rem}
+      .user-bar{
+        top:8px;
+        inset-inline:8px;
+        max-width:none;
+        justify-content:space-between;
+        gap:6px;
+        padding:6px 10px;
+      }
+      #welcomeUser{font-size:0.78rem;}
+    }
     @media (prefers-reduced-motion: reduce){
       .card{ transition:none }
       .card:hover{ transform:none; box-shadow:0 6px 20px rgba(0,0,0,.18) }
@@ -157,101 +182,10 @@
       outline:3px solid var(--focus); outline-offset:2px;
     }
 
-    /* --- تحسينات شكل إضافية (آمنة) --- */
-
-    /* خلفية أغمق شوية مع إحساس زجاج */
-    body{
-      background: radial-gradient(circle at top, #1e293b 0, #020617 55%, #000 100%);
-    }
-
-    .overlay{
-      backdrop-filter: blur(5px) brightness(0.55);
-    }
-
-    /* الكونتينر ياخد مساحة أكتر فوق وتحت */
-    .container{
-      padding: 40px 0 120px;
-    }
-
-    /* شريط الترحيب */
-    .user-bar{
-      background: linear-gradient(135deg, rgba(15,23,42,.95), rgba(30,64,175,.92));
-      border: 1px solid rgba(148,163,184,.7);
-      box-shadow: 0 18px 40px rgba(15,23,42,.8);
-    }
-
-    /* زر تسجيل الخروج بشكل أوضح */
-    .logout-btn{
-      background: rgba(239,68,68,.15);
-      border-color: rgba(248,113,113,1);
-      color: #fee2e2;
-    }
-    .logout-btn:hover{
-      background: rgba(239,68,68,.25);
-    }
-
-    /* أزرار اختيار المشروع */
-    .seg{
-      background: rgba(15,23,42,.9);
-      border-color: rgba(148,163,184,.5);
-    }
-    .seg button{
-      font-size: 0.95rem;
-    }
-    .seg button.active{
-      background: radial-gradient(circle at top, rgba(96,165,250,.2), rgba(15,23,42,1));
-      box-shadow: 0 0 0 1px rgba(148,163,184,.8);
-    }
-
-    /* الكروت */
-    .card{
-      border-radius: 20px;
-      border: 1px solid rgba(148,163,184,.45);
-      box-shadow: 0 18px 45px rgba(15,23,42,.7);
-    }
-    .card:hover{
-      transform: translateY(-4px) scale(1.01);
-      box-shadow: 0 26px 65px rgba(59,130,246,.6);
-    }
-
-    /* زر نسخ الرابط داخل الكارت */
-    .card .actions .copy{
-      font-size: 0.85rem;
-      opacity: 0.9;
-    }
-    .card .actions .copy:hover{
-      opacity: 1;
-      background: rgba(148,163,184,.35);
-    }
-
-    /* صندوق طريقة الاستخدام */
-    .tiny{
-      background: rgba(15,23,42,.9);
-      border-color: rgba(148,163,184,.7);
-    }
-
-    /* حبة ضبط للموبايل */
-    @media (max-width: 640px){
-      .user-bar{
-        justify-content: space-between;
-        gap: 6px;
-        padding: 8px 10px;
-      }
-      #welcomeUser{
-        font-size: 0.8rem;
-      }
-      h1{
-        font-size: 1.8rem;
-      }
-      .subtitle{
-        font-size: 0.9rem;
-      }
-    }
-
     /* ===== شريط التنويه لاجتماع السلامة (شرورة فقط) ===== */
     .announce-bar{
       max-width:980px;
-      margin: 10px auto 18px;
+      margin: 58px auto 18px; /* نسيب مساحة صغيرة تحت البار */
       padding:8px 14px;
       border-radius:999px;
       background: linear-gradient(90deg,#1d4ed8,#0f172a);
@@ -302,6 +236,12 @@
   <div class="overlay"></div>
   <div class="container">
 
+    <!-- شريط الترحيب في الكورنر -->
+    <div class="user-bar">
+      <span id="welcomeUser">👋 أهلاً بك</span>
+      <button id="btnLogout" class="logout-btn">تسجيل الخروج</button>
+    </div>
+
     <h1>بوابة تصاريح العمل</h1>
     <p class="subtitle">مرحبًا بك في بوابة تصاريح العمل الخاصة بشركة النجار للمقاولات</p>
 
@@ -314,12 +254,6 @@
         </div>
       </div>
       <button class="announce-close" type="button" aria-label="إخفاء التنويه">×</button>
-    </div>
-
-    <!-- شريط الترحيب + تسجيل الخروج -->
-    <div class="user-bar">
-      <span id="welcomeUser">👋 أهلاً بك</span>
-      <button id="btnLogout" class="logout-btn">تسجيل الخروج</button>
     </div>
 
     <div class="soft-note">🧭 يُرجى اختيار المشروع</div>
@@ -366,6 +300,7 @@
     // ===== حماية البوابة + بيانات المستخدم =====
     let CURRENT_USER = null;
     let ALLOWED_PROJECTS = ["najran", "sharurah"];
+    let VIEW_ONLY_MODE = false; // للرولز الجديدة viewer
 
     (function protectPortal() {
       try {
@@ -383,13 +318,21 @@
         }
 
         CURRENT_USER = session;
+        const role = (session.role || "").toLowerCase();
 
-        if (session.role === "najran") {
+        if (role === "najran") {
           ALLOWED_PROJECTS = ["najran"];
-        } else if (session.role === "sharurah") {
+        } else if (role === "sharurah") {
           ALLOWED_PROJECTS = ["sharurah"];
+        } else if (role === "najran_viewer") {
+          ALLOWED_PROJECTS = ["najran"];
+          VIEW_ONLY_MODE = true;
+        } else if (role === "sharurah_viewer") {
+          ALLOWED_PROJECTS = ["sharurah"];
+          VIEW_ONLY_MODE = true;
         } else {
-          ALLOWED_PROJECTS = ["najran", "sharurah"]; // admin
+          // admin أو أي رول عام
+          ALLOWED_PROJECTS = ["najran", "sharurah"];
         }
       } catch (e) {
         console.error(e);
@@ -433,6 +376,7 @@
         ]
       }
     };
+
     // ===== سجل نشاط بسيط في localStorage =====
     function logAction(type, details) {
       try {
@@ -451,7 +395,6 @@
           time: new Date().toISOString()
         });
 
-        // نخلي آخر 100 حركة بس علشان ما يكبرش قوي
         if (list.length > 100) {
           list = list.slice(-100);
         }
@@ -527,13 +470,8 @@
         }catch(_){}
       });
 
-           a.addEventListener('click', async (e)=>{
-        // نسجل في سجل النشاط إن المستخدم حاول يفتح التصريح
-        logAction("open_permit", {
-          title: title,
-          code: code,
-          url: url
-        });
+      a.addEventListener('click', async (e)=>{
+        logAction("open_permit", { title, code, url });
 
         try{
           await fetch(url, { method:'HEAD', mode:'no-cors' });
@@ -542,7 +480,6 @@
           const t=document.getElementById('linkToast'); if(t){ t.style.display='inline-block'; setTimeout(()=>t.style.display='none',2200); }
         }
       });
-
 
       return a;
     }
@@ -574,24 +511,51 @@
 
       // إظهار/إخفاء تنويه اجتماع السلامة حسب المشروع
       if (tbtNotice) {
-        tbtNotice.hidden = (id !== 'sharurah');
+        // في وضع viewer Sharurah نخفي TBT وبالتالي لو مفيش TBT مش لازم التنويه
+        const role = (CURRENT_USER?.role || "").toLowerCase();
+        const showTbtNotice = (id === 'sharurah' && role !== 'sharurah_viewer');
+        tbtNotice.hidden = !showTbtNotice;
       }
 
       projTitle.textContent = p.name;
-      renderSkeletons(p.links.length);
       grid.innerHTML = "";
-      p.links.forEach(l=> grid.appendChild(createCard(l)));
-      skeleton.innerHTML="";
-      if (p.resources && p.resources.length){
+      skeleton.innerHTML = "";
+
+      // ---- تجهيز الداتا حسب نوع الدور ----
+      let linksToRender = p.links || [];
+      let resourcesToRender = p.resources || [];
+
+      const role = (CURRENT_USER?.role || "").toLowerCase();
+      if (VIEW_ONLY_MODE) {
+        // viewer → مفيش generators خالص
+        linksToRender = [];
+
+        // من الموارد نسيب بس LOG + RA
+        resourcesToRender = (resourcesToRender || []).filter(r => {
+          const code = (r.code || "").toUpperCase();
+          return code === "LOG" || code === "RA";
+        });
+      }
+
+      // ---- عرض التصاريح (لو فيه) ----
+      if (linksToRender.length) {
+        renderSkeletons(linksToRender.length);
+        linksToRender.forEach(l=> grid.appendChild(createCard(l)));
+        skeleton.innerHTML="";
+      }
+
+      // ---- الموارد الإضافية ----
+      if (resourcesToRender && resourcesToRender.length){
         resourcesSection.hidden = false;
         resourcesGrid.hidden = false;
         resourcesGrid.innerHTML = "";
-        p.resources.forEach(r=> resourcesGrid.appendChild(createResCard(r)));
+        resourcesToRender.forEach(r=> resourcesGrid.appendChild(createResCard(r)));
       } else {
         resourcesSection.hidden = true;
         resourcesGrid.hidden = true;
         resourcesGrid.innerHTML = "";
       }
+
       applyActive(p.id);
       setParam('project', p.id);
       localStorage.setItem('preferredProject', p.id);
@@ -603,7 +567,7 @@
       const val=(document.getElementById('searchInput').value||'').toLowerCase().trim();
       grid.querySelectorAll('.card').forEach(c=>{
         const t=(c.getAttribute('data-title')||'').toLowerCase();
-        c.style.display = t.includes(val) ? '' : 'none';
+        c.style.display = !val || t.includes(val) ? '' : 'none';
       });
     }
     window.filterPermits = filterPermits;
@@ -614,33 +578,26 @@
       }
     });
 
-        seg.addEventListener('click', (e)=>{
+    seg.addEventListener('click', (e)=>{
       const btn = e.target.closest('button[data-project]');
       if (!btn) return;
 
       const projId = btn.dataset.project;
       if (!ALLOWED_PROJECTS.includes(projId)) return;
 
-      // نجيب المشروع الحالي (لو موجود في اللينك أو في localStorage)
       const currentProj =
         getParam('project') ||
         localStorage.getItem('preferredProject') ||
         'najran';
 
-      // لو فعلاً غير المشروع، نسجل الحركة
       if (projId !== currentProj) {
-        logAction("switch_project", {
-          from: currentProj,
-          to: projId
-        });
+        logAction("switch_project", { from: currentProj, to: projId });
       }
 
       renderProject(projId);
     });
 
-
-        btnLogout?.addEventListener('click', () => {
-      // نسجل في سجل النشاط إن المستخدم عمل تسجيل خروج
+    btnLogout?.addEventListener('click', () => {
       logAction("logout", {
         username: CURRENT_USER ? CURRENT_USER.username : null
       });
@@ -648,7 +605,6 @@
       localStorage.removeItem('aln_session');
       window.location.href = '/';
     });
-
 
     // إغلاق شريط التنويه
     announceCloseBtn?.addEventListener('click', () => {
@@ -659,14 +615,23 @@
       applyRoleVisibility();
 
       if (CURRENT_USER && welcomeUser) {
+        const role = (CURRENT_USER.role || "").toLowerCase();
         let roleText = '';
-        if (CURRENT_USER.role === 'admin') {
+
+        if (role === 'admin') {
           roleText = 'صلاحياتك: نجران وشرورة';
-        } else if (CURRENT_USER.role === 'najran') {
+        } else if (role === 'najran') {
           roleText = 'صلاحياتك: مشروع نجران فقط';
-        } else if (CURRENT_USER.role === 'sharurah') {
+        } else if (role === 'sharurah') {
           roleText = 'صلاحياتك: مشروع شرورة فقط';
+        } else if (role === 'najran_viewer') {
+          roleText = 'وضع عرض فقط: جالري + تقييم مخاطر نجران';
+        } else if (role === 'sharurah_viewer') {
+          roleText = 'وضع عرض فقط: جالري + تقييم مخاطر شرورة';
+        } else {
+          roleText = `دورك: ${CURRENT_USER.role}`;
         }
+
         welcomeUser.textContent = `👋 أهلاً ${CURRENT_USER.username} — ${roleText}`;
       }
 
@@ -743,7 +708,6 @@
       <path d="M12 8v5" />
       <path d="M12 16h.01" />
     </symbol>
-    <!-- أيقونة اجتماع السلامة TBT -->
     <symbol id="icon-tbt" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="8" cy="9" r="3" />
       <path d="M5 16v-1a3 3 0 0 1 3-3h0a3 3 0 0 1 3 3v1" />

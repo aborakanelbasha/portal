@@ -753,6 +753,64 @@
     } catch (e) {
       console.error("Firestore init / query error:", e);
     }
+    // ===== إضافة / تحديث المستخدم في localStorage: ptw_users =====
+    function addLocalUserFromRequest(data, role) {
+      try {
+        const username = (data.username || "").trim();
+        const email    = (data.email || "").trim();
+
+        if (!username || !email) {
+          console.warn("addLocalUserFromRequest: username/email ناقصين");
+          return;
+        }
+
+        // نقرأ القائمة القديمة من localStorage
+        let list = [];
+        try {
+          const raw = localStorage.getItem("ptw_users");
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) list = parsed;
+          }
+        } catch (e) {
+          console.error("addLocalUserFromRequest parse error:", e);
+        }
+
+        // نشوف اليوزر موجود ولا لأ
+        const idx = list.findIndex(
+          (u) => (u.username || "").toLowerCase() === username.toLowerCase()
+        );
+
+        const nowIso = new Date().toISOString();
+
+        const baseUser = {
+          username,
+          email,
+          // مش هنخزن باسورد هنا من الـ request
+          password: null,
+          role: role,
+          active: true,
+          createdAt: data.createdAt || nowIso
+        };
+
+        if (idx === -1) {
+          // يوزر جديد
+          list.push(baseUser);
+        } else {
+          // نحدّث بيانات يوزر قديم
+          list[idx] = { ...list[idx], ...baseUser };
+        }
+
+        localStorage.setItem("ptw_users", JSON.stringify(list));
+
+        // لو دالة loadUsers موجودة (من السكربت الأول)، نعيد تحميل الجدول
+        if (typeof window.loadUsers === "function") {
+          window.loadUsers();
+        }
+      } catch (err) {
+        console.error("addLocalUserFromRequest error:", err);
+      }
+    }
 
     // ========= دالة APPROVE =========
     window.approveSignup = async function (id) {
@@ -816,6 +874,9 @@
           console.error("app_users setDoc error:", errAppUser);
           alert("تم اعتماد الطلب، لكن حدث خطأ أثناء حفظ بيانات المستخدم في app_users. راجع الكونسول.");
         }
+
+        // 3.5) إضافة / تحديث المستخدم محليًا في ptw_users (عشان يظهر في الجدول)
+        addLocalUserFromRequest({ ...data, username, email }, role);
 
         // 4) عرض اختيار إنشاء مستخدم في Firebase Auth
         const createAuth = confirm(

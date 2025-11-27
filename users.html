@@ -286,22 +286,25 @@
 
         <div class="scroll-wrap">
           <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>اسم المستخدم</th>
-                <th>الإيميل</th>
-                <th>الجوال</th>
-                <th>الرسالة</th>
-                <th>الحالة</th>
-                <th>تم الإرسال في</th>
-              </tr>
-            </thead>
+           <thead>
+  <tr>
+    <th>#</th>
+    <th>اسم المستخدم</th>
+    <th>الإيميل</th>
+    <th>الجوال</th>
+    <th>الرسالة</th>
+    <th>الحالة</th>
+    <th>تم الإرسال في</th>
+    <th>إجراءات</th>
+  </tr>
+</thead>
+
             <tbody id="signupRequestsBody">
-              <tr id="signupEmptyRow">
-                <td colspan="7" class="empty">لا توجد طلبات تسجيل حتى الآن.</td>
-              </tr>
-            </tbody>
+  <tr id="signupEmptyRow">
+    <td colspan="8" class="empty">لا توجد طلبات تسجيل حتى الآن.</td>
+  </tr>
+</tbody>
+
           </table>
         </div>
 
@@ -590,96 +593,244 @@
   </script>
 
   <!-- سكربت Firebase / Firestore لعرض signup_requests -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import {
-    getFirestore,
-    collection,
-    onSnapshot
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  <!-- سكربت Firebase / Firestore لعرض signup_requests + Approve/Reject -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      onSnapshot,
+      doc,
+      updateDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-  // نفس config
-  const firebaseConfig = {
-    apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
-    authDomain: "ptw-najran-sharurah.firebaseapp.com",
-    projectId: "ptw-najran-sharurah",
-    storageBucket: "ptw-najran-sharurah.firebasestorage.app",
-    messagingSenderId: "848619550286",
-    appId: "1:848619550286:web:fe5c470f67236b2519751f"
-  };
+    // نفس config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
+      authDomain: "ptw-najran-sharurah.firebaseapp.com",
+      projectId: "ptw-najran-sharurah",
+      storageBucket: "ptw-najran-sharurah.firebasestorage.app",
+      messagingSenderId: "848619550286",
+      appId: "1:848619550286:web:fe5c470f67236b2519751f"
+    };
 
-  console.log("🔥 users.html Firestore module loaded");
+    console.log("🔥 users.html Firestore module loaded with Approve/Reject");
 
-  const app = initializeApp(firebaseConfig);
-  const db  = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
 
-  const tbody    = document.getElementById("signupRequestsBody");
+    const tbody    = document.getElementById("signupRequestsBody");
+    const emptyRow = document.getElementById("signupEmptyRow");
 
-  function renderRequests(docs) {
-    if (!tbody) return;
+    // نخزن بيانات الطلبات في كاش عشان نستخدمها في approve/reject
+    const requestsCache = new Map();
 
-    // نمسح الموجود
-    tbody.innerHTML = "";
+    function renderRequests(docs) {
+      if (!tbody) return;
 
-    if (!docs.length) {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td colspan="7" class="empty">لا توجد طلبات تسجيل حتى الآن.</td>`;
-      tbody.appendChild(tr);
-      return;
+      requestsCache.clear();
+
+      if (!docs.length) {
+        // لو مفيش طلبات
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="empty">لا توجد طلبات تسجيل حتى الآن.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = "";
+
+      docs.forEach((docSnap, index) => {
+        const data = docSnap.data() || {};
+        const id   = docSnap.id;
+
+        // نخزن البيانات في الكاش
+        requestsCache.set(id, data);
+
+        let createdAtText = "-";
+        try {
+          if (data.createdAt && data.createdAt.toDate) {
+            createdAtText = data.createdAt.toDate().toLocaleString("ar-EG");
+          }
+        } catch (_) {}
+
+        const status = (data.status || "pending").toLowerCase();
+        let statusClass = "tag";
+        if (status === "approved") statusClass += " green";
+        else if (status === "rejected") statusClass += " red";
+
+        const statusLabel =
+          status === "pending"
+            ? "معلق"
+            : status === "approved"
+            ? "موافق عليه"
+            : "مرفوض";
+
+        // أزرار الإجراءات تظهر فقط لو الطلب معلق
+        let actionsHtml = "-";
+        if (status === "pending") {
+          actionsHtml = `
+            <div class="actions-cell">
+              <button
+                type="button"
+                class="btn small-btn"
+                onclick="approveSignup('${id}')">
+                ✔ اعتماد
+              </button>
+              <button
+                type="button"
+                class="btn btn-danger small-btn"
+                onclick="rejectSignup('${id}')">
+                ✖ رفض
+              </button>
+            </div>
+          `;
+        }
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td class="mono small">${data.username || "-"}</td>
+          <td class="mono small">${data.email || "-"}</td>
+          <td class="mono small">${data.phone || "-"}</td>
+          <td class="small">${data.message || "-"}</td>
+          <td><span class="${statusClass}">${statusLabel}</span></td>
+          <td class="small">${createdAtText}</td>
+          <td>${actionsHtml}</td>
+        `;
+
+        tbody.appendChild(tr);
+      });
     }
 
-    docs.forEach((docSnap, index) => {
-      const data = docSnap.data() || {};
-      const tr   = document.createElement("tr");
-
-      let createdAtText = "-";
-      try {
-        if (data.createdAt && data.createdAt.toDate) {
-          createdAtText = data.createdAt.toDate().toLocaleString("ar-EG");
-        }
-      } catch (_) {}
-
-      const status = (data.status || "pending").toLowerCase();
-      let statusClass = "tag";
-      if (status === "approved") statusClass += " green";
-      else if (status === "rejected") statusClass += " red";
-
-      tr.innerHTML = `
-        <td>${index + 1}</td>
-        <td class="mono small">${data.username || "-"}</td>
-        <td class="mono small">${data.email || "-"}</td>
-        <td class="mono small">${data.phone || "-"}</td>
-        <td class="small">${data.message || "-"}</td>
-        <td><span class="${statusClass}">
-          ${status === "pending" ? "معلق" : status === "approved" ? "موافق عليه" : "مرفوض"}
-        </span></td>
-        <td class="small">${createdAtText}</td>
-      `;
-
-      tbody.appendChild(tr);
-    });
-  }
-
-  try {
-    const colRef = collection(db, "signup_requests");
-
-    onSnapshot(
-      colRef,
-      (snapshot) => {
-        console.log("signup_requests docs count:", snapshot.size);
-        renderRequests(snapshot.docs);
-      },
-      (err) => {
-        console.error("signup_requests snapshot error:", err);
-        if (err.code === "permission-denied") {
-          alert("⚠ لا توجد صلاحية لقراءة signup_requests من Firestore. راجع قواعد Firestore.");
-        }
+    // دالة مساعدة: نضيف يوزر في ptw_users من الطلب
+    function addLocalUserFromRequest(data, role) {
+      if (!window.readUsers || !window.writeUsers || !window.loadUsers) {
+        console.warn("readUsers/writeUsers/loadUsers not available on window.");
+        return;
       }
-    );
-  } catch (e) {
-    console.error("Firestore init / query error:", e);
-  }
-</script>
+
+      const list = window.readUsers() || [];
+
+      const username = (data.username || "").trim();
+      const email    = (data.email || "").trim().toLowerCase();
+
+      if (!username || !email) {
+        alert("بيانات الطلب غير مكتملة (اسم المستخدم أو الإيميل مفقود).");
+        return;
+      }
+
+      // نتفادى التكرار بالاسم أو الإيميل
+      const exists = list.some(
+        (u) =>
+          (u.username || "").toLowerCase() === username.toLowerCase() ||
+          (u.email || "").toLowerCase() === email
+      );
+      if (exists) {
+        console.log("user already exists in ptw_users, skip adding.");
+        return;
+      }
+
+      list.push({
+        username,
+        email,
+        password: "",         // ممكن نخليها فاضية / باسورد مؤقت
+        role,
+        active: true,
+        createdAt: new Date().toISOString(),
+      });
+
+      window.writeUsers(list);
+      window.loadUsers();
+    }
+
+    // ===== دوال Approve / Reject متاحة من الـ window (للاستخدام في الـ onclick) =====
+    window.approveSignup = async function (id) {
+      const data = requestsCache.get(id);
+      if (!data) {
+        alert("تعذر قراءة بيانات هذا الطلب.");
+        return;
+      }
+
+      // نطلب من الأدمن يختار الدور
+      let role = prompt(
+        'حدد الدور للمستخدم الجديد (admin / najran / sharurah):',
+        'najran'
+      );
+      if (role === null) return; // Cancel
+
+      role = role.trim().toLowerCase();
+      if (!["admin", "najran", "sharurah"].includes(role)) {
+        alert("الدور غير صالح. استخدم admin أو najran أو sharurah.");
+        return;
+      }
+
+      if (!confirm(`هل أنت متأكد من اعتماد الطلب للمستخدم: ${data.username} بالدور: ${role} ؟`)) {
+        return;
+      }
+
+      try {
+        const docRef = doc(db, "signup_requests", id);
+        await updateDoc(docRef, {
+          status: "approved",
+          role: role,
+          processedAt: serverTimestamp(),
+          processedBy: (window.CURRENT_USER && window.CURRENT_USER.username) || null
+        });
+
+        // نضيف المستخدم في ptw_users لو مش موجود
+        addLocalUserFromRequest(data, role);
+
+        alert("✅ تم اعتماد الطلب وإضافة المستخدم إلى قائمة المستخدمين.");
+      } catch (err) {
+        console.error("approveSignup error:", err);
+        alert("تعذر اعتماد الطلب الآن. حاول مرة أخرى.");
+      }
+    };
+
+    window.rejectSignup = async function (id) {
+      const data = requestsCache.get(id) || {};
+      if (!confirm(`هل أنت متأكد من رفض طلب المستخدم: ${data.username || ""} ؟`)) {
+        return;
+      }
+
+      try {
+        const docRef = doc(db, "signup_requests", id);
+        await updateDoc(docRef, {
+          status: "rejected",
+          processedAt: serverTimestamp(),
+          processedBy: (window.CURRENT_USER && window.CURRENT_USER.username) || null
+        });
+
+        alert("تم رفض الطلب.");
+      } catch (err) {
+        console.error("rejectSignup error:", err);
+        alert("تعذر رفض الطلب الآن. حاول مرة أخرى.");
+      }
+    };
+
+    // ===== الاشتراك اللايف في signup_requests =====
+    try {
+      const colRef = collection(db, "signup_requests");
+
+      onSnapshot(
+        colRef,
+        (snapshot) => {
+          console.log("signup_requests docs count:", snapshot.size);
+          const docs = snapshot.docs || [];
+          renderRequests(docs);
+        },
+        (err) => {
+          console.error("signup_requests snapshot error:", err);
+        }
+      );
+    } catch (e) {
+      console.error("Firestore init / query error:", e);
+    }
+  </script>
 
 </body>
 </html>

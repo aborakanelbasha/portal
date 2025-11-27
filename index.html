@@ -491,9 +491,13 @@
   </script>
 
   <!-- سكريبت Firebase: username/email -> Firebase Auth -->
-  <script type="module">
+ <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  import {
+    getAuth,
+    signInWithEmailAndPassword,
+    sendPasswordResetEmail
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
   // إعدادات Firebase (نفس مشروعك)
   const firebaseConfig = {
@@ -512,6 +516,7 @@
   const userEl   = document.getElementById("username");
   const passEl   = document.getElementById("password");
   const errorEl  = document.getElementById("login-error");
+  const forgotBtn = document.getElementById("forgotPasswordBtn");
 
   // نقرأ نفس users من النظام القديم علشان نجيب role / username / email
   function readStoredUsers() {
@@ -541,6 +546,7 @@
     }
   }
 
+  // ===== حدث تسجيل الدخول =====
   formEl.addEventListener("submit", async (e) => {
     e.preventDefault();
     errorEl.textContent = "";
@@ -629,7 +635,56 @@
       }
     }
   });
+
+  // ===== زر "نسيت كلمة المرور؟" =====
+  if (forgotBtn) {
+    forgotBtn.addEventListener("click", async () => {
+      errorEl.textContent = "";
+
+      const identifier = (userEl.value || "").trim(); // username أو إيميل
+
+      if (!identifier) {
+        errorEl.textContent = "من فضلك اكتب اسم المستخدم أو الإيميل أولًا.";
+        return;
+      }
+
+      let resetEmail = identifier;
+
+      // لو كتب username → نجيبه من ptw_users
+      if (!identifier.includes("@")) {
+        const appUser = findUserByIdentifier(identifier);
+        if (!appUser || !appUser.email) {
+          errorEl.textContent = "لا يوجد إيميل مرتبط بهذا المستخدم في النظام. برجاء مراجعة مسؤول النظام.";
+          return;
+        }
+        resetEmail = appUser.email;
+      }
+
+      try {
+        await sendPasswordResetEmail(auth, resetEmail);
+        errorEl.style.color = "#bbf7d0"; // أخضر فاتح
+        errorEl.textContent =
+          "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني (إن كان مسجّل في Firebase).";
+      } catch (err) {
+        console.error("reset error:", err);
+        errorEl.style.color = "#ff8080"; // يرجع أحمر
+        let msg = "تعذر إرسال رابط إعادة تعيين كلمة المرور.";
+        if (err.code === "auth/user-not-found") {
+          msg = "هذا الإيميل غير مسجّل في Firebase.";
+        } else if (err.code === "auth/invalid-email") {
+          msg = "الإيميل غير صالح.";
+        }
+        errorEl.textContent = msg;
+      } finally {
+        // نرجّع لون الـ error للون الافتراضي بعد شوية (اختياري)
+        setTimeout(() => {
+          errorEl.style.color = "#ff8080";
+        }, 6000);
+      }
+    });
+  }
 </script>
+
 
 </body>
 </html>

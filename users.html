@@ -7,89 +7,136 @@
   <meta name="color-scheme" content="dark light" />
   <style>
     :root{
-      --panel-bg: rgba(15,23,42,.98);
-      --panel-brd: rgba(148,163,184,.7);
+      --bg-main: radial-gradient(circle at top, #020617 0, #020617 35%, #000 100%);
+      --surface: rgba(15,23,42,.92);
+      --surface-soft: rgba(15,23,42,.75);
+      --border-subtle: rgba(148,163,184,.55);
+      --border-strong: rgba(59,130,246,.8);
       --accent: #38bdf8;
       --accent-soft: rgba(56,189,248,.18);
-      --text:#f9fafb;
-      --muted:#cbd5f5;
+      --accent-strong: #0ea5e9;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
       --danger:#f97373;
       --danger-soft:rgba(248,113,113,.18);
       --success:#4ade80;
       --success-soft:rgba(74,222,128,.18);
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:'Segoe UI',system-ui,Tahoma;
-      background: radial-gradient(circle at top, #1e293b 0, #020617 55%, #000 100%);
-      color:var(--text);
-      padding:20px 12px 60px;
-    }
-    .container{
-      max-width:1150px;
-      margin:0 auto;
-    }
-    h1{
-      margin:0 0 8px;
-      font-size:1.9rem;
-      text-align:right;
-      letter-spacing:.02em;
-    }
-    .subtitle{
-      margin:0 0 18px;
-      color:var(--muted);
-      font-size:.95rem;
-      text-align:right;
+      --shadow-big: 0 24px 60px rgba(15,23,42,.9);
+      --shadow-card: 0 18px 40px rgba(15,23,42,.8);
+      --radius-xl: 20px;
     }
 
-    /* ======= Top user bar ======= */
-    .user-bar{
-      margin:0 0 16px;
-      padding:10px 14px;
-      border-radius:12px;
-      background:linear-gradient(135deg, rgba(15,23,42,.95), rgba(30,64,175,.92));
-      border:1px solid var(--panel-brd);
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:'Segoe UI',system-ui,-apple-system,BlinkMacSystemFont,"Tahoma";
+      background:var(--bg-main);
+      color:var(--text);
+      padding:24px 14px 60px;
+      min-height:100vh;
+    }
+
+    .page-shell{
+      max-width:1200px;
+      margin:0 auto;
+    }
+
+    /* ====== Top header ====== */
+    .top-header{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:8px;
-      box-shadow:0 18px 40px rgba(15,23,42,.8);
-      font-size:.9rem;
+      gap:14px;
+      margin-bottom:18px;
     }
-    .user-bar-main{
+    .brand-block{
       display:flex;
       align-items:center;
-      gap:8px;
-      flex-wrap:wrap;
+      gap:10px;
     }
-    .user-chip{
-      display:inline-flex;
+    .brand-logo{
+      width:40px;
+      height:40px;
+      border-radius:16px;
+      background:conic-gradient(from 160deg, #38bdf8, #818cf8, #ec4899, #38bdf8);
+      display:flex;
       align-items:center;
-      gap:6px;
-      padding:4px 10px;
-      border-radius:999px;
-      background:rgba(15,23,42,.85);
-      border:1px solid rgba(148,163,184,.85);
-      font-size:.8rem;
+      justify-content:center;
+      box-shadow:0 16px 40px rgba(59,130,246,.7);
+    }
+    .brand-logo span{
+      font-size:1.1rem;
+      font-weight:800;
+      color:#0b1120;
+    }
+    .brand-text h1{
+      margin:0;
+      font-size:1.6rem;
+      letter-spacing:.03em;
+    }
+    .brand-text p{
+      margin:3px 0 0;
+      font-size:.86rem;
+      color:var(--muted);
     }
 
-    .btn{
-      border-radius:10px;
-      border:1px solid rgba(148,163,184,.8);
-      background:rgba(15,23,42,.9);
-      color:var(--text);
-      padding:7px 12px;
-      cursor:pointer;
-      font-weight:600;
+    .user-pill{
+      padding:10px 14px;
+      border-radius:999px;
+      background:linear-gradient(135deg, rgba(15,23,42,.96), rgba(37,99,235,.96));
+      border:1px solid rgba(129,140,248,.9);
+      display:flex;
+      align-items:center;
+      gap:10px;
+      box-shadow:var(--shadow-card);
+      font-size:.86rem;
+    }
+    .user-pill-main{
+      display:flex;
+      flex-direction:column;
+      gap:1px;
+    }
+    .user-pill-main strong{
       font-size:.9rem;
+    }
+    .role-chip{
       display:inline-flex;
       align-items:center;
       gap:4px;
-      transition:box-shadow .15s ease, background .15s ease, transform .05s ease;
+      padding:2px 8px;
+      border-radius:999px;
+      background:rgba(15,23,42,.92);
+      border:1px solid rgba(191,219,254,.9);
+      font-size:.78rem;
+    }
+
+    .user-pill-actions{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.7);
+      background:rgba(15,23,42,.9);
+      color:var(--text);
+      padding:7px 13px;
+      cursor:pointer;
+      font-weight:600;
+      font-size:.86rem;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      transition:
+        box-shadow .15s ease,
+        background .15s ease,
+        transform .07s ease,
+        border-color .15s ease;
     }
     .btn:hover{
-      box-shadow:0 0 0 1px rgba(56,189,248,.85);
+      box-shadow:0 0 0 1px rgba(56,189,248,.9);
       background:rgba(15,23,42,1);
       transform:translateY(-1px);
     }
@@ -103,92 +150,128 @@
     .btn-primary{
       border-color:var(--accent);
       background:var(--accent-soft);
+      color:#f9fafb;
     }
     .btn-danger{
       border-color:var(--danger);
-      color:#fee2e2;
       background:var(--danger-soft);
+      color:#fee2e2;
     }
-    .btn-danger:hover{
-      box-shadow:0 0 0 1px rgba(248,113,113,.85);
-      background:rgba(127,29,29,.9);
-    }
-    .small-btn{
+    .btn-sm{
       padding:4px 9px;
       font-size:.78rem;
-      border-radius:999px;
     }
 
-    /* ======= Stats bar ======= */
-    .stats-grid{
-      display:grid;
-      grid-template-columns:repeat(4, minmax(0,1fr));
-      gap:10px;
-      margin:0 0 18px;
-    }
-    @media(max-width:900px){
-      .stats-grid{
-        grid-template-columns:repeat(2, minmax(0,1fr));
-      }
-    }
-    @media(max-width:600px){
-      .stats-grid{
-        grid-template-columns:1fr;
-      }
-    }
-    .stat-card{
-      background:rgba(15,23,42,.96);
-      border-radius:14px;
-      padding:8px 10px;
-      border:1px solid rgba(30,64,175,.7);
-      box-shadow:0 10px 26px rgba(15,23,42,.7);
+    /* ====== sub header ====== */
+    .sub-header{
+      margin-bottom:18px;
       display:flex;
-      flex-direction:column;
-      gap:2px;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:12px;
+      flex-wrap:wrap;
     }
-    .stat-label{
-      font-size:.76rem;
+    .sub-header-left h2{
+      margin:0 0 4px;
+      font-size:1.05rem;
+      color:var(--muted);
+      font-weight:500;
+    }
+    .sub-header-left p{
+      margin:0;
+      font-size:.84rem;
       color:var(--muted);
     }
-    .stat-value{
-      font-size:1.1rem;
-      font-weight:700;
-    }
-    .stat-chip{
-      font-size:.7rem;
-      align-self:flex-start;
-      margin-top:2px;
-      padding:2px 7px;
-      border-radius:999px;
-      background:rgba(15,23,42,.9);
-      border:1px solid rgba(148,163,184,.7);
+    .sub-header-breadcrumb{
+      font-size:.78rem;
+      color:var(--muted);
     }
 
-    /* ======= Layout & panels ======= */
-    .layout{
+    /* ====== stats strip ====== */
+    .stats-row{
       display:grid;
-      grid-template-columns: minmax(0, 2fr) minmax(0, 1.35fr);
-      gap:16px;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+      margin-bottom:20px;
     }
-    @media(max-width:900px){
-      .layout{
-        grid-template-columns: 1fr;
-      }
+    @media(max-width:980px){
+      .stats-row{grid-template-columns:repeat(2,minmax(0,1fr));}
+    }
+    @media(max-width:640px){
+      .stats-row{grid-template-columns:1fr;}
+      body{padding-inline:10px;}
+    }
+
+    .stat-card{
+      position:relative;
+      overflow:hidden;
+      border-radius:var(--radius-xl);
+      background:linear-gradient(135deg, rgba(15,23,42,.98), rgba(15,23,42,.82));
+      border:1px solid rgba(30,64,175,.7);
+      padding:10px 12px;
+      box-shadow:var(--shadow-card);
+    }
+    .stat-card::before{
+      content:"";
+      position:absolute;
+      inset:-40px;
+      opacity:.25;
+      background:radial-gradient(circle at top left,#38bdf8,transparent 55%);
+      mix-blend-mode:screen;
+      pointer-events:none;
+    }
+    .stat-label{
+      position:relative;
+      font-size:.78rem;
+      color:var(--muted);
+      margin-bottom:4px;
+    }
+    .stat-value{
+      position:relative;
+      font-size:1.25rem;
+      font-weight:700;
+    }
+    .stat-footer{
+      position:relative;
+      margin-top:4px;
+      font-size:.75rem;
+      color:var(--muted);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:6px;
+    }
+    .stat-pill{
+      padding:2px 7px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.6);
+      font-size:.72rem;
+    }
+
+    /* ====== main layout ====== */
+    .main-layout{
+      display:grid;
+      grid-template-columns:minmax(0,2.15fr) minmax(0,1.4fr);
+      gap:18px;
+    }
+    @media(max-width:980px){
+      .main-layout{grid-template-columns:1fr;}
     }
 
     .panel{
-      background:var(--panel-bg);
-      border-radius:16px;
-      border:1px solid var(--panel-brd);
-      padding:14px 14px 10px;
-      box-shadow:0 16px 40px rgba(15,23,42,.8);
+      border-radius:var(--radius-xl);
+      background:var(--surface);
+      border:1px solid var(--border-subtle);
+      box-shadow:var(--shadow-card);
+      padding:14px 16px 12px;
+      backdrop-filter:blur(20px);
     }
     .panel-header{
       display:flex;
       justify-content:space-between;
       align-items:flex-start;
       gap:10px;
-      margin-bottom:8px;
+      margin-bottom:10px;
     }
     .panel-title{
       margin:0;
@@ -198,262 +281,324 @@
       gap:6px;
     }
     .panel-subtitle{
-      margin:2px 0 0;
-      color:var(--muted);
+      margin:4px 0 0;
       font-size:.8rem;
+      color:var(--muted);
     }
 
-    .panel h2{
-      margin:0 0 10px;
-      font-size:1.05rem;
+    /* ====== toolbar (search + filters + sync) ====== */
+    .toolbar{
+      margin-bottom:8px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
     }
-    .panel small{
-      color:var(--muted);
-      font-size:.8rem;
+    .toolbar-group{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .input, select{
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.7);
+      background:var(--surface-soft);
+      color:var(--text);
+      font-size:.86rem;
+      padding:7px 11px;
+    }
+    .input:focus, select:focus{
+      outline:none;
+      border-color:var(--border-strong);
+      box-shadow:0 0 0 1px rgba(56,189,248,.7);
+    }
+    .search-input{
+      min-width:220px;
     }
 
-    /* ======= Table ======= */
+    /* ====== table ====== */
     table{
       width:100%;
       border-collapse:collapse;
-      font-size:.86rem;
-      direction:rtl;
-    }
-    thead{
-      background:rgba(15,23,42,1);
+      font-size:.84rem;
     }
     th,td{
-      padding:7px 6px;
-      border-bottom:1px solid rgba(51,65,85,.9);
+      padding:7px 7px;
       text-align:right;
-      vertical-align:middle;
+      border-bottom:1px solid rgba(30,41,59,.95);
     }
     th{
-      font-weight:700;
+      font-weight:600;
       color:#e5e7eb;
+      background:linear-gradient(180deg, rgba(15,23,42,.98), rgba(15,23,42,.96));
       position:sticky;
       top:0;
-      background:rgba(15,23,42,.98);
       z-index:1;
     }
     tbody tr:nth-child(even){
-      background:rgba(15,23,42,.7);
+      background:rgba(15,23,42,.78);
     }
     tbody tr:hover{
-      background:rgba(30,64,175,.55);
+      background:rgba(30,64,175,.6);
+    }
+    .empty-row{
+      text-align:center;
+      padding:18px 6px;
+      font-size:.9rem;
+      color:var(--muted);
+    }
+    .mono{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+    }
+    .small{
+      font-size:.76rem;
     }
 
     .tag{
       display:inline-flex;
       align-items:center;
-      padding:2px 9px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,.8);
-      font-size:.75rem;
       gap:4px;
+      padding:2px 8px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.7);
+      font-size:.74rem;
     }
     .tag.green{
       border-color:var(--success);
-      color:#bbf7d0;
       background:var(--success-soft);
+      color:#bbf7d0;
     }
     .tag.red{
       border-color:var(--danger);
-      color:#fecaca;
       background:var(--danger-soft);
+      color:#fecaca;
     }
     .tag.role-admin{
       border-color:#facc15;
+      background:rgba(250,204,21,.17);
       color:#fef9c3;
-      background:rgba(250,204,21,.18);
     }
     .tag.role-najran{
       border-color:#38bdf8;
-      color:#e0f2fe;
       background:rgba(56,189,248,.16);
+      color:#e0f2fe;
     }
     .tag.role-sharurah{
       border-color:#a855f7;
+      background:rgba(168,85,247,.16);
       color:#f3e8ff;
-      background:rgba(168,85,247,.17);
     }
 
-    .small{
-      font-size:.78rem;
-    }
-    .mono{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-    }
-    .form-group{
-      margin-bottom:10px;
-    }
-    label{
-      display:block;
-      margin-bottom:4px;
-      font-size:.86rem;
-    }
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    select{
-      width:100%;
-      padding:7px 8px;
-      border-radius:8px;
-      border:1px solid rgba(148,163,184,.7);
-      background:rgba(15,23,42,.9);
-      color:var(--text);
-      font-size:.88rem;
-    }
-    input[type="text"]:focus,
-    input[type="email"]:focus,
-    input[type="password"]:focus,
-    select:focus{
-      outline:none;
-      border-color:var(--accent);
-      box-shadow:0 0 0 1px rgba(56,189,248,.7);
-    }
-    input[type="checkbox"]{
-      vertical-align:middle;
-    }
-    .hint{
-      font-size:.78rem;
-      color:var(--muted);
-      margin-top:3px;
-    }
     .actions-cell{
       display:flex;
-      gap:6px;
       flex-wrap:wrap;
+      gap:6px;
     }
-    .empty{
-      text-align:center;
-      padding:18px 6px;
-      color:var(--muted);
-      font-size:.9rem;
-    }
+
     .scroll-wrap{
-      max-height:65vh;
+      max-height:64vh;
       overflow:auto;
-      border-radius:10px;
-      border:1px solid rgba(30,64,175,.6);
+      border-radius:18px;
+      border:1px solid rgba(30,64,175,.7);
+      background:radial-gradient(circle at top, rgba(30,64,175,.45), rgba(15,23,42,.98));
+    }
+
+    /* ====== form section ====== */
+    .form-grid{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+    .card-soft{
+      border-radius:18px;
+      background:linear-gradient(145deg, rgba(15,23,42,.95), rgba(15,23,42,.82));
+      border:1px solid rgba(55,65,81,.9);
+      padding:11px 12px 12px;
+    }
+    .card-soft h3{
+      margin:0 0 6px;
+      font-size:.98rem;
+    }
+    .card-soft small{
+      font-size:.8rem;
+      color:var(--muted);
+    }
+    .form-group{
+      margin-bottom:8px;
+    }
+    .form-group label{
+      display:block;
+      margin-bottom:3px;
+      font-size:.83rem;
+    }
+    .hint{
+      margin-top:3px;
+      font-size:.76rem;
+      color:var(--muted);
+    }
+
+    /* ====== badges / counters ====== */
+    .badge-counter{
+      padding:2px 8px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.7);
+      font-size:.74rem;
+      color:var(--muted);
+    }
+
+    /* ====== modal لتعديل الدور ====== */
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.8);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:50;
+    }
+    .modal-backdrop.active{
+      display:flex;
+    }
+    .modal-card{
+      width:100%;
+      max-width:360px;
+      border-radius:20px;
+      background:linear-gradient(145deg, rgba(15,23,42,.98), rgba(15,23,42,.9));
+      border:1px solid rgba(59,130,246,.8);
+      box-shadow:var(--shadow-big);
+      padding:14px 16px 14px;
+    }
+    .modal-card h3{
+      margin:0 0 6px;
+      font-size:1rem;
+    }
+    .modal-body{
+      margin-bottom:10px;
+      font-size:.87rem;
+      color:var(--muted);
+    }
+    .modal-footer{
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
       margin-top:6px;
     }
 
-    /* ======= Toolbar (بحث + فلاتر) ======= */
-    .toolbar{
-      margin-top:10px;
-      margin-bottom:6px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-    .toolbar-left,
-    .toolbar-right{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-    .search-input{
-      min-width:210px;
-    }
-    .badge-counter{
-      font-size:.75rem;
-      padding:2px 7px;
-      border-radius:999px;
-      background:rgba(15,23,42,.9);
-      border:1px solid rgba(148,163,184,.7);
-      color:var(--muted);
-    }
-
     @media(max-width:600px){
-      body{
-        padding-inline:8px;
+      .top-header{
+        flex-direction:column-reverse;
+        align-items:stretch;
       }
-      .panel{
-        padding-inline:10px;
+      .user-pill{
+        width:100%;
+        justify-content:space-between;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- شريط أعلى الصفحة -->
-    <div class="user-bar">
-      <div class="user-bar-main">
-        <span id="userInfo">👋 جاري التحقق من المستخدم…</span>
-        <span class="user-chip">
-          🛡️ صلاحيات: <span id="userRoleChip">-</span>
-        </span>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button type="button" class="btn btn-ghost" onclick="goPortal()">⬅ الرجوع للبوابة</button>
-        <button type="button" class="btn" onclick="goActivity()">📜 عرض سجل النشاط</button>
-      </div>
-    </div>
-
-    <!-- شريط الإحصائيات -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-label">إجمالي المستخدمين</div>
-        <div class="stat-value" id="statUsersTotal">0</div>
-        <div class="stat-chip">جميع الأدوار</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">مستخدمون مفعّلون</div>
-        <div class="stat-value" id="statUsersActive">0</div>
-        <div class="stat-chip">جاهزون للدخول</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">مستخدمون موقوفون</div>
-        <div class="stat-value" id="statUsersInactive">0</div>
-        <div class="stat-chip">ممنوعون من الدخول</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">طلبات التسجيل (معلقة)</div>
-        <div class="stat-value" id="statReqPending">0</div>
-        <div class="stat-chip">
-          الكل: <span id="statReqTotal">0</span>
+  <div class="page-shell">
+    <!-- ====== Top header ====== -->
+    <header class="top-header">
+      <div class="brand-block">
+        <div class="brand-logo">
+          <span>PT</span>
+        </div>
+        <div class="brand-text">
+          <h1>إدارة المستخدمين</h1>
+          <p>لوحة تحكم مسؤولي بوابة تصاريح العمل</p>
         </div>
       </div>
-    </div>
 
-    <h1>إدارة المستخدمين</h1>
-    <p class="subtitle">
-      هذه الصفحة لإدارة المستخدمين محليًا على هذا المتصفح (تجريبية). لاحقًا يمكن ربطها بقاعدة بيانات حقيقية.
-    </p>
+      <div class="user-pill">
+        <div class="user-pill-main">
+          <strong id="userInfo">جاري التحقق من المستخدم…</strong>
+          <span class="role-chip">
+            🛡️ الدور الحالي:
+            <span id="userRoleChip" class="mono small">-</span>
+          </span>
+        </div>
+        <div class="user-pill-actions">
+          <button type="button" class="btn btn-ghost btn-sm" onclick="goPortal()">⬅ الرجوع للبوابة</button>
+          <button type="button" class="btn btn-sm" onclick="goActivity()">📜 سجل النشاط</button>
+        </div>
+      </div>
+    </header>
 
-    <div class="layout">
-      <!-- قائمة المستخدمين -->
-      <div class="panel">
+    <!-- ====== sub header ====== -->
+    <section class="sub-header">
+      <div class="sub-header-left">
+        <h2>نظرة عامة</h2>
+        <p>إدارة المستخدمين المحليين، مراجعة طلبات التسجيل، والمزامنة مع Firestore.</p>
+      </div>
+      <div class="sub-header-breadcrumb">
+        بوابة تصاريح العمل / <span class="mono small">admin</span> / إدارة المستخدمين
+      </div>
+    </section>
+
+    <!-- ====== stats ====== -->
+    <section class="stats-row">
+      <article class="stat-card">
+        <div class="stat-label">إجمالي المستخدمين</div>
+        <div class="stat-value" id="statUsersTotal">0</div>
+        <div class="stat-footer">
+          <span>جميع الأدوار</span>
+          <span class="stat-pill" id="usersCountLabel">0 مستخدم</span>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-label">مستخدمون مفعّلون</div>
+        <div class="stat-value" id="statUsersActive">0</div>
+        <div class="stat-footer">
+          <span>يُسمح لهم بالدخول</span>
+          <span class="stat-pill">Active</span>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-label">مستخدمون موقوفون</div>
+        <div class="stat-value" id="statUsersInactive">0</div>
+        <div class="stat-footer">
+          <span>ممنوعون من الوصول</span>
+          <span class="stat-pill">Suspended</span>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-label">طلبات التسجيل</div>
+        <div class="stat-value" id="statReqPending">0</div>
+        <div class="stat-footer">
+          <span>معلقة الآن</span>
+          <span class="stat-pill">
+            إجمالي الطلبات: <span id="statReqTotal">0</span>
+          </span>
+        </div>
+      </article>
+    </section>
+
+    <!-- ====== main content ====== -->
+    <main class="main-layout">
+      <!-- ====== users list ====== -->
+      <section class="panel">
         <div class="panel-header">
           <div>
             <h2 class="panel-title">قائمة المستخدمين</h2>
             <p class="panel-subtitle">
-              الأدوار المستخدمة حاليًا:
-              <span class="mono small">admin</span>،
-              <span class="mono small">najran</span>،
-              <span class="mono small">sharurah</span>
+              إدارة مستخدمي
+              <span class="mono small">ptw_users</span> محليًا على هذا الجهاز.
             </p>
-          </div>
-          <div>
-            <span class="badge-counter" id="usersCountLabel">0 مستخدم</span>
           </div>
         </div>
 
-        <!-- شريط أدوات: بحث + فلاتر + مزامنة -->
+        <!-- toolbar -->
         <div class="toolbar">
-          <div class="toolbar-left">
-            <input
-              id="searchInput"
-              class="search-input"
-              type="text"
-              placeholder="🔍 بحث بالاسم أو الإيميل..."
-            />
+          <div class="toolbar-group">
+            <input id="searchInput" class="input search-input" type="text" placeholder="🔍 بحث بالاسم أو الإيميل..." />
           </div>
-          <div class="toolbar-right">
+          <div class="toolbar-group">
             <select id="filterRole">
               <option value="">كل الأدوار</option>
               <option value="admin">Admin</option>
@@ -465,7 +610,7 @@
               <option value="active">مفعّل</option>
               <option value="inactive">موقوف</option>
             </select>
-            <button type="button" class="btn btn-primary small-btn" onclick="syncLocalUsersToFirestore()">
+            <button type="button" class="btn btn-primary btn-sm" onclick="syncLocalUsersToFirestore()">
               ☁ مزامنة مع Firestore
             </button>
           </div>
@@ -486,102 +631,128 @@
             </thead>
             <tbody id="usersBody">
               <tr id="emptyRow">
-                <td colspan="7" class="empty">لا يوجد مستخدمون مسجلون بعد.</td>
+                <td colspan="7" class="empty-row">لا يوجد مستخدمون مسجلون بعد.</td>
               </tr>
             </tbody>
           </table>
+        </div>
+      </section>
+
+      <!-- ====== forms & signup requests ====== -->
+      <section class="panel">
+        <div class="form-grid">
+          <!-- add user -->
+          <div class="card-soft">
+            <h3>إضافة مستخدم جديد</h3>
+            <small>إضافة مستخدم يدويًا إلى قائمة <span class="mono small">ptw_users</span>.</small>
+
+            <form onsubmit="handleAddUser(event)" style="margin-top:8px;">
+              <div class="form-group">
+                <label for="usernameInput">اسم المستخدم (لتسجيل الدخول)</label>
+                <input id="usernameInput" type="text" class="input" required />
+              </div>
+
+              <div class="form-group">
+                <label for="emailInput">الإيميل (المستخدم في Firebase)</label>
+                <input id="emailInput" type="email" class="input" required />
+                <div class="hint">مثال: eng.moustafa3013@gmail.com</div>
+              </div>
+
+              <div class="form-group">
+                <label for="passwordInput">كلمة المرور</label>
+                <input id="passwordInput" type="password" class="input" required />
+              </div>
+
+              <div class="form-group">
+                <label for="roleSelect">الدور (Role)</label>
+                <select id="roleSelect" class="input" required>
+                  <option value="najran">Najran فقط</option>
+                  <option value="sharurah">Sharurah فقط</option>
+                  <option value="admin">Admin (كل المشاريع)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>
+                  <input id="activeCheck" type="checkbox" checked />
+                  مستخدم مفعل
+                </label>
+              </div>
+
+              <button type="submit" class="btn btn-primary">
+                ➕ إضافة المستخدم
+              </button>
+            </form>
+          </div>
+
+          <!-- signup requests -->
+          <div class="card-soft">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+              <div>
+                <h3>طلبات التسجيل من البوابة</h3>
+                <small>
+                  البيانات من
+                  <span class="mono small">Firestore → signup_requests</span>
+                </small>
+              </div>
+              <span class="badge-counter" id="reqCountLabel">0 طلب</span>
+            </div>
+
+            <div class="scroll-wrap" style="margin-top:10px;max-height:40vh;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>اسم المستخدم</th>
+                    <th>الإيميل</th>
+                    <th>الجوال</th>
+                    <th>الرسالة</th>
+                    <th>الحالة</th>
+                    <th>تم الإرسال</th>
+                    <th>إجراءات</th>
+                  </tr>
+                </thead>
+                <tbody id="signupRequestsBody">
+                  <tr id="signupEmptyRow">
+                    <td colspan="8" class="empty-row">لا توجد طلبات تسجيل حتى الآن.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ====== modal: تغيير الدور ====== -->
+  <div class="modal-backdrop" id="roleModalBackdrop">
+    <div class="modal-card">
+      <h3>تغيير دور المستخدم</h3>
+      <div class="modal-body">
+        <div style="margin-bottom:8px;">
+          المستخدم:
+          <span id="roleModalUsername" class="mono"></span>
+        </div>
+        <label for="roleModalSelect" style="font-size:.83rem;">اختر الدور الجديد</label>
+        <select id="roleModalSelect" class="input" style="width:100%;margin-top:3px;">
+          <option value="admin">Admin (كل المشاريع)</option>
+          <option value="najran">Najran فقط</option>
+          <option value="sharurah">Sharurah فقط</option>
+        </select>
+        <div class="hint" style="margin-top:6px;">
+          سيتم تحديث الدور محليًا في <span class="mono small">ptw_users</span>.
+          (يمكنك لاحقًا مزامنته مع Firestore من زر المزامنة.)
         </div>
       </div>
-
-      <!-- إضافة / تعديل + طلبات التسجيل -->
-      <div class="panel">
-        <div class="panel-header">
-          <div>
-            <h2 class="panel-title">إضافة مستخدم جديد</h2>
-            <p class="panel-subtitle">إضافة مستخدم يدويًا إلى قائمة <span class="mono small">ptw_users</span> المحلية.</p>
-          </div>
-        </div>
-
-        <form onsubmit="handleAddUser(event)">
-          <div class="form-group">
-            <label for="usernameInput">اسم المستخدم (يستخدم في تسجيل الدخول)</label>
-            <input id="usernameInput" type="text" required />
-          </div>
-
-          <div class="form-group">
-            <label for="emailInput">الإيميل (المستخدم في Firebase)</label>
-            <input id="emailInput" type="email" required />
-            <div class="hint">مثال: eng.moustafa3013@gmail.com</div>
-          </div>
-
-          <div class="form-group">
-            <label for="passwordInput">كلمة المرور</label>
-            <input id="passwordInput" type="password" required />
-          </div>
-
-          <div class="form-group">
-            <label for="roleSelect">الدور (Role)</label>
-            <select id="roleSelect" required>
-              <option value="najran">Najran فقط</option>
-              <option value="sharurah">Sharurah فقط</option>
-              <option value="admin">Admin (كل المشاريع)</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>
-              <input id="activeCheck" type="checkbox" checked />
-              مستخدم مفعل
-            </label>
-          </div>
-
-          <button type="submit" class="btn btn-primary">
-            ➕ إضافة المستخدم
-          </button>
-        </form>
-
-        <hr style="margin:14px 0;border-color:rgba(30,64,175,.7)">
-
-        <div class="panel-header" style="margin-top:4px;">
-          <div>
-            <h2 class="panel-title">طلبات التسجيل من البوابة</h2>
-            <p class="panel-subtitle">
-              البيانات التالية قادمة من
-              <span class="mono small">Firestore → collection: signup_requests</span>
-            </p>
-          </div>
-          <div>
-            <span class="badge-counter" id="reqCountLabel">0 طلب</span>
-          </div>
-        </div>
-
-        <div class="scroll-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>اسم المستخدم</th>
-                <th>الإيميل</th>
-                <th>الجوال</th>
-                <th>الرسالة</th>
-                <th>الحالة</th>
-                <th>تم الإرسال في</th>
-                <th>إجراءات</th>
-              </tr>
-            </thead>
-            <tbody id="signupRequestsBody">
-              <tr id="signupEmptyRow">
-                <td colspan="8" class="empty">لا توجد طلبات تسجيل حتى الآن.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="closeRoleModal()">إلغاء</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="saveRoleFromModal()">حفظ التغيير</button>
       </div>
     </div>
   </div>
 
-  <!-- سكربت localStorage + حماية الصفحة -->
+  <!-- ====== سكربت localStorage + حماية الصفحة + إدارة المستخدمين ====== -->
   <script>
     "use strict";
 
@@ -590,22 +761,18 @@
     let FILTER_ROLE = "";
     let FILTER_STATUS = "";
     let SEARCH_TERM = "";
+    let ROLE_MODAL_USERNAME = null;
 
-    // دالة مساعدة لتنسيق التاريخ (تعالج String أو Object من Firestore)
+    // تنسيق التاريخ
     function formatCreatedAt(value) {
       if (!value) return "-";
       try {
         if (typeof value === "string") {
           const d = new Date(value);
           if (!isNaN(d)) return d.toLocaleString("ar-EG");
-          return "-";
-        }
-
-        if (typeof value === "object" && value !== null) {
-          if (typeof value.seconds === "number") {
-            const d = new Date(value.seconds * 1000);
-            if (!isNaN(d)) return d.toLocaleString("ar-EG");
-          }
+        } else if (typeof value === "object" && value !== null && typeof value.seconds === "number") {
+          const d = new Date(value.seconds * 1000);
+          if (!isNaN(d)) return d.toLocaleString("ar-EG");
         }
       } catch (e) {
         console.error("formatCreatedAt error:", e);
@@ -613,25 +780,25 @@
       return "-";
     }
 
-    // ===== تحديث الإحصائيات الخاصة بالمستخدمين =====
+    // إحصائيات المستخدمين
     function updateUserStats(list) {
       if (!Array.isArray(list)) list = [];
       const total = list.length;
       const active = list.filter(u => u.active !== false).length;
       const inactive = total - active;
 
-      const statUsersTotal   = document.getElementById("statUsersTotal");
-      const statUsersActive  = document.getElementById("statUsersActive");
-      const statUsersInactive= document.getElementById("statUsersInactive");
-      const usersCountLabel  = document.getElementById("usersCountLabel");
+      const statUsersTotal    = document.getElementById("statUsersTotal");
+      const statUsersActive   = document.getElementById("statUsersActive");
+      const statUsersInactive = document.getElementById("statUsersInactive");
+      const usersCountLabel   = document.getElementById("usersCountLabel");
 
-      if (statUsersTotal)    statUsersTotal.textContent = total;
-      if (statUsersActive)   statUsersActive.textContent = active;
+      if (statUsersTotal)    statUsersTotal.textContent    = total;
+      if (statUsersActive)   statUsersActive.textContent   = active;
       if (statUsersInactive) statUsersInactive.textContent = inactive;
-      if (usersCountLabel)   usersCountLabel.textContent = total + " مستخدم";
+      if (usersCountLabel)   usersCountLabel.textContent   = total + " مستخدم";
     }
 
-    // ===== تحديث الإحصائيات الخاصة بطلبات التسجيل =====
+    // إحصائيات طلبات التسجيل (يُستدعى من سكربت Firestore)
     function updateSignupStatsFromDocs(docs) {
       const all = docs || [];
       const total = all.length;
@@ -646,14 +813,13 @@
       const statReqPending = document.getElementById("statReqPending");
       const reqCountLabel  = document.getElementById("reqCountLabel");
 
-      if (statReqTotal)   statReqTotal.textContent = total;
+      if (statReqTotal)   statReqTotal.textContent   = total;
       if (statReqPending) statReqPending.textContent = pending;
-      if (reqCountLabel)  reqCountLabel.textContent = total + " طلب";
+      if (reqCountLabel)  reqCountLabel.textContent  = total + " طلب";
     }
-    // نخليها متاحة للموديول
     window.updateSignupStats = updateSignupStatsFromDocs;
 
-    // ===== حماية الصفحة: admin فقط =====
+    // حماية الصفحة: admin فقط
     (function protectUsersPage() {
       try {
         const raw = localStorage.getItem("aln_session");
@@ -682,12 +848,8 @@
 
         const userInfo = document.getElementById("userInfo");
         const roleChip = document.getElementById("userRoleChip");
-        if (userInfo) {
-          userInfo.textContent = `👋 مرحبًا ${session.username} — دورك: ${session.role}`;
-        }
-        if (roleChip) {
-          roleChip.textContent = session.role;
-        }
+        if (userInfo) userInfo.textContent = `مرحبًا ${session.username}`;
+        if (roleChip) roleChip.textContent = session.role;
 
         ensureCurrentAdminInUsers();
         loadUsers();
@@ -699,41 +861,35 @@
       }
     })();
 
-    function goPortal() {
-      window.location.href = "/portal";
-    }
+    function goPortal(){ window.location.href = "/portal"; }
+    function goActivity(){ window.location.href = "/activity.html"; }
 
-    function goActivity() {
-      window.location.href = "/activity.html";
-    }
-
-    // ===== التعامل مع ptw_users في localStorage =====
-    function readUsers() {
+    // قراءة/كتابة المستخدمين من localStorage
+    function readUsers(){
       const raw = localStorage.getItem(USERS_KEY);
       if (!raw) return [];
-      try {
+      try{
         const list = JSON.parse(raw);
         return Array.isArray(list) ? list : [];
-      } catch (e) {
+      }catch(e){
         console.error("parse users error", e);
         return [];
       }
     }
-
-    function writeUsers(list) {
-      try {
+    function writeUsers(list){
+      try{
         localStorage.setItem(USERS_KEY, JSON.stringify(list));
-      } catch (e) {
+      }catch(e){
         console.error("write users error", e);
       }
     }
 
-    // نتأكد إن الأدمن الحالي موجود في القائمة
-    function ensureCurrentAdminInUsers() {
+    // التأكد من وجود الأدمن الحالي
+    function ensureCurrentAdminInUsers(){
       if (!CURRENT_USER) return;
       const list = readUsers();
-      const exists = list.some((u) => u.username === CURRENT_USER.username);
-      if (!exists) {
+      const exists = list.some(u => u.username === CURRENT_USER.username);
+      if (!exists){
         list.push({
           username: CURRENT_USER.username,
           email: CURRENT_USER.email || null,
@@ -746,147 +902,129 @@
       }
     }
 
-    // تطبيق الفلاتر والبحث على القائمة
-    function applyUserFilters(list) {
+    // تطبيق البحث/الفلاتر
+    function applyUserFilters(list){
       let filtered = Array.isArray(list) ? [...list] : [];
-
-      if (SEARCH_TERM) {
+      if (SEARCH_TERM){
         const t = SEARCH_TERM.toLowerCase();
         filtered = filtered.filter(u =>
           (u.username || "").toLowerCase().includes(t) ||
           (u.email || "").toLowerCase().includes(t)
         );
       }
-
-      if (FILTER_ROLE) {
+      if (FILTER_ROLE){
         filtered = filtered.filter(u => (u.role || "").toLowerCase() === FILTER_ROLE);
       }
-
-      if (FILTER_STATUS) {
-        const activeWanted = FILTER_STATUS === "active";
-        filtered = filtered.filter(u => (u.active !== false) === activeWanted);
+      if (FILTER_STATUS){
+        const wantActive = FILTER_STATUS === "active";
+        filtered = filtered.filter(u => (u.active !== false) === wantActive);
       }
-
       return filtered;
     }
 
-    // ===== تحميل وعرض المستخدمين =====
-    function loadUsers() {
+    // تحميل وعرض المستخدمين
+    function loadUsers(){
       const tbody = document.getElementById("usersBody");
       const emptyRow = document.getElementById("emptyRow");
       if (!tbody) return;
 
-      const list = readUsers();
-      const renderedList = applyUserFilters(list);
+      const allUsers = readUsers();
+      const rendered = applyUserFilters(allUsers);
 
-      // تحديث الإحصائيات
-      updateUserStats(list);
+      updateUserStats(allUsers);
 
-      if (!renderedList.length) {
-        tbody.innerHTML = "";
-        if (emptyRow) {
+      tbody.innerHTML = "";
+      if (!rendered.length){
+        if (emptyRow){
           emptyRow.style.display = "";
           tbody.appendChild(emptyRow);
         }
         return;
-      } else if (emptyRow) {
-        emptyRow.style.display = "none";
       }
 
-      tbody.innerHTML = "";
+      if (emptyRow) emptyRow.style.display = "none";
 
-      renderedList.forEach((u, index) => {
+      rendered.forEach((u, index) => {
         const tr = document.createElement("tr");
 
         const roleRaw = (u.role || "").toLowerCase();
         let roleLabel = "-";
         let roleClass = "";
-        if (roleRaw === "admin") {
-          roleLabel = "Admin";
-          roleClass = "role-admin";
-        } else if (roleRaw === "najran") {
-          roleLabel = "Najran";
-          roleClass = "role-najran";
-        } else if (roleRaw === "sharurah") {
-          roleLabel = "Sharurah";
-          roleClass = "role-sharurah";
-        } else {
-          roleLabel = u.role || "-";
-        }
+        if (roleRaw === "admin"){ roleLabel = "Admin"; roleClass = "role-admin"; }
+        else if (roleRaw === "najran"){ roleLabel = "Najran"; roleClass = "role-najran"; }
+        else if (roleRaw === "sharurah"){ roleLabel = "Sharurah"; roleClass = "role-sharurah"; }
+        else { roleLabel = u.role || "-"; }
 
-        const createdAtText = formatCreatedAt(u.createdAt);
+        const createdAt = formatCreatedAt(u.createdAt);
 
         tr.innerHTML = `
           <td>${index + 1}</td>
           <td class="mono">${u.username}</td>
           <td class="mono small">${u.email || "-"}</td>
-          <td><span class="tag ${roleClass}">${roleLabel}</span></td>
+          <td>
+            <button type="button" class="btn btn-sm"
+              style="padding-inline:8px;"
+              onclick="openRoleModal('${u.username}')">
+              <span class="tag ${roleClass}">
+                ${roleLabel}
+              </span>
+            </button>
+          </td>
           <td>
             <span class="tag ${u.active ? "green" : "red"}">
               ${u.active ? "مفعل" : "موقوف"}
             </span>
           </td>
-          <td class="small">${createdAtText}</td>
+          <td class="small">${createdAt}</td>
           <td>
             <div class="actions-cell">
-              <button
-                type="button"
-                class="btn small-btn"
+              <button type="button" class="btn btn-sm"
                 onclick="handleChangePassword('${u.username}')">
                 باسورد
               </button>
-
-              <button
-                type="button"
-                class="btn small-btn"
+              <button type="button" class="btn btn-sm"
                 onclick="toggleActive('${u.username}')">
                 ${u.active ? "إيقاف" : "تفعيل"}
               </button>
-
-              <button
-                type="button"
-                class="btn btn-danger small-btn"
+              <button type="button" class="btn btn-danger btn-sm"
                 onclick="deleteUser('${u.username}')">
                 حذف
               </button>
             </div>
           </td>
         `;
-
         tbody.appendChild(tr);
       });
     }
 
-    // تهيئة البحث والفلاتر
-    function initFilters() {
+    // تهيئة البحث + الفلاتر
+    function initFilters(){
       const searchInput  = document.getElementById("searchInput");
       const filterRole   = document.getElementById("filterRole");
       const filterStatus = document.getElementById("filterStatus");
 
-      if (searchInput) {
-        searchInput.addEventListener("input", (e) => {
+      if (searchInput){
+        searchInput.addEventListener("input", e => {
           SEARCH_TERM = (e.target.value || "").trim().toLowerCase();
           loadUsers();
         });
       }
-
-      if (filterRole) {
-        filterRole.addEventListener("change", (e) => {
+      if (filterRole){
+        filterRole.addEventListener("change", e => {
           FILTER_ROLE = (e.target.value || "").toLowerCase();
           loadUsers();
         });
       }
-
-      if (filterStatus) {
-        filterStatus.addEventListener("change", (e) => {
+      if (filterStatus){
+        filterStatus.addEventListener("change", e => {
           FILTER_STATUS = e.target.value || "";
           loadUsers();
         });
       }
     }
 
-    // ===== إضافة مستخدم جديد يدويًا =====
-    function handleAddUser(evt) {
+    // إضافة مستخدم جديد
+    function handleAddUser(evt){
       evt.preventDefault();
 
       const usernameInput = document.getElementById("usernameInput");
@@ -901,22 +1039,18 @@
       const role     = roleSelect.value;
       const active   = !!activeCheck.checked;
 
-      if (!username) {
-        alert("من فضلك أدخل اسم المستخدم.");
-        return;
-      }
-      if (!email || !email.includes("@")) {
+      if (!username){ alert("من فضلك أدخل اسم المستخدم."); return; }
+      if (!email || !email.includes("@")){
         alert("من فضلك أدخل إيميل صحيح (يُستخدم في Firebase).");
         return;
       }
 
       let list = readUsers();
-
-      if (list.some((u) => (u.username || "").toLowerCase() === username.toLowerCase())) {
+      if (list.some(u => (u.username || "").toLowerCase() === username.toLowerCase())){
         alert("هذا الاسم موجود بالفعل في القائمة.");
         return;
       }
-      if (list.some((u) => (u.email || "").toLowerCase() === email.toLowerCase())) {
+      if (list.some(u => (u.email || "").toLowerCase() === email.toLowerCase())){
         alert("هذا الإيميل مستخدم بالفعل لمستخدم آخر.");
         return;
       }
@@ -942,17 +1076,14 @@
       alert("تم إضافة المستخدم إلى القائمة (محليًا).");
     }
 
-    // ===== تفعيل/إيقاف مستخدم =====
-    function toggleActive(username) {
+    // تفعيل/إيقاف مستخدم
+    function toggleActive(username){
       let list = readUsers();
-      const idx = list.findIndex((u) => u.username === username);
+      const idx = list.findIndex(u => u.username === username);
       if (idx === -1) return;
 
       const targetState = !list[idx].active;
-      const msg = targetState
-        ? "هل تريد تفعيل هذا المستخدم؟"
-        : "هل تريد إيقاف هذا المستخدم؟";
-
+      const msg = targetState ? "هل تريد تفعيل هذا المستخدم؟" : "هل تريد إيقاف هذا المستخدم؟";
       if (!confirm(msg)) return;
 
       list[idx].active = targetState;
@@ -960,55 +1091,118 @@
       loadUsers();
     }
 
-    // ===== حذف مستخدم =====
-    function deleteUser(username) {
+    // حذف مستخدم
+    function deleteUser(username){
       if (!confirm("هل أنت متأكد من حذف هذا المستخدم من هذه القائمة؟")) return;
       let list = readUsers();
-      list = list.filter((u) => u.username !== username);
+      list = list.filter(u => u.username !== username);
       writeUsers(list);
       loadUsers();
     }
 
-    // ===== تغيير / إظهار كلمة المرور لمستخدم معين =====
-    function handleChangePassword(username) {
+    // تغيير كلمة المرور
+    function handleChangePassword(username){
       const list = readUsers();
-      const idx = list.findIndex((u) => u.username === username);
-      if (idx === -1) {
+      const idx = list.findIndex(u => u.username === username);
+      if (idx === -1){
         alert("هذا المستخدم غير موجود في القائمة.");
         return;
       }
 
       const user = list[idx];
       const current = user.password || "";
-
       const newPass = prompt(
         `أدخل كلمة المرور الجديدة للمستخدم: ${user.username}`,
         current
       );
-
-      if (newPass === null) return; // Cancel
+      if (newPass === null) return;
 
       const trimmed = newPass.trim();
-      if (!trimmed) {
+      if (!trimmed){
         alert("كلمة المرور لا يمكن أن تكون فارغة.");
         return;
       }
 
       user.password = trimmed;
       list[idx] = user;
-
       writeUsers(list);
       loadUsers();
-
       alert("تم تحديث كلمة المرور بنجاح.");
     }
 
-    // نخلي بعض الدوال متاحة للموديول لو احتاجها
+    // ====== تعديل الدور من خلال قائمة المستخدمين (المودال) ======
+    function openRoleModal(username){
+      const list = readUsers();
+      const user = list.find(u => u.username === username);
+      if (!user){
+        alert("هذا المستخدم غير موجود.");
+        return;
+      }
+
+      ROLE_MODAL_USERNAME = username;
+      const backdrop = document.getElementById("roleModalBackdrop");
+      const usernameSpan = document.getElementById("roleModalUsername");
+      const select = document.getElementById("roleModalSelect");
+
+      if (usernameSpan) usernameSpan.textContent = username;
+      if (select){
+        const role = (user.role || "najran").toLowerCase();
+        if (["admin","najran","sharurah"].includes(role)){
+          select.value = role;
+        }else{
+          select.value = "najran";
+        }
+      }
+
+      if (backdrop) backdrop.classList.add("active");
+    }
+
+    function closeRoleModal(){
+      ROLE_MODAL_USERNAME = null;
+      const backdrop = document.getElementById("roleModalBackdrop");
+      if (backdrop) backdrop.classList.remove("active");
+    }
+
+    function saveRoleFromModal(){
+      if (!ROLE_MODAL_USERNAME) return;
+      const select = document.getElementById("roleModalSelect");
+      const newRole = (select && select.value) ? select.value : "najran";
+
+      let list = readUsers();
+      const idx = list.findIndex(u => u.username === ROLE_MODAL_USERNAME);
+      if (idx === -1){
+        alert("المستخدم غير موجود.");
+        closeRoleModal();
+        return;
+      }
+
+      if (!["admin","najran","sharurah"].includes(newRole)){
+        alert("الدور غير صالح.");
+        return;
+      }
+
+      const confirmMsg = `سيتم تغيير دور المستخدم ${ROLE_MODAL_USERNAME} إلى: ${newRole}.\nمتأكد؟`;
+      if (!confirm(confirmMsg)) return;
+
+      list[idx].role = newRole;
+      writeUsers(list);
+      closeRoleModal();
+      loadUsers();
+      alert("تم تحديث الدور بنجاح (محليًا).");
+    }
+
+    // جعل بعض الدوال متاحة للموديول
     window.readUsers = readUsers;
     window.loadUsers = loadUsers;
+    window.openRoleModal = openRoleModal;
+    window.closeRoleModal = closeRoleModal;
+    window.saveRoleFromModal = saveRoleFromModal;
+    window.toggleActive = toggleActive;
+    window.deleteUser = deleteUser;
+    window.handleChangePassword = handleChangePassword;
   </script>
 
-  <!-- سكربت Firebase / Firestore + Auth لطلبات التسجيل + Approve/Reject + app_users + Sync -->
+  <!-- ====== سكربت Firebase / Firestore + Auth ====== -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import {
@@ -1023,12 +1217,10 @@
       onSnapshot,
       doc,
       updateDoc,
-      deleteDoc,
       setDoc,
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-    // نفس config بتاع المشروع
     const firebaseConfig = {
       apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
       authDomain: "ptw-najran-sharurah.firebaseapp.com",
@@ -1045,26 +1237,21 @@
     const tbody    = document.getElementById("signupRequestsBody");
     const emptyRow = document.getElementById("signupEmptyRow");
 
-    // نخزن الطلبات هنا علشان نستخدمها في approve/reject
     const requestsCache = new Map();
     window._signupRequestsCache = requestsCache;
 
-    // ========= دالة عرض الطلبات في الجدول =========
-    function renderRequests(docs) {
+    function renderRequests(docs){
       if (!tbody) return;
 
       requestsCache.clear();
 
-      if (!docs.length) {
-        if (emptyRow) {
+      if (!docs.length){
+        if (emptyRow){
           emptyRow.style.display = "";
           tbody.innerHTML = "";
           tbody.appendChild(emptyRow);
         }
-        // تحديث الإحصائيات
-        if (window.updateSignupStats) {
-          window.updateSignupStats([]);
-        }
+        if (window.updateSignupStats) window.updateSignupStats([]);
         return;
       }
 
@@ -1077,45 +1264,41 @@
 
         requestsCache.set(id, data);
 
-        const tr = document.createElement("tr");
-
         const createdAt =
           data.createdAt && data.createdAt.toDate
             ? data.createdAt.toDate().toLocaleString("ar-EG")
             : "-";
 
         const status = (data.status || "pending").toLowerCase();
-
         let statusClass = "tag";
         let statusLabel = "";
-        if (status === "approved") {
+        if (status === "approved"){
           statusClass += " green";
           statusLabel = "موافق عليه";
-        } else if (status === "rejected") {
+        }else if (status === "rejected"){
           statusClass += " red";
           statusLabel = "مرفوض";
-        } else {
+        }else{
           statusLabel = "معلق";
         }
 
         let actionsHtml = "";
-        if (status === "pending") {
+        if (status === "pending"){
           actionsHtml = `
-            <button type="button"
-              class="btn small-btn"
+            <button type="button" class="btn btn-sm"
               onclick="approveSignup('${id}')">
               اعتماد
             </button>
-            <button type="button"
-              class="btn btn-danger small-btn"
+            <button type="button" class="btn btn-danger btn-sm"
               onclick="rejectSignup('${id}')">
               رفض
             </button>
           `;
-        } else {
+        }else{
           actionsHtml = `<span class="small">-</span>`;
         }
 
+        const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${index + 1}</td>
           <td class="mono small">${data.username || "-"}</td>
@@ -1126,82 +1309,68 @@
           <td class="small">${createdAt}</td>
           <td>${actionsHtml}</td>
         `;
-
         tbody.appendChild(tr);
       });
 
-      // تحديث الإحصائيات
-      if (window.updateSignupStats) {
-        window.updateSignupStats(docs);
-      }
+      if (window.updateSignupStats) window.updateSignupStats(docs);
     }
 
-    // ========= الاشتراك اللايف في collection signup_requests =========
-    try {
+    try{
       const qSignup = query(
         collection(db, "signup_requests"),
-        orderBy("createdAt", "desc")
+        orderBy("createdAt","desc")
       );
 
       onSnapshot(
         qSignup,
-        (snapshot) => {
+        snapshot => {
           const docs = snapshot.docs || [];
           renderRequests(docs);
         },
-        (err) => {
+        err => {
           console.error("signup_requests snapshot error:", err);
           alert("لا توجد صلاحية لقراءة signup_requests من Firestore. راجع قواعد Firestore.");
         }
       );
-    } catch (e) {
+    }catch(e){
       console.error("Firestore init / query error:", e);
     }
 
-    // ===== مزامنة ptw_users -> app_users =====
-    window.syncLocalUsersToFirestore = async function () {
-      if (typeof window.readUsers !== "function") {
+    // مزامنة ptw_users -> app_users
+    window.syncLocalUsersToFirestore = async function (){
+      if (typeof window.readUsers !== "function"){
         alert("تعذر قراءة المستخدمين المحليين.");
         return;
       }
 
       const list = window.readUsers();
-      if (!Array.isArray(list) || !list.length) {
+      if (!Array.isArray(list) || !list.length){
         alert("لا يوجد مستخدمون محليًا للمزامنة.");
         return;
       }
 
-      let success = 0;
-      let skipped = 0;
-      let failed  = 0;
+      let success = 0, skipped = 0, failed = 0;
 
-      for (const u of list) {
+      for (const u of list){
         const username = (u.username || "").trim();
         const email    = (u.email || "").trim().toLowerCase();
         const role     = u.role || "najran";
 
-        if (!username || !email) {
-          skipped++;
-          continue;
-        }
+        if (!username || !email){ skipped++; continue; }
 
-        try {
+        try{
           const appUserRef = doc(db, "app_users", username.toLowerCase());
-          await setDoc(
-            appUserRef,
-            {
-              username,
-              email,
-              role,
-              active: u.active !== false,
-              createdAt: u.createdAt || serverTimestamp(),
-              updatedAt: serverTimestamp(),
-              source: "manual_sync"
-            },
-            { merge: true }
-          );
+          await setDoc(appUserRef,{
+            username,
+            email,
+            role,
+            active: u.active !== false,
+            createdAt: u.createdAt || serverTimestamp(),
+            updatedAt: serverTimestamp(),
+            source: "manual_sync"
+          },{merge:true});
           success++;
-        } catch (err) {
+        }catch(err){
           console.error("syncLocalUsersToFirestore error for", username, err);
           failed++;
         }
@@ -1215,76 +1384,68 @@
       );
     };
 
-    // ===== إضافة / تحديث المستخدم في localStorage: ptw_users من طلب تسجيل =====
-    function addLocalUserFromRequest(data, role) {
-      try {
+    // إضافة/تحديث مستخدم محليًا من طلب تسجيل
+    function addLocalUserFromRequest(data, role){
+      try{
         const username = (data.username || "").trim();
         const email    = (data.email || "").trim();
-
-        if (!username || !email) {
+        if (!username || !email){
           console.warn("addLocalUserFromRequest: username/email ناقصين");
           return;
         }
 
         let list = [];
-        try {
+        try{
           const raw = localStorage.getItem("ptw_users");
-          if (raw) {
+          if (raw){
             const parsed = JSON.parse(raw);
             if (Array.isArray(parsed)) list = parsed;
           }
-        } catch (e) {
+        }catch(e){
           console.error("addLocalUserFromRequest parse error:", e);
         }
 
-        const idx = list.findIndex(
-          (u) => (u.username || "").toLowerCase() === username.toLowerCase()
+        const idx = list.findIndex(u =>
+          (u.username || "").toLowerCase() === username.toLowerCase()
         );
 
         const nowIso = new Date().toISOString();
-
         let createdAtIso = nowIso;
         const ca = data.createdAt;
-        try {
-          if (ca && typeof ca.toDate === "function") {
+        try{
+          if (ca && typeof ca.toDate === "function"){
             createdAtIso = ca.toDate().toISOString();
-          } else if (typeof ca === "string") {
+          }else if (typeof ca === "string"){
             const d = new Date(ca);
             if (!isNaN(d)) createdAtIso = d.toISOString();
           }
-        } catch (e) {
+        }catch(e){
           console.error("convert createdAt error:", e);
         }
 
         const baseUser = {
           username,
           email,
-          password: null,
-          role: role,
-          active: true,
+          password:null,
+          role,
+          active:true,
           createdAt: createdAtIso
         };
 
-        if (idx === -1) {
-          list.push(baseUser);
-        } else {
-          list[idx] = { ...list[idx], ...baseUser };
-        }
+        if (idx === -1) list.push(baseUser);
+        else list[idx] = {...list[idx], ...baseUser};
 
         localStorage.setItem("ptw_users", JSON.stringify(list));
-
-        if (typeof window.loadUsers === "function") {
-          window.loadUsers();
-        }
-      } catch (err) {
+        if (typeof window.loadUsers === "function") window.loadUsers();
+      }catch(err){
         console.error("addLocalUserFromRequest error:", err);
       }
     }
 
-    // ========= دالة APPROVE =========
-    window.approveSignup = async function (id) {
+    // APPROVE
+    window.approveSignup = async function(id){
       const data = requestsCache.get(id);
-      if (!data) {
+      if (!data){
         alert("تعذر قراءة بيانات هذا الطلب.");
         return;
       }
@@ -1296,107 +1457,94 @@
       if (role === null) return;
 
       role = role.trim().toLowerCase();
-      if (!["admin", "najran", "sharurah"].includes(role)) {
+      if (!["admin","najran","sharurah"].includes(role)){
         alert("الدور غير صالح. استخدم admin أو najran أو sharurah.");
         return;
       }
 
       const username = (data.username || "").trim();
       const email    = (data.email || "").trim().toLowerCase();
-
-      if (!username || !email) {
+      if (!username || !email){
         alert("الطلب لا يحتوي على اسم مستخدم أو إيميل صحيح.");
         return;
       }
 
-      try {
-        const reqRef = doc(db, "signup_requests", id);
-        await updateDoc(reqRef, {
-          status: "approved",
-          role: role,
+      try{
+        const reqRef = doc(db,"signup_requests",id);
+        await updateDoc(reqRef,{
+          status:"approved",
+          role,
           processedAt: serverTimestamp(),
-          processedBy:
-            (window.CURRENT_USER && window.CURRENT_USER.username) || null
+          processedBy: (window.CURRENT_USER && window.CURRENT_USER.username) || null
         });
 
-        try {
+        try{
           const now = new Date().toISOString();
-          const appUserRef = doc(db, "app_users", username.toLowerCase());
-          await setDoc(
-            appUserRef,
-            {
-              username,
-              email,
-              role,
-              active: true,
-              createdAt: data.createdAt || now,
-              updatedAt: now,
-              source: "signup_approve"
-            },
-            { merge: true }
-          );
-          console.log("✅ app_users updated for", username);
-        } catch (errAppUser) {
+          const appUserRef = doc(db,"app_users",username.toLowerCase());
+          await setDoc(appUserRef,{
+            username,
+            email,
+            role,
+            active:true,
+            createdAt: data.createdAt || now,
+            updatedAt: now,
+            source:"signup_approve"
+          },{merge:true});
+        }catch(errAppUser){
           console.error("app_users setDoc error:", errAppUser);
           alert("تم اعتماد الطلب، لكن حدث خطأ أثناء حفظ بيانات المستخدم في app_users. راجع الكونسول.");
         }
 
-        addLocalUserFromRequest({ ...data, username, email }, role);
+        addLocalUserFromRequest({...data,username,email},role);
 
         const createAuth = confirm(
           "تم اعتماد الطلب.\nهل تريد إنشاء مستخدم في Firebase Auth لهذا الإيميل الآن؟"
         );
-
-        if (createAuth) {
+        if (createAuth){
           const pwd = prompt(
             `أدخل كلمة المرور للمستخدم ${username} (ستُستخدم في Firebase Auth):`
           );
-          if (pwd && pwd.trim().length >= 6) {
-            try {
+          if (pwd && pwd.trim().length >= 6){
+            try{
               await createUserWithEmailAndPassword(auth, email, pwd.trim());
               alert("✅ تم إنشاء المستخدم في Firebase Auth بنجاح.");
-            } catch (errAuth) {
+            }catch(errAuth){
               console.error("createUser error:", errAuth);
               alert("تم اعتماد الطلب، لكن تعذر إنشاء المستخدم في Firebase Auth. راجع الكونسول.");
             }
-          } else if (pwd !== null) {
+          }else if (pwd !== null){
             alert("كلمة المرور قصيرة. (الحد الأدنى 6 حروف).");
           }
-        } else {
+        }else{
           alert("تم اعتماد الطلب بدون إنشاء مستخدم في Firebase Auth.");
         }
-      } catch (err) {
+      }catch(err){
         console.error("approveSignup error:", err);
         alert("تعذر اعتماد الطلب الآن. حاول مرة أخرى.");
       }
     };
 
-    // ========= دالة REJECT =========
-    window.rejectSignup = async function (id) {
+    // REJECT
+    window.rejectSignup = async function(id){
       const data = requestsCache.get(id);
-      if (!data) {
+      if (!data){
         alert("تعذر قراءة بيانات هذا الطلب.");
         return;
       }
 
-      const reason = prompt(
-        "سبب رفض الطلب (اختياري):",
-        data.rejectReason || ""
-      );
+      const reason = prompt("سبب رفض الطلب (اختياري):", data.rejectReason || "");
       if (reason === null) return;
 
-      try {
-        const reqRef = doc(db, "signup_requests", id);
-        await updateDoc(reqRef, {
-          status: "rejected",
+      try{
+        const reqRef = doc(db,"signup_requests",id);
+        await updateDoc(reqRef,{
+          status:"rejected",
           rejectReason: reason || null,
           processedAt: serverTimestamp(),
-          processedBy:
-            (window.CURRENT_USER && window.CURRENT_USER.username) || null
+          processedBy: (window.CURRENT_USER && window.CURRENT_USER.username) || null
         });
-
         alert("تم رفض الطلب.");
-      } catch (err) {
+      }catch(err){
         console.error("rejectSignup error:", err);
         alert("تعذر رفض الطلب الآن. حاول مرة أخرى.");
       }

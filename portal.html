@@ -185,7 +185,7 @@
     /* ===== شريط التنويه لاجتماع السلامة (شرورة فقط) ===== */
     .announce-bar{
       max-width:980px;
-      margin: 58px auto 18px; /* نسيب مساحة صغيرة تحت البار */
+      margin: 58px auto 18px;
       padding:8px 14px;
       border-radius:999px;
       background: linear-gradient(90deg,#1d4ed8,#0f172a);
@@ -317,10 +317,15 @@
           return;
         }
 
-        // توحيد الـ role على lowercase وتثبيت شكل CURRENT_USER
+        // نطبّع الـ role: lowercase + نستبدل المسافات بـ _
+        const normalizedRole = (session.role || "")
+          .toLowerCase()
+          .replace(/\s+/g, "_");
+
         CURRENT_USER = {
           ...session,
-          role: (session.role || "").toLowerCase()
+          role: normalizedRole,
+          roleRaw: session.role || normalizedRole
         };
 
         const role = CURRENT_USER.role;
@@ -529,7 +534,6 @@
       let linksToRender = p.links || [];
       let resourcesToRender = p.resources || [];
 
-      const role = (CURRENT_USER?.role || "").toLowerCase();
       if (VIEW_ONLY_MODE) {
         // viewer → مفيش generators خالص
         linksToRender = [];

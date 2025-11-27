@@ -317,10 +317,9 @@
           return;
         }
 
-        // نطبّع الـ role: lowercase + نستبدل المسافات بـ _
-        const normalizedRole = (session.role || "")
-          .toLowerCase()
-          .replace(/\s+/g, "_");
+        // نطبّع الـ role ونحلّلها
+        const roleRawLower = (session.role || "").toLowerCase();
+        const normalizedRole = roleRawLower.replace(/\s+/g, "_");
 
         CURRENT_USER = {
           ...session,
@@ -328,21 +327,29 @@
           roleRaw: session.role || normalizedRole
         };
 
-        const role = CURRENT_USER.role;
+        const isViewer = roleRawLower.includes("viewer");
 
-        if (role === "najran") {
-          ALLOWED_PROJECTS = ["najran"];
-        } else if (role === "sharurah") {
-          ALLOWED_PROJECTS = ["sharurah"];
-        } else if (role === "najran_viewer") {
-          ALLOWED_PROJECTS = ["najran"];
+        if (isViewer) {
           VIEW_ONLY_MODE = true;
-        } else if (role === "sharurah_viewer") {
-          ALLOWED_PROJECTS = ["sharurah"];
-          VIEW_ONLY_MODE = true;
+
+          if (roleRawLower.includes("najran")) {
+            ALLOWED_PROJECTS = ["najran"];
+          } else if (roleRawLower.includes("sharurah")) {
+            ALLOWED_PROJECTS = ["sharurah"];
+          } else {
+            // لو viewer عام من غير تحديد مشروع
+            ALLOWED_PROJECTS = ["najran", "sharurah"];
+          }
         } else {
-          // admin أو أي رول عام
-          ALLOWED_PROJECTS = ["najran", "sharurah"];
+          // أدوار عادية
+          if (normalizedRole === "najran") {
+            ALLOWED_PROJECTS = ["najran"];
+          } else if (normalizedRole === "sharurah") {
+            ALLOWED_PROJECTS = ["sharurah"];
+          } else {
+            // admin أو أي رول عام
+            ALLOWED_PROJECTS = ["najran", "sharurah"];
+          }
         }
       } catch (e) {
         console.error(e);
@@ -522,7 +529,7 @@
       // إظهار/إخفاء تنويه اجتماع السلامة حسب المشروع
       if (tbtNotice) {
         const role = (CURRENT_USER?.role || "").toLowerCase();
-        const showTbtNotice = (id === 'sharurah' && role !== 'sharurah_viewer');
+        const showTbtNotice = (id === 'sharurah' && !role.includes("viewer"));
         tbtNotice.hidden = !showTbtNotice;
       }
 
@@ -623,21 +630,26 @@
       applyRoleVisibility();
 
       if (CURRENT_USER && welcomeUser) {
-        const role = (CURRENT_USER.role || "").toLowerCase();
+        const roleLower = (CURRENT_USER.role || "").toLowerCase();
+        const roleRawLower = (CURRENT_USER.roleRaw || CURRENT_USER.role || "").toLowerCase();
         let roleText = '';
 
-        if (role === 'admin') {
+        if (roleRawLower.includes("viewer")) {
+          if (roleRawLower.includes("najran")) {
+            roleText = 'وضع عرض فقط: جالري + تقييم مخاطر نجران';
+          } else if (roleRawLower.includes("sharurah")) {
+            roleText = 'وضع عرض فقط: جالري + تقييم مخاطر شرورة';
+          } else {
+            roleText = 'وضع عرض فقط: جالري + تقييم مخاطر (كل المشاريع المتاحة)';
+          }
+        } else if (roleLower === 'admin') {
           roleText = 'صلاحياتك: نجران وشرورة';
-        } else if (role === 'najran') {
+        } else if (roleLower === 'najran') {
           roleText = 'صلاحياتك: مشروع نجران فقط';
-        } else if (role === 'sharurah') {
+        } else if (roleLower === 'sharurah') {
           roleText = 'صلاحياتك: مشروع شرورة فقط';
-        } else if (role === 'najran_viewer') {
-          roleText = 'وضع عرض فقط: جالري + تقييم مخاطر نجران';
-        } else if (role === 'sharurah_viewer') {
-          roleText = 'وضع عرض فقط: جالري + تقييم مخاطر شرورة';
         } else {
-          roleText = `دورك: ${CURRENT_USER.role}`;
+          roleText = `دورك: ${CURRENT_USER.roleRaw || CURRENT_USER.role}`;
         }
 
         welcomeUser.textContent = `👋 أهلاً ${CURRENT_USER.username} — ${roleText}`;

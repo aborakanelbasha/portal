@@ -238,6 +238,108 @@
       color: #ff8080;
       min-height: 1.2rem;
     }
+    /* زر إنشاء حساب جديد تحت زر الدخول */
+    .signup-link {
+      margin-top: 0.4rem;
+      background: none;
+      border: none;
+      color: #e5e7eb;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .signup-link:hover {
+      color: #bae6fd;
+    }
+
+    /* أوفرلاي فورم التسجيل */
+    .signup-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+
+    .signup-card {
+      width: min(420px, 92vw);
+      background: rgba(15, 23, 42, 0.98);
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.9);
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.9);
+      padding: 18px 18px 16px;
+      color: #f9fafb;
+      text-align: right;
+    }
+
+    .signup-card h2 {
+      margin: 0 0 6px;
+      font-size: 1.1rem;
+    }
+
+    .signup-card p {
+      margin: 0 0 10px;
+      font-size: 0.85rem;
+      color: #cbd5f5;
+    }
+
+    .signup-card .form-group {
+      margin-bottom: 8px;
+    }
+
+    .signup-card label {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 0.8rem;
+    }
+
+    .signup-card input,
+    .signup-card textarea {
+      width: 100%;
+      padding: 7px 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+      color: #f9fafb;
+      font-size: 0.86rem;
+      resize: vertical;
+    }
+
+    .signup-card textarea {
+      min-height: 60px;
+      max-height: 120px;
+    }
+
+    .signup-actions {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      justify-content: flex-start;
+      flex-wrap: wrap-reverse;
+    }
+
+    .btn-secondary {
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .btn-secondary:hover {
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.7);
+    }
+
+    .signup-hint {
+      margin-top: 4px;
+      font-size: 0.78rem;
+      color: #94a3b8;
+    }
 
     @media (max-width: 900px) {
       .hero-card {
@@ -312,15 +414,17 @@
               </button>
             </div>
 
-           <button class="login-btn" type="submit">دخول</button>
-           <button
-            type="button"
-            id="forgotPasswordBtn"
-            class="forgot-btn">
-            نسيت كلمة المرور؟
-            </button>
+         <button class="login-btn" type="submit">دخول</button>
+
+<button
+  type="button"
+  id="openSignup"
+  class="signup-link">
+  مستخدم جديد؟ إنشاء حساب
+</button>
 
 <p class="login-error" id="login-error"></p>
+
 
           </form>
         </div>
@@ -683,8 +787,162 @@
       }
     });
   }
-</script>
+     <!-- ===== نافذة طلب إنشاء حساب جديد ===== -->
+  <div id="signupOverlay" class="signup-overlay" style="display:none;">
+    <div class="signup-card">
+      <h2>طلب إنشاء حساب جديد</h2>
+      <p>
+        املأ البيانات التالية ليتم مراجعة طلبك من قِبَل مسؤول النظام.
+      </p>
 
+      <form id="signupForm">
+        <div class="form-group">
+          <label for="su_username">اسم المستخدم المقترح</label>
+          <input id="su_username" type="text" required />
+        </div>
+
+        <div class="form-group">
+          <label for="su_email">البريد الإلكتروني</label>
+          <input id="su_email" type="email" required />
+        </div>
+
+        <div class="form-group">
+          <label for="su_phone">رقم الجوال</label>
+          <input id="su_phone" type="text" placeholder="اختياري" />
+        </div>
+
+        <div class="form-group">
+          <label for="su_password">كلمة المرور المقترحة</label>
+          <input id="su_password" type="password" required />
+          <div class="signup-hint">
+            يمكنك تغييرها لاحقًا بعد تفعيل الحساب.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="su_message">رسالة تعريفية / سبب طلب الوصول</label>
+          <textarea
+            id="su_message"
+            placeholder="مثلاً: أحتاج الوصول لتصاريح مشروع نجران كمشرف سلامة."></textarea>
+        </div>
+
+        <div class="signup-actions">
+          <button type="submit" class="login-btn" style="margin-top:0;">
+            إرسال طلب التسجيل
+          </button>
+          <button type="button" id="closeSignup" class="btn-secondary">
+            إلغاء
+          </button>
+        </div>
+      </form>
+
+      <p class="signup-hint">
+        * سيتم مراجعة طلبك من قِبَل مسؤول النظام، وستصلك بيانات الدخول بعد الموافقة.
+      </p>
+    </div>
+  </div>
+</script>
+  const OPEN_SIGNUP_BTN  = document.getElementById("openSignup");
+    const SIGNUP_OVERLAY   = document.getElementById("signupOverlay");
+    const CLOSE_SIGNUP_BTN = document.getElementById("closeSignup");
+    const SIGNUP_FORM      = document.getElementById("signupForm");
+
+    const SIGNUP_KEY = "ptw_signup_requests";
+
+    function readSignupRequests() {
+      try {
+        const raw = localStorage.getItem(SIGNUP_KEY);
+        if (!raw) return [];
+        const list = JSON.parse(raw);
+        return Array.isArray(list) ? list : [];
+      } catch (e) {
+        console.error("parse signup requests error", e);
+        return [];
+      }
+    }
+
+    function writeSignupRequests(list) {
+      localStorage.setItem(SIGNUP_KEY, JSON.stringify(list));
+    }
+
+    function openSignup() {
+      if (SIGNUP_OVERLAY) SIGNUP_OVERLAY.style.display = "flex";
+    }
+    function closeSignup() {
+      if (SIGNUP_OVERLAY) SIGNUP_OVERLAY.style.display = "none";
+    }
+
+    if (OPEN_SIGNUP_BTN && SIGNUP_OVERLAY) {
+      OPEN_SIGNUP_BTN.addEventListener("click", openSignup);
+    }
+    if (CLOSE_SIGNUP_BTN) {
+      CLOSE_SIGNUP_BTN.addEventListener("click", closeSignup);
+    }
+
+    if (SIGNUP_FORM) {
+      SIGNUP_FORM.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (!SIGNUP_FORM.checkValidity()) {
+          SIGNUP_FORM.reportValidity();
+          return;
+        }
+
+        const username = (document.getElementById("su_username").value || "").trim();
+        const email    = (document.getElementById("su_email").value || "").trim();
+        const phone    = (document.getElementById("su_phone").value || "").trim();
+        const password = document.getElementById("su_password").value || "";
+        const message  = (document.getElementById("su_message").value || "").trim();
+
+        if (!username || !email || !password) {
+          alert("من فضلك أكمل الحقول الإلزامية (الاسم، الإيميل، كلمة المرور).");
+          return;
+        }
+
+        const requests = readSignupRequests();
+
+        // نتحقق لو في طلب بنفس الإيميل أو اليوزر
+        const exists = requests.some(
+          (r) =>
+            (r.username && r.username.toLowerCase() === username.toLowerCase()) ||
+            (r.email && r.email.toLowerCase() === email.toLowerCase())
+        );
+        if (exists) {
+          alert("يوجد بالفعل طلب تسجيل بنفس اسم المستخدم أو البريد الإلكتروني قيد المراجعة.");
+          return;
+        }
+
+        const newReq = {
+          id: "req_" + Date.now(),
+          username,
+          email,
+          phone,
+          password,
+          message,
+          status: "pending",
+          createdAt: new Date().toISOString()
+        };
+
+        requests.push(newReq);
+        writeSignupRequests(requests);
+
+        // نفرّغ الفورم و نقفل النافذة
+        SIGNUP_FORM.reset();
+        closeSignup();
+
+        // رسالة للمستخدم في صفحة اللوجين
+        if (errorBox) {
+          errorBox.style.color = "#bbf7d0";
+          errorBox.textContent =
+            "✅ تم إرسال طلب التسجيل بنجاح، وسيتم مراجعته من قِبَل مسؤول النظام.";
+          setTimeout(() => {
+            errorBox.style.color = "#ff8080";
+          }, 7000);
+        } else {
+          alert("تم إرسال طلب التسجيل، سيتم مراجعته من قِبَل مسؤول النظام.");
+        }
+      });
+    }
+  </script>
 
 </body>
 </html>

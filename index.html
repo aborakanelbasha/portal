@@ -471,125 +471,144 @@
 
   <!-- سكريبت Firebase: username/email -> Firebase Auth -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-    // إعدادات Firebase (نفس مشروعك)
-    const firebaseConfig = {
-      apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
-      authDomain: "ptw-najran-sharurah.firebaseapp.com",
-      projectId: "ptw-najran-sharurah",
-      storageBucket: "ptw-najran-sharurah.firebasestorage.app",
-      messagingSenderId: "848619550286",
-      appId: "1:848619550286:web:fe5c470f67236b2519751f"
-    };
+  // إعدادات Firebase (نفس مشروعك)
+  const firebaseConfig = {
+    apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
+    authDomain: "ptw-najran-sharurah.firebaseapp.com",
+    projectId: "ptw-najran-sharurah",
+    storageBucket: "ptw-najran-sharurah.firebasestorage.app",
+    messagingSenderId: "848619550286",
+    appId: "1:848619550286:web:fe5c470f67236b2519751f"
+  };
 
-    const app  = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
-    const formEl   = document.getElementById("login-form");
-    const userEl   = document.getElementById("username");
-    const passEl   = document.getElementById("password");
-    const errorEl  = document.getElementById("login-error");
+  const formEl   = document.getElementById("login-form");
+  const userEl   = document.getElementById("username");
+  const passEl   = document.getElementById("password");
+  const errorEl  = document.getElementById("login-error");
 
-    function findUserByIdentifier(identifier) {
-      const list = readStoredUsers();
-      if (!identifier) return null;
+  // نقرأ نفس users من النظام القديم علشان نجيب role / username / email
+  function readStoredUsers() {
+    try {
+      const raw = localStorage.getItem("ptw_users");
+      if (!raw) return [];
+      const list = JSON.parse(raw);
+      return Array.isArray(list) ? list : [];
+    } catch (e) {
+      console.error("ptw_users parse error", e);
+      return [];
+    }
+  }
 
-      if (identifier.includes("@")) {
-        return list.find(
-          (u) => (u.email || "").toLowerCase() === identifier.toLowerCase()
-        );
-      } else {
-        return list.find(
-          (u) => (u.username || "").toLowerCase() === identifier.toLowerCase()
-        );
-      }
+  function findUserByIdentifier(identifier) {
+    const list = readStoredUsers();
+    if (!identifier) return null;
+
+    if (identifier.includes("@")) {
+      return list.find(
+        (u) => (u.email || "").toLowerCase() === identifier.toLowerCase()
+      );
+    } else {
+      return list.find(
+        (u) => (u.username || "").toLowerCase() === identifier.toLowerCase()
+      );
+    }
+  }
+
+  formEl.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    errorEl.textContent = "";
+
+    const identifier = (userEl.value || "").trim(); // ممكن يكون username أو إيميل
+    const password   = passEl.value || "";
+
+    if (!identifier || !password) {
+      errorEl.textContent = "من فضلك أدخل اسم المستخدم/الإيميل وكلمة المرور.";
+      return;
     }
 
-    formEl.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      errorEl.textContent = "";
+    // 1) حالة الأدمن الكلاسيكي → نسيبه على النظام القديم
+    if (!identifier.includes("@") && identifier === "admin") {
+      const ok = window.legacyLoginAttempt(identifier, password);
+      return;
+    }
 
-      const identifier = (userEl.value || "").trim(); // ممكن يكون username أو إيميل
-      const password   = passEl.value || "";
+    // 2) نحدد الإيميل اللي هنستخدمه في Firebase
+    let loginEmail = identifier;
+    let appUser    = null;
 
-      if (!identifier || !password) {
-        errorEl.textContent = "من فضلك أدخل اسم المستخدم/الإيميل وكلمة المرور.";
+    if (!identifier.includes("@")) {
+      appUser = findUserByIdentifier(identifier);
+      if (!appUser || !appUser.email) {
+        errorEl.textContent = "هذا المستخدم غير مرتبط بإيميل. برجاء مراجعة مسؤول النظام من صفحة إدارة المستخدمين.";
+        return;
+      }
+      loginEmail = appUser.email;
+    } else {
+      // identifier هو نفسه إيميل
+      appUser = findUserByIdentifier(identifier) || null;
+    }
+
+    try {
+      // 3) تسجيل الدخول في Firebase
+      const cred   = await signInWithEmailAndPassword(auth, loginEmail, password);
+      const fbUser = cred.user;
+      console.log("Firebase login OK:", fbUser);
+
+      // لو المستخدم موجود في ptw_users و موقوف → نمنعه
+      if (appUser && appUser.active === false) {
+        errorEl.textContent = "هذا المستخدم موقوف في النظام. برجاء مراجعة مسؤول النظام.";
         return;
       }
 
-      // 1) حالة الأدمن الكلاسيكي → نسيبه على النظام القديم
-      if (!identifier.includes("@") && identifier === "admin") {
-        const ok = window.legacyLoginAttempt(identifier, password);
-        if (!ok) {
-          // الرسالة بتتكتب جوه legacyLoginAttempt
-        }
-        return;
+      // نحاول نجيب بياناته من ptw_users (username, role)
+      if (!appUser) {
+        const list = readStoredUsers();
+        appUser =
+          list.find(
+            (u) =>
+              (u.email || "").toLowerCase() === (fbUser.email || "").toLowerCase()
+          ) || null;
       }
 
-      // 2) نحدد الإيميل اللي هنستخدمه في Firebase
-      let loginEmail = identifier;
-      let appUser    = null;
+      const sessionData = {
+        uid: fbUser.uid,
+        email: fbUser.email,
+        username: appUser?.username || fbUser.email,
+        role: appUser?.role || "admin", // تقدر تغير الديفولت بعدين
+        loginTime: new Date().toISOString()
+      };
 
+      localStorage.setItem("aln_session", JSON.stringify(sessionData));
+      window.location.href = "portal.html";
+    } catch (err) {
+      console.error("Firebase login error:", err);
+      let handled = false;
+
+      // 4) لو اللي مكتوب username (مفيهوش @) نجرب النظام القديم كـ fallback
       if (!identifier.includes("@")) {
-        appUser = findUserByIdentifier(identifier);
-        if (!appUser || !appUser.email) {
-          errorEl.textContent = "هذا المستخدم غير مرتبط بإيميل. برجاء مراجعة مسؤول النظام من صفحة إدارة المستخدمين.";
-          return;
-        }
-        loginEmail = appUser.email;
-      } else {
-        // identifier هو نفسه إيميل
-        appUser = findUserByIdentifier(identifier) || null;
+        handled = window.legacyLoginAttempt(identifier, password);
       }
 
-      try {
-        // 3) تسجيل الدخول في Firebase
-        const cred = await signInWithEmailAndPassword(auth, loginEmail, password);
-        const fbUser = cred.user;
-        console.log("Firebase login OK:", fbUser);
-
-        // لو المستخدم موجود في ptw_users و موقوف → نمنعه
-        if (appUser && appUser.active === false) {
-          errorEl.textContent = "هذا المستخدم موقوف في النظام. برجاء مراجعة مسؤول النظام.";
-          return;
+      if (!handled) {
+        let msg = "تسجيل الدخول فشل في نظام Firebase.";
+        if (err.code === "auth/user-not-found") {
+          msg = "هذا الإيميل غير مسجّل في Firebase.";
+        } else if (err.code === "auth/wrong-password") {
+          msg = "كلمة المرور غير صحيحة (من Firebase).";
+        } else if (err.code === "auth/invalid-login-credentials") {
+          msg = "بيانات الدخول غير صحيحة (من Firebase).";
         }
-
-        // نحاول نجيب بياناته من ptw_users (username, role)
-        if (!appUser) {
-          const list = readStoredUsers();
-          appUser =
-            list.find(
-              (u) =>
-                (u.email || "").toLowerCase() === (fbUser.email || "").toLowerCase()
-            ) || null;
-        }
-
-        const sessionData = {
-          uid: fbUser.uid,
-          email: fbUser.email,
-          username: appUser?.username || fbUser.email,
-          role: appUser?.role || "admin", // تقدر تغير الديفولت بعدين
-          loginTime: new Date().toISOString()
-        };
-
-        localStorage.setItem("aln_session", JSON.stringify(sessionData));
-        window.location.href = "portal.html";
-      } catch (err) {
-        console.error("Firebase login error:", err);
-
-        // 4) لو فشل Firebase نحاول بالنظام القديم كـ fallback (للمرحلة الانتقالية)
-        const ok = window.legacyLoginAttempt(identifier, password);
-        if (!ok) {
-          // لو برضه فشل → نعرض رسالة عامة
-          if (!errorEl.textContent) {
-            errorEl.textContent =
-              "تسجيل الدخول فشل، تأكد من اسم المستخدم/الإيميل وكلمة المرور أو اطلب من الأدمن إضافتك في Firebase و ptw_users.";
-          }
-        }
+        errorEl.textContent = msg + " لو المشكلة مستمرة، راجع مسؤول النظام.";
       }
-    });
-  </script>
+    }
+  });
+</script>
+
 </body>
 </html>

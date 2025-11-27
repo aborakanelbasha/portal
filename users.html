@@ -10,8 +10,13 @@
       --panel-bg: rgba(15,23,42,.98);
       --panel-brd: rgba(148,163,184,.7);
       --accent: #38bdf8;
+      --accent-soft: rgba(56,189,248,.18);
       --text:#f9fafb;
       --muted:#cbd5f5;
+      --danger:#f97373;
+      --danger-soft:rgba(248,113,113,.18);
+      --success:#4ade80;
+      --success-soft:rgba(74,222,128,.18);
     }
     *{box-sizing:border-box}
     body{
@@ -22,13 +27,14 @@
       padding:20px 12px 60px;
     }
     .container{
-      max-width:1100px;
+      max-width:1150px;
       margin:0 auto;
     }
     h1{
       margin:0 0 8px;
-      font-size:1.8rem;
+      font-size:1.9rem;
       text-align:right;
+      letter-spacing:.02em;
     }
     .subtitle{
       margin:0 0 18px;
@@ -36,8 +42,10 @@
       font-size:.95rem;
       text-align:right;
     }
+
+    /* ======= Top user bar ======= */
     .user-bar{
-      margin:0 0 18px;
+      margin:0 0 16px;
       padding:10px 14px;
       border-radius:12px;
       background:linear-gradient(135deg, rgba(15,23,42,.95), rgba(30,64,175,.92));
@@ -49,31 +57,117 @@
       box-shadow:0 18px 40px rgba(15,23,42,.8);
       font-size:.9rem;
     }
+    .user-bar-main{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .user-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 10px;
+      border-radius:999px;
+      background:rgba(15,23,42,.85);
+      border:1px solid rgba(148,163,184,.85);
+      font-size:.8rem;
+    }
+
     .btn{
       border-radius:10px;
       border:1px solid rgba(148,163,184,.8);
       background:rgba(15,23,42,.9);
       color:var(--text);
-      padding:6px 12px;
+      padding:7px 12px;
       cursor:pointer;
       font-weight:600;
       font-size:.9rem;
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      transition:box-shadow .15s ease, background .15s ease, transform .05s ease;
     }
     .btn:hover{
-      box-shadow:0 0 0 1px rgba(56,189,248,.7);
+      box-shadow:0 0 0 1px rgba(56,189,248,.85);
+      background:rgba(15,23,42,1);
+      transform:translateY(-1px);
+    }
+    .btn:active{
+      transform:translateY(0);
+      box-shadow:none;
+    }
+    .btn-ghost{
+      background:transparent;
+    }
+    .btn-primary{
+      border-color:var(--accent);
+      background:var(--accent-soft);
     }
     .btn-danger{
-      border-color:#f97373;
+      border-color:var(--danger);
       color:#fee2e2;
+      background:var(--danger-soft);
     }
     .btn-danger:hover{
-      box-shadow:0 0 0 1px rgba(248,113,113,.8);
-      background:rgba(248,113,113,.15);
+      box-shadow:0 0 0 1px rgba(248,113,113,.85);
+      background:rgba(127,29,29,.9);
+    }
+    .small-btn{
+      padding:4px 9px;
+      font-size:.78rem;
+      border-radius:999px;
     }
 
+    /* ======= Stats bar ======= */
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0,1fr));
+      gap:10px;
+      margin:0 0 18px;
+    }
+    @media(max-width:900px){
+      .stats-grid{
+        grid-template-columns:repeat(2, minmax(0,1fr));
+      }
+    }
+    @media(max-width:600px){
+      .stats-grid{
+        grid-template-columns:1fr;
+      }
+    }
+    .stat-card{
+      background:rgba(15,23,42,.96);
+      border-radius:14px;
+      padding:8px 10px;
+      border:1px solid rgba(30,64,175,.7);
+      box-shadow:0 10px 26px rgba(15,23,42,.7);
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .stat-label{
+      font-size:.76rem;
+      color:var(--muted);
+    }
+    .stat-value{
+      font-size:1.1rem;
+      font-weight:700;
+    }
+    .stat-chip{
+      font-size:.7rem;
+      align-self:flex-start;
+      margin-top:2px;
+      padding:2px 7px;
+      border-radius:999px;
+      background:rgba(15,23,42,.9);
+      border:1px solid rgba(148,163,184,.7);
+    }
+
+    /* ======= Layout & panels ======= */
     .layout{
       display:grid;
-      grid-template-columns: minmax(0, 2fr) minmax(0, 1.3fr);
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1.35fr);
       gap:16px;
     }
     @media(max-width:900px){
@@ -89,6 +183,26 @@
       padding:14px 14px 10px;
       box-shadow:0 16px 40px rgba(15,23,42,.8);
     }
+    .panel-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+      margin-bottom:8px;
+    }
+    .panel-title{
+      margin:0;
+      font-size:1.02rem;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .panel-subtitle{
+      margin:2px 0 0;
+      color:var(--muted);
+      font-size:.8rem;
+    }
+
     .panel h2{
       margin:0 0 10px;
       font-size:1.05rem;
@@ -98,6 +212,7 @@
       font-size:.8rem;
     }
 
+    /* ======= Table ======= */
     table{
       width:100%;
       border-collapse:collapse;
@@ -124,22 +239,45 @@
     tbody tr:nth-child(even){
       background:rgba(15,23,42,.7);
     }
+    tbody tr:hover{
+      background:rgba(30,64,175,.55);
+    }
+
     .tag{
       display:inline-flex;
       align-items:center;
-      padding:2px 8px;
+      padding:2px 9px;
       border-radius:999px;
       border:1px solid rgba(148,163,184,.8);
       font-size:.75rem;
+      gap:4px;
     }
     .tag.green{
-      border-color:#4ade80;
+      border-color:var(--success);
       color:#bbf7d0;
+      background:var(--success-soft);
     }
     .tag.red{
-      border-color:#f97373;
+      border-color:var(--danger);
       color:#fecaca;
+      background:var(--danger-soft);
     }
+    .tag.role-admin{
+      border-color:#facc15;
+      color:#fef9c3;
+      background:rgba(250,204,21,.18);
+    }
+    .tag.role-najran{
+      border-color:#38bdf8;
+      color:#e0f2fe;
+      background:rgba(56,189,248,.16);
+    }
+    .tag.role-sharurah{
+      border-color:#a855f7;
+      color:#f3e8ff;
+      background:rgba(168,85,247,.17);
+    }
+
     .small{
       font-size:.78rem;
     }
@@ -165,6 +303,14 @@
       background:rgba(15,23,42,.9);
       color:var(--text);
       font-size:.88rem;
+    }
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    select:focus{
+      outline:none;
+      border-color:var(--accent);
+      box-shadow:0 0 0 1px rgba(56,189,248,.7);
     }
     input[type="checkbox"]{
       vertical-align:middle;
@@ -192,15 +338,85 @@
       border:1px solid rgba(30,64,175,.6);
       margin-top:6px;
     }
+
+    /* ======= Toolbar (بحث + فلاتر) ======= */
+    .toolbar{
+      margin-top:10px;
+      margin-bottom:6px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .toolbar-left,
+    .toolbar-right{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .search-input{
+      min-width:210px;
+    }
+    .badge-counter{
+      font-size:.75rem;
+      padding:2px 7px;
+      border-radius:999px;
+      background:rgba(15,23,42,.9);
+      border:1px solid rgba(148,163,184,.7);
+      color:var(--muted);
+    }
+
+    @media(max-width:600px){
+      body{
+        padding-inline:8px;
+      }
+      .panel{
+        padding-inline:10px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
+    <!-- شريط أعلى الصفحة -->
     <div class="user-bar">
-      <div id="userInfo">👋 جاري التحقق من المستخدم…</div>
+      <div class="user-bar-main">
+        <span id="userInfo">👋 جاري التحقق من المستخدم…</span>
+        <span class="user-chip">
+          🛡️ صلاحيات: <span id="userRoleChip">-</span>
+        </span>
+      </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button type="button" class="btn" onclick="goPortal()">الرجوع للبوابة</button>
-        <button type="button" class="btn" onclick="goActivity()">عرض سجل النشاط</button>
+        <button type="button" class="btn btn-ghost" onclick="goPortal()">⬅ الرجوع للبوابة</button>
+        <button type="button" class="btn" onclick="goActivity()">📜 عرض سجل النشاط</button>
+      </div>
+    </div>
+
+    <!-- شريط الإحصائيات -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">إجمالي المستخدمين</div>
+        <div class="stat-value" id="statUsersTotal">0</div>
+        <div class="stat-chip">جميع الأدوار</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">مستخدمون مفعّلون</div>
+        <div class="stat-value" id="statUsersActive">0</div>
+        <div class="stat-chip">جاهزون للدخول</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">مستخدمون موقوفون</div>
+        <div class="stat-value" id="statUsersInactive">0</div>
+        <div class="stat-chip">ممنوعون من الدخول</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">طلبات التسجيل (معلقة)</div>
+        <div class="stat-value" id="statReqPending">0</div>
+        <div class="stat-chip">
+          الكل: <span id="statReqTotal">0</span>
+        </div>
       </div>
     </div>
 
@@ -212,18 +428,47 @@
     <div class="layout">
       <!-- قائمة المستخدمين -->
       <div class="panel">
-        <h2>قائمة المستخدمين</h2>
-        <small>الأدوار المستخدمة حاليًا:
-          <span class="mono small">admin</span>،
-          <span class="mono small">najran</span>،
-          <span class="mono small">sharurah</span>
-        </small>
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">قائمة المستخدمين</h2>
+            <p class="panel-subtitle">
+              الأدوار المستخدمة حاليًا:
+              <span class="mono small">admin</span>،
+              <span class="mono small">najran</span>،
+              <span class="mono small">sharurah</span>
+            </p>
+          </div>
+          <div>
+            <span class="badge-counter" id="usersCountLabel">0 مستخدم</span>
+          </div>
+        </div>
 
-        <!-- زر مزامنة المستخدمين مع Firestore -->
-        <div style="margin:10px 0 6px; text-align:left;">
-          <button type="button" class="btn" onclick="syncLocalUsersToFirestore()">
-            ☁ مزامنة المستخدمين مع Firestore
-          </button>
+        <!-- شريط أدوات: بحث + فلاتر + مزامنة -->
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <input
+              id="searchInput"
+              class="search-input"
+              type="text"
+              placeholder="🔍 بحث بالاسم أو الإيميل..."
+            />
+          </div>
+          <div class="toolbar-right">
+            <select id="filterRole">
+              <option value="">كل الأدوار</option>
+              <option value="admin">Admin</option>
+              <option value="najran">Najran</option>
+              <option value="sharurah">Sharurah</option>
+            </select>
+            <select id="filterStatus">
+              <option value="">كل الحالات</option>
+              <option value="active">مفعّل</option>
+              <option value="inactive">موقوف</option>
+            </select>
+            <button type="button" class="btn btn-primary small-btn" onclick="syncLocalUsersToFirestore()">
+              ☁ مزامنة مع Firestore
+            </button>
+          </div>
         </div>
 
         <div class="scroll-wrap">
@@ -250,7 +495,12 @@
 
       <!-- إضافة / تعديل + طلبات التسجيل -->
       <div class="panel">
-        <h2>إضافة مستخدم جديد</h2>
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">إضافة مستخدم جديد</h2>
+            <p class="panel-subtitle">إضافة مستخدم يدويًا إلى قائمة <span class="mono small">ptw_users</span> المحلية.</p>
+          </div>
+        </div>
 
         <form onsubmit="handleAddUser(event)">
           <div class="form-group">
@@ -285,16 +535,25 @@
             </label>
           </div>
 
-          <button type="submit" class="btn">➕ إضافة المستخدم</button>
+          <button type="submit" class="btn btn-primary">
+            ➕ إضافة المستخدم
+          </button>
         </form>
 
         <hr style="margin:14px 0;border-color:rgba(30,64,175,.7)">
 
-        <h2 style="margin-top:10px;">طلبات التسجيل من البوابة</h2>
-        <small>
-          البيانات التالية قادمة من
-          <span class="mono small">Firestore → collection: signup_requests</span>
-        </small>
+        <div class="panel-header" style="margin-top:4px;">
+          <div>
+            <h2 class="panel-title">طلبات التسجيل من البوابة</h2>
+            <p class="panel-subtitle">
+              البيانات التالية قادمة من
+              <span class="mono small">Firestore → collection: signup_requests</span>
+            </p>
+          </div>
+          <div>
+            <span class="badge-counter" id="reqCountLabel">0 طلب</span>
+          </div>
+        </div>
 
         <div class="scroll-wrap">
           <table>
@@ -328,19 +587,20 @@
 
     const USERS_KEY = "ptw_users";
     let CURRENT_USER = null;
+    let FILTER_ROLE = "";
+    let FILTER_STATUS = "";
+    let SEARCH_TERM = "";
 
     // دالة مساعدة لتنسيق التاريخ (تعالج String أو Object من Firestore)
     function formatCreatedAt(value) {
       if (!value) return "-";
       try {
-        // لو String عادي
         if (typeof value === "string") {
           const d = new Date(value);
           if (!isNaN(d)) return d.toLocaleString("ar-EG");
           return "-";
         }
 
-        // لو Object جاي من Firestore بعد JSON.parse (seconds / nanoseconds)
         if (typeof value === "object" && value !== null) {
           if (typeof value.seconds === "number") {
             const d = new Date(value.seconds * 1000);
@@ -352,6 +612,46 @@
       }
       return "-";
     }
+
+    // ===== تحديث الإحصائيات الخاصة بالمستخدمين =====
+    function updateUserStats(list) {
+      if (!Array.isArray(list)) list = [];
+      const total = list.length;
+      const active = list.filter(u => u.active !== false).length;
+      const inactive = total - active;
+
+      const statUsersTotal   = document.getElementById("statUsersTotal");
+      const statUsersActive  = document.getElementById("statUsersActive");
+      const statUsersInactive= document.getElementById("statUsersInactive");
+      const usersCountLabel  = document.getElementById("usersCountLabel");
+
+      if (statUsersTotal)    statUsersTotal.textContent = total;
+      if (statUsersActive)   statUsersActive.textContent = active;
+      if (statUsersInactive) statUsersInactive.textContent = inactive;
+      if (usersCountLabel)   usersCountLabel.textContent = total + " مستخدم";
+    }
+
+    // ===== تحديث الإحصائيات الخاصة بطلبات التسجيل =====
+    function updateSignupStatsFromDocs(docs) {
+      const all = docs || [];
+      const total = all.length;
+      let pending = 0;
+      all.forEach(d => {
+        const data = d.data ? d.data() : d;
+        const st = (data && data.status || "pending").toLowerCase();
+        if (st === "pending") pending++;
+      });
+
+      const statReqTotal   = document.getElementById("statReqTotal");
+      const statReqPending = document.getElementById("statReqPending");
+      const reqCountLabel  = document.getElementById("reqCountLabel");
+
+      if (statReqTotal)   statReqTotal.textContent = total;
+      if (statReqPending) statReqPending.textContent = pending;
+      if (reqCountLabel)  reqCountLabel.textContent = total + " طلب";
+    }
+    // نخليها متاحة للموديول
+    window.updateSignupStats = updateSignupStatsFromDocs;
 
     // ===== حماية الصفحة: admin فقط =====
     (function protectUsersPage() {
@@ -378,18 +678,20 @@
         }
 
         CURRENT_USER = session;
-        // نخليها كمان على window علشان سكربت الـ module يستخدمها
         window.CURRENT_USER = session;
 
         const userInfo = document.getElementById("userInfo");
+        const roleChip = document.getElementById("userRoleChip");
         if (userInfo) {
           userInfo.textContent = `👋 مرحبًا ${session.username} — دورك: ${session.role}`;
         }
+        if (roleChip) {
+          roleChip.textContent = session.role;
+        }
 
-        // نتأكد إن الأدمن الحالي موجود في قائمة المستخدمين
         ensureCurrentAdminInUsers();
-        // بعد كده نحمّل اليوزرات من localStorage
         loadUsers();
+        initFilters();
       } catch (e) {
         console.error(e);
         alert("حدث خطأ في قراءة جلسة المستخدم.");
@@ -444,6 +746,30 @@
       }
     }
 
+    // تطبيق الفلاتر والبحث على القائمة
+    function applyUserFilters(list) {
+      let filtered = Array.isArray(list) ? [...list] : [];
+
+      if (SEARCH_TERM) {
+        const t = SEARCH_TERM.toLowerCase();
+        filtered = filtered.filter(u =>
+          (u.username || "").toLowerCase().includes(t) ||
+          (u.email || "").toLowerCase().includes(t)
+        );
+      }
+
+      if (FILTER_ROLE) {
+        filtered = filtered.filter(u => (u.role || "").toLowerCase() === FILTER_ROLE);
+      }
+
+      if (FILTER_STATUS) {
+        const activeWanted = FILTER_STATUS === "active";
+        filtered = filtered.filter(u => (u.active !== false) === activeWanted);
+      }
+
+      return filtered;
+    }
+
     // ===== تحميل وعرض المستخدمين =====
     function loadUsers() {
       const tbody = document.getElementById("usersBody");
@@ -451,9 +777,17 @@
       if (!tbody) return;
 
       const list = readUsers();
+      const renderedList = applyUserFilters(list);
 
-      if (!list.length) {
-        if (emptyRow) emptyRow.style.display = "";
+      // تحديث الإحصائيات
+      updateUserStats(list);
+
+      if (!renderedList.length) {
+        tbody.innerHTML = "";
+        if (emptyRow) {
+          emptyRow.style.display = "";
+          tbody.appendChild(emptyRow);
+        }
         return;
       } else if (emptyRow) {
         emptyRow.style.display = "none";
@@ -461,17 +795,24 @@
 
       tbody.innerHTML = "";
 
-      list.forEach((u, index) => {
+      renderedList.forEach((u, index) => {
         const tr = document.createElement("tr");
 
-        const roleLabel =
-          u.role === "admin"
-            ? "Admin"
-            : u.role === "najran"
-            ? "Najran"
-            : u.role === "sharurah"
-            ? "Sharurah"
-            : (u.role || "-");
+        const roleRaw = (u.role || "").toLowerCase();
+        let roleLabel = "-";
+        let roleClass = "";
+        if (roleRaw === "admin") {
+          roleLabel = "Admin";
+          roleClass = "role-admin";
+        } else if (roleRaw === "najran") {
+          roleLabel = "Najran";
+          roleClass = "role-najran";
+        } else if (roleRaw === "sharurah") {
+          roleLabel = "Sharurah";
+          roleClass = "role-sharurah";
+        } else {
+          roleLabel = u.role || "-";
+        }
 
         const createdAtText = formatCreatedAt(u.createdAt);
 
@@ -479,7 +820,7 @@
           <td>${index + 1}</td>
           <td class="mono">${u.username}</td>
           <td class="mono small">${u.email || "-"}</td>
-          <td><span class="tag">${roleLabel}</span></td>
+          <td><span class="tag ${roleClass}">${roleLabel}</span></td>
           <td>
             <span class="tag ${u.active ? "green" : "red"}">
               ${u.active ? "مفعل" : "موقوف"}
@@ -514,6 +855,34 @@
 
         tbody.appendChild(tr);
       });
+    }
+
+    // تهيئة البحث والفلاتر
+    function initFilters() {
+      const searchInput  = document.getElementById("searchInput");
+      const filterRole   = document.getElementById("filterRole");
+      const filterStatus = document.getElementById("filterStatus");
+
+      if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+          SEARCH_TERM = (e.target.value || "").trim().toLowerCase();
+          loadUsers();
+        });
+      }
+
+      if (filterRole) {
+        filterRole.addEventListener("change", (e) => {
+          FILTER_ROLE = (e.target.value || "").toLowerCase();
+          loadUsers();
+        });
+      }
+
+      if (filterStatus) {
+        filterStatus.addEventListener("change", (e) => {
+          FILTER_STATUS = e.target.value || "";
+          loadUsers();
+        });
+      }
     }
 
     // ===== إضافة مستخدم جديد يدويًا =====
@@ -578,7 +947,15 @@
       let list = readUsers();
       const idx = list.findIndex((u) => u.username === username);
       if (idx === -1) return;
-      list[idx].active = !list[idx].active;
+
+      const targetState = !list[idx].active;
+      const msg = targetState
+        ? "هل تريد تفعيل هذا المستخدم؟"
+        : "هل تريد إيقاف هذا المستخدم؟";
+
+      if (!confirm(msg)) return;
+
+      list[idx].active = targetState;
       writeUsers(list);
       loadUsers();
     }
@@ -625,6 +1002,10 @@
 
       alert("تم تحديث كلمة المرور بنجاح.");
     }
+
+    // نخلي بعض الدوال متاحة للموديول لو احتاجها
+    window.readUsers = readUsers;
+    window.loadUsers = loadUsers;
   </script>
 
   <!-- سكربت Firebase / Firestore + Auth لطلبات التسجيل + Approve/Reject + app_users + Sync -->
@@ -666,7 +1047,7 @@
 
     // نخزن الطلبات هنا علشان نستخدمها في approve/reject
     const requestsCache = new Map();
-    window._signupRequestsCache = requestsCache; // لو حبّيت تشوفها من الكونسول
+    window._signupRequestsCache = requestsCache;
 
     // ========= دالة عرض الطلبات في الجدول =========
     function renderRequests(docs) {
@@ -680,6 +1061,10 @@
           tbody.innerHTML = "";
           tbody.appendChild(emptyRow);
         }
+        // تحديث الإحصائيات
+        if (window.updateSignupStats) {
+          window.updateSignupStats([]);
+        }
         return;
       }
 
@@ -690,7 +1075,6 @@
         const data = docSnap.data() || {};
         const id   = docSnap.id;
 
-        // نخزن الداتا في الكاش
         requestsCache.set(id, data);
 
         const tr = document.createElement("tr");
@@ -714,7 +1098,6 @@
           statusLabel = "معلق";
         }
 
-        // أزرار الاعتماد/الرفض تظهر فقط لو الطلب معلق
         let actionsHtml = "";
         if (status === "pending") {
           actionsHtml = `
@@ -746,6 +1129,11 @@
 
         tbody.appendChild(tr);
       });
+
+      // تحديث الإحصائيات
+      if (window.updateSignupStats) {
+        window.updateSignupStats(docs);
+      }
     }
 
     // ========= الاشتراك اللايف في collection signup_requests =========
@@ -838,7 +1226,6 @@
           return;
         }
 
-        // نقرأ القائمة القديمة من localStorage
         let list = [];
         try {
           const raw = localStorage.getItem("ptw_users");
@@ -856,7 +1243,6 @@
 
         const nowIso = new Date().toISOString();
 
-        // نحاول نطلع createdAt من data (Firestore Timestamp أو String)
         let createdAtIso = nowIso;
         const ca = data.createdAt;
         try {
@@ -873,23 +1259,20 @@
         const baseUser = {
           username,
           email,
-          password: null, // مش هنخزن باسورد من الـ request
+          password: null,
           role: role,
           active: true,
           createdAt: createdAtIso
         };
 
         if (idx === -1) {
-          // يوزر جديد
           list.push(baseUser);
         } else {
-          // نحدّث بيانات يوزر قديم
           list[idx] = { ...list[idx], ...baseUser };
         }
 
         localStorage.setItem("ptw_users", JSON.stringify(list));
 
-        // لو دالة loadUsers موجودة (من السكربت الأول)، نعيد تحميل الجدول
         if (typeof window.loadUsers === "function") {
           window.loadUsers();
         }
@@ -906,12 +1289,11 @@
         return;
       }
 
-      // 1) نحدد الدور
       let role = prompt(
         'حدد الدور للمستخدم الجديد (admin / najran / sharurah):',
         data.role || 'najran'
       );
-      if (role === null) return; // Cancel
+      if (role === null) return;
 
       role = role.trim().toLowerCase();
       if (!["admin", "najran", "sharurah"].includes(role)) {
@@ -928,7 +1310,6 @@
       }
 
       try {
-        // 2) تحديث حالة الطلب في signup_requests
         const reqRef = doc(db, "signup_requests", id);
         await updateDoc(reqRef, {
           status: "approved",
@@ -938,7 +1319,6 @@
             (window.CURRENT_USER && window.CURRENT_USER.username) || null
         });
 
-        // 3) إضافة / تحديث المستخدم في app_users
         try {
           const now = new Date().toISOString();
           const appUserRef = doc(db, "app_users", username.toLowerCase());
@@ -961,10 +1341,8 @@
           alert("تم اعتماد الطلب، لكن حدث خطأ أثناء حفظ بيانات المستخدم في app_users. راجع الكونسول.");
         }
 
-        // 3.5) إضافة / تحديث المستخدم محليًا في ptw_users (عشان يظهر في الجدول)
         addLocalUserFromRequest({ ...data, username, email }, role);
 
-        // 4) عرض اختيار إنشاء مستخدم في Firebase Auth
         const createAuth = confirm(
           "تم اعتماد الطلب.\nهل تريد إنشاء مستخدم في Firebase Auth لهذا الإيميل الآن؟"
         );
@@ -1005,7 +1383,7 @@
         "سبب رفض الطلب (اختياري):",
         data.rejectReason || ""
       );
-      if (reason === null) return; // Cancel
+      if (reason === null) return;
 
       try {
         const reqRef = doc(db, "signup_requests", id);

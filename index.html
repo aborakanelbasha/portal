@@ -609,7 +609,8 @@
           username: "admin",
           password: fb.password,
           role: fb.role,
-          active: fb.active ?? true
+          active: fb.active ?? true,
+          email: null
         };
       } else {
         foundUser = usersList.find(
@@ -622,7 +623,8 @@
             username: cleanUser,
             password: fb.password,
             role: fb.role,
-            active: fb.active ?? true
+            active: fb.active ?? true,
+            email: null
           };
         }
       }
@@ -642,9 +644,14 @@
         return false;
       }
 
+      const normalizedRole = (foundUser.role || "najran").toLowerCase();
+
+      // توحيد شكل الجلسة مع Firebase: uid/email/username/role/loginTime
       const sessionData = {
+        uid: null,
+        email: foundUser.email || null,
         username: foundUser.username,
-        role: foundUser.role || "najran",
+        role: normalizedRole,
         loginTime: new Date().toISOString()
       };
 
@@ -738,6 +745,7 @@
       formEl.addEventListener("submit", async (e) => {
         e.preventDefault();
         errorEl.textContent = "";
+        errorEl.style.color = "#ff8080";
 
         const identifier = (userEl.value || "").trim(); // username أو إيميل
         const password   = passEl.value || "";
@@ -821,20 +829,22 @@
               null;
           }
 
-          // 7) نحدد الـ username والـ role النهائيين
+          // 7) نحدد الـ username والـ role النهائيين (ونعملهم lowercase)
           const finalUsername =
             profile?.username ||
             localUser?.username ||
             (fbUser.email || loginEmail);
 
-          const finalRole =
+          const finalRoleRaw =
             profile?.role ||
             localUser?.role ||
             "najran"; // ديفولت بسيط لو مفيش أي حاجة
 
+          const finalRole = (finalRoleRaw || "najran").toLowerCase();
+
           const sessionData = {
             uid: fbUser.uid,
-            email: fbUser.email,
+            email: fbUser.email || loginEmail,
             username: finalUsername,
             role: finalRole,
             loginTime: new Date().toISOString()
@@ -871,6 +881,7 @@
     if (forgotBtn) {
       forgotBtn.addEventListener("click", async () => {
         errorEl.textContent = "";
+        errorEl.style.color = "#ff8080";
 
         const identifier = (userEl.value || "").trim(); // username أو إيميل
 

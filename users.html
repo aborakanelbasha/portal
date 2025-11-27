@@ -594,6 +594,7 @@
 
   <!-- سكربت Firebase / Firestore لعرض signup_requests -->
   <!-- سكربت Firebase / Firestore لعرض signup_requests + Approve/Reject -->
+    <!-- سكربت Firebase / Firestore + Auth لعرض signup_requests + Approve/Reject + إنشاء مستخدم في Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import {
@@ -604,6 +605,10 @@
       updateDoc,
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
     // نفس config
     const firebaseConfig = {
@@ -615,10 +620,11 @@
       appId: "1:848619550286:web:fe5c470f67236b2519751f"
     };
 
-    console.log("🔥 users.html Firestore module loaded with Approve/Reject");
+    console.log("🔥 users.html Firestore + Auth module loaded");
 
-    const app = initializeApp(firebaseConfig);
-    const db  = getFirestore(app);
+    const app  = initializeApp(firebaseConfig);
+    const db   = getFirestore(app);
+    const auth = getAuth(app);   // هنستخدمه في إنشاء مستخدم جديد
 
     const tbody    = document.getElementById("signupRequestsBody");
     const emptyRow = document.getElementById("signupEmptyRow");
@@ -632,7 +638,6 @@
       requestsCache.clear();
 
       if (!docs.length) {
-        // لو مفيش طلبات
         tbody.innerHTML = `
           <tr>
             <td colspan="8" class="empty">لا توجد طلبات تسجيل حتى الآن.</td>
@@ -647,7 +652,6 @@
         const data = docSnap.data() || {};
         const id   = docSnap.id;
 
-        // نخزن البيانات في الكاش
         requestsCache.set(id, data);
 
         let createdAtText = "-";
@@ -669,7 +673,6 @@
             ? "موافق عليه"
             : "مرفوض";
 
-        // أزرار الإجراءات تظهر فقط لو الطلب معلق
         let actionsHtml = "-";
         if (status === "pending") {
           actionsHtml = `
@@ -723,7 +726,6 @@
         return;
       }
 
-      // نتفادى التكرار بالاسم أو الإيميل
       const exists = list.some(
         (u) =>
           (u.username || "").toLowerCase() === username.toLowerCase() ||
@@ -737,7 +739,7 @@
       list.push({
         username,
         email,
-        password: "",         // ممكن نخليها فاضية / باسورد مؤقت
+        password: "",         // باسورد مؤقت محليًا (مش مهم دلوقتي)
         role,
         active: true,
         createdAt: new Date().toISOString(),
@@ -747,7 +749,7 @@
       window.loadUsers();
     }
 
-    // ===== دوال Approve / Reject متاحة من الـ window (للاستخدام في الـ onclick) =====
+    // ===== دوال Approve / Reject =====
     window.approveSignup = async function (id) {
       const data = requestsCache.get(id);
       if (!data) {
@@ -755,7 +757,7 @@
         return;
       }
 
-      // نطلب من الأدمن يختار الدور
+      // 1) نحدد الدور
       let role = prompt(
         'حدد الدور للمستخدم الجديد (admin / najran / sharurah):',
         'najran'
@@ -768,10 +770,7 @@
         return;
       }
 
-      if (!confirm(`هل أنت متأكد من اعتماد الطلب للمستخدم: ${data.username} بالدور: ${role} ؟`)) {
-        return;
-      }
-
+      // 2) نعمل Update في Firestore + نضيفه في ptw_users
       try {
         const docRef = doc(db, "signup_requests", id);
         await updateDoc(docRef, {
@@ -781,10 +780,45 @@
           processedBy: (window.CURRENT_USER && window.CURRENT_USER.username) || null
         });
 
-        // نضيف المستخدم في ptw_users لو مش موجود
         addLocalUserFromRequest(data, role);
 
-        alert("✅ تم اعتماد الطلب وإضافة المستخدم إلى قائمة المستخدمين.");
+        // 3) نحاول ننشئ مستخدم في Firebase Auth (اختياري)
+        const email = (data.email || "").trim();
+        if (!email) {
+          alert("✅ تم اعتماد الطلب وإضافة المستخدم محليًا.\n⚠ لكن الإيميل غير موجود، فلن يتم إنشاء مستخدم في Firebase Auth.");
+          return;
+        }
+
+        let tempPassword = prompt(
+          "اختياري: اكتب كلمة مرور مؤقتة لهذا المستخدم في Firebase (على الأقل 6 حروف/أرقام).\nلو سيبتها فاضية هنعدّي بدون إنشاء مستخدم في Firebase:",
+          ""
+        );
+        if (tempPassword !== null) {
+          tempPassword = tempPassword.trim();
+        }
+
+        if (!tempPassword) {
+          alert("✅ تم اعتماد الطلب وإضافة المستخدم محليًا (لم يتم إنشاء مستخدم في Firebase Auth).");
+          return;
+        }
+
+        if (tempPassword.length < 6) {
+          alert("كلمة المرور المؤقتة لازم تكون 6 حروف/أرقام على الأقل. سيتم الاكتفاء بالاعتماد المحلي فقط.");
+          return;
+        }
+
+        try {
+          await createUserWithEmailAndPassword(auth, email, tempPassword);
+          alert("✅ تم اعتماد الطلب + إضافة المستخدم محليًا + إنشاء مستخدم في Firebase Auth بنجاح.");
+        } catch (errAuth) {
+          console.error("createUserWithEmailAndPassword error:", errAuth);
+          if (errAuth.code === "auth/email-already-in-use") {
+            alert("✅ تم اعتماد الطلب وإضافة المستخدم محليًا.\n⚠ هذا الإيميل مسجّل بالفعل في Firebase Auth (email-already-in-use).");
+          } else {
+            alert("✅ تم اعتماد الطلب وإضافة المستخدم محليًا.\n⚠ لكن تعذر إنشاء مستخدم في Firebase Auth، راجع الكونسول للخطأ.");
+          }
+        }
+
       } catch (err) {
         console.error("approveSignup error:", err);
         alert("تعذر اعتماد الطلب الآن. حاول مرة أخرى.");
@@ -831,6 +865,7 @@
       console.error("Firestore init / query error:", e);
     }
   </script>
+
 
 </body>
 </html>

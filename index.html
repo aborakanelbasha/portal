@@ -509,26 +509,8 @@
     </div>
   </div>
 
-  <!-- سكريبت عام: الـ UI + جلسة قديمة + دالة اللوجين القديم -->
+  <!-- سكريبت عام: UI + إظهار/إخفاء الباسورد + إعادة التوجيه لو فيه جلسة -->
   <script>
-    // ===== مستخدم احتياطي ثابت لو الـ ptw_users مش متظبط =====
-    const FALLBACK_USERS = {
-      admin: { password: "Admin@123", role: "admin", active: true }
-    };
-
-    // قراءة مستخدمين النظام القديم (users.html) من localStorage
-    function readStoredUsers() {
-      try {
-        const raw = localStorage.getItem("ptw_users");
-        if (!raw) return [];
-        const list = JSON.parse(raw);
-        return Array.isArray(list) ? list : [];
-      } catch (e) {
-        console.error("ptw_users parse error", e);
-        return [];
-      }
-    }
-
     const form = document.getElementById("login-form");
     const usernameInput = document.getElementById("username");
     const passwordInput = document.getElementById("password");
@@ -585,80 +567,6 @@
         console.warn("Session parse error", e);
       }
     })();
-
-    // ===== دالة اللوجين القديم (fallback محلي) =====
-    window.legacyLoginAttempt = function legacyLoginAttempt(username, password) {
-      if (!errorBox) return false;
-      errorBox.textContent = "";
-
-      const cleanUser = (username || "").trim();
-      const pass = password || "";
-
-      if (!cleanUser || !pass) {
-        errorBox.textContent = "من فضلك أدخل اسم المستخدم وكلمة المرور.";
-        return false;
-      }
-
-      const usersList = readStoredUsers();
-      let foundUser = null;
-
-      // الأدمن من FALLBACK دايماً
-      if (cleanUser === "admin" && FALLBACK_USERS.admin) {
-        const fb = FALLBACK_USERS.admin;
-        foundUser = {
-          username: "admin",
-          password: fb.password,
-          role: fb.role,
-          active: fb.active ?? true,
-          email: null
-        };
-      } else {
-        foundUser = usersList.find(
-          (u) => (u.username || "").toLowerCase() === cleanUser.toLowerCase()
-        );
-
-        if (!foundUser && FALLBACK_USERS[cleanUser]) {
-          const fb = FALLBACK_USERS[cleanUser];
-          foundUser = {
-            username: cleanUser,
-            password: fb.password,
-            role: fb.role,
-            active: fb.active ?? true,
-            email: null
-          };
-        }
-      }
-
-      if (!foundUser) {
-        errorBox.textContent = "هذا المستخدم غير موجود (في النظام المحلي). برجاء مراجعة مسؤول النظام.";
-        return false;
-      }
-
-      if (foundUser.active === false) {
-        errorBox.textContent = "هذا المستخدم موقوف. برجاء مراجعة مسؤول النظام.";
-        return false;
-      }
-
-      if (!foundUser.password || foundUser.password !== pass) {
-        errorBox.textContent = "كلمة المرور غير صحيحة.";
-        return false;
-      }
-
-      const normalizedRole = (foundUser.role || "najran").toLowerCase();
-
-      // توحيد شكل الجلسة مع Firebase: uid/email/username/role/loginTime
-      const sessionData = {
-        uid: null,
-        email: foundUser.email || null,
-        username: foundUser.username,
-        role: normalizedRole,
-        loginTime: new Date().toISOString()
-      };
-
-      localStorage.setItem("aln_session", JSON.stringify(sessionData));
-      window.location.href = "portal.html";
-      return true;
-    };
   </script>
 
   <!-- سكريبت Firebase: Auth + Firestore (app_users + signup_requests) -->
@@ -705,7 +613,6 @@
     // ===== دالة تجيب لنا user من Firestore collection: app_users =====
     async function fetchAppUserProfile(identifier) {
       if (!identifier) return null;
-
       const value = (identifier || "").trim().toLowerCase();
 
       try {
@@ -740,7 +647,7 @@
       }
     }
 
-    // ===== حدث تسجيل الدخول =====
+    // ===== حدث تسجيل الدخول (Firebase Auth + app_users فقط) =====
     if (formEl) {
       formEl.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -755,92 +662,59 @@
           return;
         }
 
-        // 1) حالة الأدمن الكلاسيكي → نسيبه على النظام المحلي القديم
-        if (!identifier.includes("@") && identifier === "admin") {
-          window.legacyLoginAttempt(identifier, password);
-          return;
-        }
-
-        let loginEmail = identifier.trim().toLowerCase();
-        let profile    = null;
-        let localUser  = null;
-
         try {
-          // 2) نجيب profile من app_users حسب اللي اتكتب
-          profile = await fetchAppUserProfile(identifier);
+          // 1) نجيب profile من app_users
+          let profile = await fetchAppUserProfile(identifier);
+          let loginEmail = "";
 
+          // لو اللي مكتوب إيميل
           if (identifier.includes("@")) {
-            // المستخدم كتب إيميل
             loginEmail = identifier.trim().toLowerCase();
-
-            // لو مفيش profile في app_users هنكمّل عادي (هيكون fallback لاحقًا)
+            // لو مفيش profile مع ذلك → نحاول نجيبه تاني بعد اللوجين، بس هنحتاجه للصلاحيات
           } else {
-            // المستخدم كتب username
-            if (profile && profile.email) {
-              loginEmail = (profile.email || "").toLowerCase();
-            } else {
-              // fallback: ندور في ptw_users المحليين علشان نطلع الإيميل
-              const list = window.readStoredUsers ? window.readStoredUsers() : [];
-              localUser = list.find(
-                (u) =>
-                  (u.username || "").toLowerCase() === identifier.toLowerCase()
-              );
-              if (localUser && localUser.email) {
-                loginEmail = (localUser.email || "").toLowerCase();
-              } else {
-                errorEl.textContent =
-                  "لا يوجد إيميل مرتبط بهذا اسم المستخدم في قاعدة البيانات. برجاء مراجعة مسؤول النظام.";
-                return;
-              }
+            // مستخدم كتب username
+            if (!profile) {
+              errorEl.textContent = "لا يوجد مستخدم بهذا الاسم في النظام. برجاء مراجعة مسؤول النظام.";
+              return;
             }
+            if (!profile.email) {
+              errorEl.textContent = "لا يوجد بريد إلكتروني مرتبط بهذا المستخدم في النظام.";
+              return;
+            }
+            loginEmail = (profile.email || "").toLowerCase();
           }
 
-          // 3) نسجّل الدخول في Firebase Auth باستخدام الإيميل النهائي
+          // لو فيه profile مسبقًا و Active = false
+          if (profile && profile.active === false) {
+            errorEl.textContent = "هذا الحساب موقوف. برجاء مراجعة مسؤول النظام.";
+            return;
+          }
+
+          // 2) تسجيل الدخول في Firebase Auth
           const cred   = await signInWithEmailAndPassword(auth, loginEmail, password);
           const fbUser = cred.user;
           console.log("Firebase login OK:", fbUser);
 
-          // 4) بعد النجاح: لو مكنّاش profile (مثلاً المستخدم دخل ببريد موجود بس)، نجيبه دلوقتي
+          // 3) لو مفيش profile (المستخدم كتب إيميل مباشرة وما لقيناش doc)، نجرب نجيبه بالإيميل بعد اللوجين
           if (!profile) {
             profile = await fetchAppUserProfile(fbUser.email || loginEmail);
           }
 
-          // 5) لو موقوف في Firestore → نمنع الدخول
-          if (profile && profile.active === false) {
+          if (!profile) {
+            // في الحالة دي إحنا مش عارفين Role ولا Active → نمنع الدخول
             errorEl.textContent =
-              "هذا المستخدم موقوف في النظام (من قاعدة البيانات). برجاء مراجعة مسؤول النظام.";
+              "تم تسجيل الدخول في Firebase، لكن لا يوجد ملف صلاحيات (app_users) لهذا المستخدم. برجاء مراجعة مسؤول النظام.";
             return;
           }
 
-          // 6) fallback محلي لو مالقيناش profile بالمرّة
-          if (!localUser) {
-            const list = window.readStoredUsers ? window.readStoredUsers() : [];
-            localUser =
-              list.find(
-                (u) =>
-                  (u.email || "").toLowerCase() ===
-                  (fbUser.email || "").toLowerCase()
-              ) ||
-              list.find(
-                (u) =>
-                  (u.username || "").toLowerCase() ===
-                  (identifier || "").toLowerCase()
-              ) ||
-              null;
+          if (profile.active === false) {
+            errorEl.textContent = "هذا الحساب موقوف في النظام. برجاء مراجعة مسؤول النظام.";
+            return;
           }
 
-          // 7) نحدد الـ username والـ role النهائيين (ونعملهم lowercase)
-          const finalUsername =
-            profile?.username ||
-            localUser?.username ||
-            (fbUser.email || loginEmail);
-
-          const finalRoleRaw =
-            profile?.role ||
-            localUser?.role ||
-            "najran"; // ديفولت بسيط لو مفيش أي حاجة
-
-          const finalRole = (finalRoleRaw || "najran").toLowerCase();
+          const finalUsername = profile.username || (fbUser.email || loginEmail);
+          const finalRoleRaw  = profile.role || "najran";
+          const finalRole     = (finalRoleRaw || "najran").toLowerCase();
 
           const sessionData = {
             uid: fbUser.uid,
@@ -854,65 +728,45 @@
           window.location.href = "portal.html";
         } catch (err) {
           console.error("Firebase login error:", err);
-          let handled = false;
 
-          // في حالة فشل Firebase مع username بدون @ نجرب النظام المحلي القديم
-          if (!identifier.includes("@")) {
-            handled = window.legacyLoginAttempt(identifier, password);
+          let msg = "تسجيل الدخول فشل في نظام Firebase.";
+          if (err.code === "auth/user-not-found") {
+            msg = "هذا الإيميل غير مسجّل في Firebase.";
+          } else if (err.code === "auth/wrong-password") {
+            msg = "كلمة المرور غير صحيحة.";
+          } else if (err.code === "auth/invalid-login-credentials") {
+            msg = "بيانات الدخول غير صحيحة.";
           }
-
-          if (!handled) {
-            let msg = "تسجيل الدخول فشل في نظام Firebase.";
-            if (err.code === "auth/user-not-found") {
-              msg = "هذا الإيميل غير مسجّل في Firebase.";
-            } else if (err.code === "auth/wrong-password") {
-              msg = "كلمة المرور غير صحيحة (من Firebase).";
-            } else if (err.code === "auth/invalid-login-credentials") {
-              msg = "بيانات الدخول غير صحيحة (من Firebase).";
-            }
-            errorEl.textContent =
-              msg + " لو المشكلة مستمرة، راجع مسؤول النظام.";
-          }
+          errorEl.textContent = msg + " لو المشكلة مستمرة، راجع مسؤول النظام.";
         }
       });
     }
 
-    // ===== زر "نسيت كلمة المرور؟" =====
+    // ===== زر "نسيت كلمة المرور؟" (اعتماد كامل على app_users + Firebase Auth) =====
     if (forgotBtn) {
       forgotBtn.addEventListener("click", async () => {
         errorEl.textContent = "";
         errorEl.style.color = "#ff8080";
 
         const identifier = (userEl.value || "").trim(); // username أو إيميل
-
         if (!identifier) {
           errorEl.textContent = "من فضلك اكتب اسم المستخدم أو الإيميل أولًا.";
           return;
         }
 
-        let resetEmail = identifier.trim().toLowerCase();
+        let resetEmail = "";
 
         try {
-          if (!identifier.includes("@")) {
-            // أولاً نحاول من app_users
+          if (identifier.includes("@")) {
+            resetEmail = identifier.trim().toLowerCase();
+          } else {
             const profile = await fetchAppUserProfile(identifier);
-            if (profile && profile.email) {
-              resetEmail = (profile.email || "").toLowerCase();
-            } else {
-              // fallback: ندور في ptw_users المحلي
-              const list = window.readStoredUsers ? window.readStoredUsers() : [];
-              const localUser = list.find(
-                (u) =>
-                  (u.username || "").toLowerCase() === identifier.toLowerCase()
-              );
-              if (localUser && localUser.email) {
-                resetEmail = (localUser.email || "").toLowerCase();
-              } else {
-                errorEl.textContent =
-                  "لا يوجد إيميل مرتبط بهذا المستخدم في النظام. برجاء مراجعة مسؤول النظام.";
-                return;
-              }
+            if (!profile || !profile.email) {
+              errorEl.textContent =
+                "لا يوجد بريد إلكتروني مرتبط بهذا المستخدم في النظام. برجاء مراجعة مسؤول النظام.";
+              return;
             }
+            resetEmail = (profile.email || "").toLowerCase();
           }
 
           await sendPasswordResetEmail(auth, resetEmail);
@@ -969,7 +823,7 @@
         const email    = (document.getElementById("su_email").value || "").trim();
         const phone    = (document.getElementById("su_phone").value || "").trim();
         const message  = (document.getElementById("su_message").value || "").trim();
-        // هنطنّش الباسورد هنا علشان الأمان، وتتعامل كباسورد مؤقت بعد الموافقة
+        // هنطنّش الباسورد هنا علشان الأمان
 
         if (!username || !email) {
           alert("من فضلك أكمل الحقول الإلزامية (الاسم، الإيميل).");

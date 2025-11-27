@@ -209,12 +209,21 @@
 
     <div class="layout">
       <!-- قائمة المستخدمين -->
-      <div class="panel">
-        <h2>قائمة المستخدمين</h2>
-        <small>الأدوار المستخدمة حاليًا: <span class="mono small">admin</span>، <span class="mono small">najran</span>، <span class="mono small">sharurah</span></small>
+     <div class="panel">
+  <h2>قائمة المستخدمين</h2>
+  <small>الأدوار المستخدمة حاليًا: <span class="mono small">admin</span>، <span class="mono small">najran</span>، <span class="mono small">sharurah</span></small>
 
-        <div class="scroll-wrap">
-          <table>
+  <!-- زر مزامنة المستخدمين مع Firestore -->
+  <div style="margin:10px 0 6px; text-align:left;">
+    <button type="button" class="btn" onclick="syncLocalUsersToFirestore()">
+      ☁ مزامنة المستخدمين مع Firestore
+    </button>
+  </div>
+
+  <div class="scroll-wrap">
+    <table>
+      ...
+
             <thead>
               <tr>
                 <th>#</th>
@@ -595,6 +604,11 @@
   <!-- سكربت Firebase / Firestore لعرض signup_requests -->
   <!-- سكربت Firebase / Firestore لعرض signup_requests + Approve/Reject -->
     <!-- سكربت Firebase / Firestore + Auth لعرض signup_requests + Approve/Reject + إنشاء مستخدم في Firebase -->
+    <!-- سكربت Firebase / Firestore + Auth
+       - عرض signup_requests
+       - Approve / Reject
+       - إنشاء مستخدم في Firebase Auth
+       - مزامنة ptw_users → app_users -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import {
@@ -603,14 +617,15 @@
       onSnapshot,
       doc,
       updateDoc,
-      serverTimestamp
+      serverTimestamp,
+      setDoc
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
     import {
       getAuth,
       createUserWithEmailAndPassword
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-    // نفس config
+    // نفس إعدادات Firebase بتاعة المشروع
     const firebaseConfig = {
       apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
       authDomain: "ptw-najran-sharurah.firebaseapp.com",
@@ -624,14 +639,15 @@
 
     const app  = initializeApp(firebaseConfig);
     const db   = getFirestore(app);
-    const auth = getAuth(app);   // هنستخدمه في إنشاء مستخدم جديد
+    const auth = getAuth(app);
 
     const tbody    = document.getElementById("signupRequestsBody");
     const emptyRow = document.getElementById("signupEmptyRow");
 
-    // نخزن بيانات الطلبات في كاش عشان نستخدمها في approve/reject
+    // كاش للطلبات عشان نستخدمها في approve/reject
     const requestsCache = new Map();
 
+    // ===== عرض جدول طلبات التسجيل =====
     function renderRequests(docs) {
       if (!tbody) return;
 
@@ -652,6 +668,7 @@
         const data = docSnap.data() || {};
         const id   = docSnap.id;
 
+        // نحفظ الداتا في الكاش
         requestsCache.set(id, data);
 
         let createdAtText = "-";
@@ -709,7 +726,7 @@
       });
     }
 
-    // دالة مساعدة: نضيف يوزر في ptw_users من الطلب
+    // ===== إضافة يوزر في ptw_users من الطلب =====
     function addLocalUserFromRequest(data, role) {
       if (!window.readUsers || !window.writeUsers || !window.loadUsers) {
         console.warn("readUsers/writeUsers/loadUsers not available on window.");
@@ -739,7 +756,7 @@
       list.push({
         username,
         email,
-        password: "",         // باسورد مؤقت محليًا (مش مهم دلوقتي)
+        password: "",         // مش مهم دلوقتي
         role,
         active: true,
         createdAt: new Date().toISOString(),
@@ -749,7 +766,67 @@
       window.loadUsers();
     }
 
-    // ===== دوال Approve / Reject =====
+    // ===== مزامنة ptw_users → Firestore collection: app_users =====
+    window.syncLocalUsersToFirestore = async function () {
+      if (!window.readUsers) {
+        alert("دالة readUsers غير متاحة على هذه الصفحة.");
+        return;
+      }
+
+      const list = window.readUsers() || [];
+      if (!list.length) {
+        alert("لا يوجد مستخدمون في ptw_users لمزامنتهم.");
+        return;
+      }
+
+      if (!confirm("هل أنت متأكد من مزامنة جميع المستخدمين الحاليين إلى Firestore (collection: app_users)؟")) {
+        return;
+      }
+
+      let success = 0;
+      let skipped = 0;
+      let failed  = 0;
+
+      for (const u of list) {
+        try {
+          const username = (u.username || "").trim();
+          const email    = (u.email || "").trim().toLowerCase();
+
+          if (!username || !email) {
+            skipped++;
+            continue;
+          }
+
+          const docId  = username.toLowerCase(); // نخلي doc id = username
+          const docRef = doc(db, "app_users", docId);
+          const nowIso = new Date().toISOString();
+
+          await setDoc(docRef, {
+            username,
+            email,
+            role:   u.role || "najran",
+            active: u.active !== false,
+            createdAt: u.createdAt || nowIso,
+            updatedAt: nowIso,
+            source: "local_migration",
+          }, { merge: true });
+
+          success++;
+        } catch (err) {
+          console.error("sync user error:", err);
+          failed++;
+        }
+      }
+
+      alert(
+        "تمت عملية المزامنة مع Firestore.\n" +
+        "نجاح: " + success + "\n" +
+        "تخطي (بيانات ناقصة): " + skipped + "\n" +
+        "فشل: " + failed
+      );
+    };
+
+    // ===== Approve Signup =====
     window.approveSignup = async function (id) {
       const data = requestsCache.get(id);
       if (!data) {
@@ -770,8 +847,8 @@
         return;
       }
 
-      // 2) نعمل Update في Firestore + نضيفه في ptw_users
       try {
+        // 2) تحديث الطلب في Firestore
         const docRef = doc(db, "signup_requests", id);
         await updateDoc(docRef, {
           status: "approved",
@@ -780,9 +857,10 @@
           processedBy: (window.CURRENT_USER && window.CURRENT_USER.username) || null
         });
 
+        // 3) إضافة المستخدم في ptw_users محليًا
         addLocalUserFromRequest(data, role);
 
-        // 3) نحاول ننشئ مستخدم في Firebase Auth (اختياري)
+        // 4) إنشاء مستخدم في Firebase Auth (اختياري)
         const email = (data.email || "").trim();
         if (!email) {
           alert("✅ تم اعتماد الطلب وإضافة المستخدم محليًا.\n⚠ لكن الإيميل غير موجود، فلن يتم إنشاء مستخدم في Firebase Auth.");
@@ -813,7 +891,7 @@
         } catch (errAuth) {
           console.error("createUserWithEmailAndPassword error:", errAuth);
           if (errAuth.code === "auth/email-already-in-use") {
-            alert("✅ تم اعتماد الطلب وإضافة المستخدم محليًا.\n⚠ هذا الإيميل مسجّل بالفعل في Firebase Auth (email-already-in-use).");
+            alert("✅ تم اعتماد الطلب وإضافة المستخدم محليًا.\n⚠ هذا الإيميل مسجّل بالفعل في Firebase Auth.");
           } else {
             alert("✅ تم اعتماد الطلب وإضافة المستخدم محليًا.\n⚠ لكن تعذر إنشاء مستخدم في Firebase Auth، راجع الكونسول للخطأ.");
           }
@@ -825,6 +903,7 @@
       }
     };
 
+    // ===== Reject Signup =====
     window.rejectSignup = async function (id) {
       const data = requestsCache.get(id) || {};
       if (!confirm(`هل أنت متأكد من رفض طلب المستخدم: ${data.username || ""} ؟`)) {
@@ -865,7 +944,5 @@
       console.error("Firestore init / query error:", e);
     }
   </script>
-
-
 </body>
 </html>

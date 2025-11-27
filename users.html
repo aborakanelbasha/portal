@@ -524,16 +524,7 @@ roleSelect.value    = "najran";
 loadUsers();
 alert("تم إضافة المستخدم إلى القائمة (محليًا).");
 
-      writeUsers(list);
-      usernameInput.value = "";
-      passwordInput.value = "";
-      activeCheck.checked = true;
-      roleSelect.value = "najran";
-      loadUsers();
-      alert("تم إضافة المستخدم إلى القائمة (محليًا).");
-    }
-
-    // ===== تفعيل/إيقاف مستخدم =====
+       // ===== تفعيل/إيقاف مستخدم =====
     function toggleActive(username) {
       let list = readUsers();
       const idx = list.findIndex((u) => u.username === username);
@@ -588,93 +579,97 @@ alert("تم إضافة المستخدم إلى القائمة (محليًا).");
     }
   </script>
   <!-- سكربت Firebase / Firestore لعرض signup_requests -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      query,
-      orderBy,
-      onSnapshot
-    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    onSnapshot
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-    // نفس config بتاع index.html بالظبط
-    const firebaseConfig = {
-      apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
-      authDomain: "ptw-najran-sharurah.firebaseapp.com",
-      projectId: "ptw-najran-sharurah",
-      storageBucket: "ptw-najran-sharurah.firebasestorage.app",
-      messagingSenderId: "848619550286",
-      appId: "1:848619550286:web:fe5c470f67236b2519751f"
-    };
+  // نفس config
+  const firebaseConfig = {
+    apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
+    authDomain: "ptw-najran-sharurah.firebaseapp.com",
+    projectId: "ptw-najran-sharurah",
+    storageBucket: "ptw-najran-sharurah.firebasestorage.app",
+    messagingSenderId: "848619550286",
+    appId: "1:848619550286:web:fe5c470f67236b2519751f"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db  = getFirestore(app);
+  console.log("🔥 users.html Firestore module loaded");
 
-    const tbody    = document.getElementById("signupRequestsBody");
-    const emptyRow = document.getElementById("signupEmptyRow");
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
 
-    function renderRequests(docs) {
-      if (!tbody) return;
+  const tbody    = document.getElementById("signupRequestsBody");
 
-      if (!docs.length) {
-        if (emptyRow) emptyRow.style.display = "";
-        tbody.innerHTML = emptyRow ? emptyRow.outerHTML : "";
-        return;
-      }
+  function renderRequests(docs) {
+    if (!tbody) return;
 
-      if (emptyRow) emptyRow.style.display = "none";
-      tbody.innerHTML = "";
+    // نمسح الموجود
+    tbody.innerHTML = "";
 
-      docs.forEach((docSnap, index) => {
-        const data = docSnap.data() || {};
-        const tr   = document.createElement("tr");
-
-        const createdAt =
-          data.createdAt && data.createdAt.toDate
-            ? data.createdAt.toDate().toLocaleString("ar-EG")
-            : "-";
-
-        const status = (data.status || "pending").toLowerCase();
-        let statusClass = "tag";
-        if (status === "approved") statusClass += " green";
-        else if (status === "rejected") statusClass += " red";
-
-        tr.innerHTML = `
-          <td>${index + 1}</td>
-          <td class="mono small">${data.username || "-"}</td>
-          <td class="mono small">${data.email || "-"}</td>
-          <td class="mono small">${data.phone || "-"}</td>
-          <td class="small">${data.message || "-"}</td>
-          <td><span class="${statusClass}">${status === "pending" ? "معلق" : status === "approved" ? "موافق عليه" : "مرفوض"}</span></td>
-          <td class="small">${createdAt}</td>
-        `;
-
-        tbody.appendChild(tr);
-      });
+    if (!docs.length) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td colspan="7" class="empty">لا توجد طلبات تسجيل حتى الآن.</td>`;
+      tbody.appendChild(tr);
+      return;
     }
 
-    // اشتراك لايف في collection signup_requests
-    try {
-      const q = query(
-        collection(db, "signup_requests"),
-        orderBy("createdAt", "desc")
-      );
+    docs.forEach((docSnap, index) => {
+      const data = docSnap.data() || {};
+      const tr   = document.createElement("tr");
 
-      onSnapshot(
-        q,
-        (snapshot) => {
-          const docs = snapshot.docs || [];
-          renderRequests(docs);
-        },
-        (err) => {
-          console.error("signup_requests snapshot error:", err);
+      let createdAtText = "-";
+      try {
+        if (data.createdAt && data.createdAt.toDate) {
+          createdAtText = data.createdAt.toDate().toLocaleString("ar-EG");
         }
-      );
-    } catch (e) {
-      console.error("Firestore init / query error:", e);
-    }
-  </script>
+      } catch (_) {}
+
+      const status = (data.status || "pending").toLowerCase();
+      let statusClass = "tag";
+      if (status === "approved") statusClass += " green";
+      else if (status === "rejected") statusClass += " red";
+
+      tr.innerHTML = `
+        <td>${index + 1}</td>
+        <td class="mono small">${data.username || "-"}</td>
+        <td class="mono small">${data.email || "-"}</td>
+        <td class="mono small">${data.phone || "-"}</td>
+        <td class="small">${data.message || "-"}</td>
+        <td><span class="${statusClass}">
+          ${status === "pending" ? "معلق" : status === "approved" ? "موافق عليه" : "مرفوض"}
+        </span></td>
+        <td class="small">${createdAtText}</td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  try {
+    const colRef = collection(db, "signup_requests");
+
+    onSnapshot(
+      colRef,
+      (snapshot) => {
+        console.log("signup_requests docs count:", snapshot.size);
+        renderRequests(snapshot.docs);
+      },
+      (err) => {
+        console.error("signup_requests snapshot error:", err);
+        if (err.code === "permission-denied") {
+          alert("⚠ لا توجد صلاحية لقراءة signup_requests من Firestore. راجع قواعد Firestore.");
+        }
+      }
+    );
+  } catch (e) {
+    console.error("Firestore init / query error:", e);
+  }
+</script>
+
 </body>
 </html>
 

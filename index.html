@@ -653,273 +653,259 @@
   </script>
 
   <!-- سكريبت Firebase: username/email -> Firebase Auth + نسيت الباسورد + طلب تسجيل -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import {
-      getAuth,
-      signInWithEmailAndPassword,
-      sendPasswordResetEmail
-    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+ <script type="module">
+  // Firebase imports
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import {
+    getAuth,
+    signInWithEmailAndPassword,
+    sendPasswordResetEmail
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-    // إعدادات Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
-      authDomain: "ptw-najran-sharurah.firebaseapp.com",
-      projectId: "ptw-najran-sharurah",
-      storageBucket: "ptw-najran-sharurah.firebasestorage.app",
-      messagingSenderId: "848619550286",
-      appId: "1:848619550286:web:fe5c470f67236b2519751f"
-    };
+  // إعدادات مشروعك
+  const firebaseConfig = {
+    apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
+    authDomain: "ptw-najran-sharurah.firebaseapp.com",
+    projectId: "ptw-najran-sharurah",
+    storageBucket: "ptw-najran-sharurah.firebasestorage.app",
+    messagingSenderId: "848619550286",
+    appId: "1:848619550286:web:fe5c470f67236b2519751f"
+  };
 
-    const app  = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
 
-    const formEl    = document.getElementById("login-form");
-    const userEl    = document.getElementById("username");
-    const passEl    = document.getElementById("password");
-    const errorEl   = document.getElementById("login-error");
-    const forgotBtn = document.getElementById("forgotPasswordBtn");
+  // عناصر اللوجين
+  const formEl   = document.getElementById("login-form");
+  const userEl   = document.getElementById("username");
+  const passEl   = document.getElementById("password");
+  const errorEl  = document.getElementById("login-error");
+  const forgotBtn = document.getElementById("forgotPasswordBtn");
 
-    const OPEN_SIGNUP_BTN  = document.getElementById("openSignup");
-    const SIGNUP_OVERLAY   = document.getElementById("signupOverlay");
-    const CLOSE_SIGNUP_BTN = document.getElementById("closeSignup");
-    const SIGNUP_FORM      = document.getElementById("signupForm");
+  // دوال من السكريبت العادي (موجودة في window)
+  // legacyLoginAttempt موجود في السكريبت العادي فوق
 
-    // نستخدم نفس دالة readStoredUsers من السكريبت العادي
-    function findUserByIdentifier(identifier) {
-      const list = window.readStoredUsers ? window.readStoredUsers() : [];
-      if (!identifier) return null;
+  // ===== قراءة مستخدم من ptw_users عشان الـ role والـ email =====
+  function readStoredUsers() {
+    try {
+      const raw = localStorage.getItem("ptw_users");
+      if (!raw) return [];
+      const list = JSON.parse(raw);
+      return Array.isArray(list) ? list : [];
+    } catch (e) {
+      console.error("ptw_users parse error", e);
+      return [];
+    }
+  }
 
-      if (identifier.includes("@")) {
-        return list.find(
-          (u) => (u.email || "").toLowerCase() === identifier.toLowerCase()
-        );
-      } else {
-        return list.find(
-          (u) => (u.username || "").toLowerCase() === identifier.toLowerCase()
-        );
+  function findUserByIdentifier(identifier) {
+    const list = readStoredUsers();
+    if (!identifier) return null;
+
+    if (identifier.includes("@")) {
+      return list.find(
+        (u) => (u.email || "").toLowerCase() === identifier.toLowerCase()
+      );
+    } else {
+      return list.find(
+        (u) => (u.username || "").toLowerCase() === identifier.toLowerCase()
+      );
+    }
+  }
+
+  // ===== حدث تسجيل الدخول =====
+  if (formEl) {
+    formEl.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorEl.textContent = "";
+
+      const identifier = (userEl.value || "").trim(); // username أو إيميل
+      const password   = passEl.value || "";
+
+      if (!identifier || !password) {
+        errorEl.textContent = "من فضلك أدخل اسم المستخدم/الإيميل وكلمة المرور.";
+        return;
       }
-    }
 
-    // ===== حدث تسجيل الدخول =====
-    if (formEl) {
-      formEl.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        if (!errorEl) return;
-        errorEl.textContent = "";
-        errorEl.style.color = "#ff8080";
+      // 1) حالة الأدمن الكلاسيكي → نسيبه على النظام القديم
+      if (!identifier.includes("@") && identifier === "admin") {
+        window.legacyLoginAttempt(identifier, password);
+        return;
+      }
 
-        const identifier = (userEl.value || "").trim(); // username أو email
-        const password   = passEl.value || "";
+      // 2) نحدد الإيميل اللي هنستخدمه في Firebase
+      let loginEmail = identifier;
+      let appUser    = null;
 
-        if (!identifier || !password) {
-          errorEl.textContent = "من فضلك أدخل اسم المستخدم/الإيميل وكلمة المرور.";
-          return;
-        }
-
-        // 1) حالة الأدمن الكلاسيكي → نسيبه على النظام القديم فقط
-        if (!identifier.includes("@") && identifier === "admin") {
-          window.legacyLoginAttempt(identifier, password);
-          return;
-        }
-
-        // 2) نحدد الإيميل اللي هنستخدمه في Firebase
-        let loginEmail = identifier;
-        let appUser    = null;
-
-        if (!identifier.includes("@")) {
-          appUser = findUserByIdentifier(identifier);
-          if (!appUser || !appUser.email) {
-            errorEl.textContent = "هذا المستخدم غير مرتبط بإيميل. برجاء مراجعة مسؤول النظام من صفحة إدارة المستخدمين.";
-            return;
-          }
-          loginEmail = appUser.email;
-        } else {
-          // identifier هو نفسه إيميل
-          appUser = findUserByIdentifier(identifier) || null;
-        }
-
-        try {
-          // 3) تسجيل الدخول في Firebase
-          const cred   = await signInWithEmailAndPassword(auth, loginEmail, password);
-          const fbUser = cred.user;
-          console.log("Firebase login OK:", fbUser);
-
-          // لو المستخدم موجود في ptw_users و موقوف → نمنعه
-          if (appUser && appUser.active === false) {
-            errorEl.textContent = "هذا المستخدم موقوف في النظام. برجاء مراجعة مسؤول النظام.";
-            return;
-          }
-
-          // نحاول نجيب بياناته من ptw_users (username, role)
-          if (!appUser) {
-            const list = window.readStoredUsers ? window.readStoredUsers() : [];
-            appUser =
-              list.find(
-                (u) =>
-                  (u.email || "").toLowerCase() === (fbUser.email || "").toLowerCase()
-              ) || null;
-          }
-
-          const sessionData = {
-            uid: fbUser.uid,
-            email: fbUser.email,
-            username: appUser?.username || fbUser.email,
-            role: appUser?.role || "admin", // ديفولت تقدر تعدله بعدين
-            loginTime: new Date().toISOString()
-          };
-
-          localStorage.setItem("aln_session", JSON.stringify(sessionData));
-          window.location.href = "portal.html";
-        } catch (err) {
-          console.error("Firebase login error:", err);
-          let handled = false;
-
-          // 4) لو اللي مكتوب username (مفيهوش @) نجرب النظام القديم كـ fallback
-          if (!identifier.includes("@")) {
-            handled = window.legacyLoginAttempt(identifier, password);
-          }
-
-          if (!handled) {
-            let msg = "تسجيل الدخول فشل في نظام Firebase.";
-            if (err.code === "auth/user-not-found") {
-              msg = "هذا الإيميل غير مسجّل في Firebase.";
-            } else if (err.code === "auth/wrong-password") {
-              msg = "كلمة المرور غير صحيحة (من Firebase).";
-            } else if (err.code === "auth/invalid-login-credentials") {
-              msg = "بيانات الدخول غير صحيحة (من Firebase).";
-            }
-            errorEl.textContent = msg + " لو المشكلة مستمرة، راجع مسؤول النظام.";
-          }
-        }
-      });
-    }
-
-    // ===== زر "نسيت كلمة المرور؟" =====
-    if (forgotBtn && errorEl) {
-      forgotBtn.addEventListener("click", async () => {
-        errorEl.textContent = "";
-        errorEl.style.color = "#ff8080";
-
-        const identifier = (userEl.value || "").trim(); // username أو email
-
-        if (!identifier) {
-          errorEl.textContent = "من فضلك اكتب اسم المستخدم أو الإيميل أولًا.";
-          return;
-        }
-
-        let resetEmail = identifier;
-
-        // لو كتب username → نجيبه من ptw_users
-        if (!identifier.includes("@")) {
-          const appUser = findUserByIdentifier(identifier);
-          if (!appUser || !appUser.email) {
-            errorEl.textContent = "لا يوجد إيميل مرتبط بهذا المستخدم في النظام. برجاء مراجعة مسؤول النظام.";
-            return;
-          }
-          resetEmail = appUser.email;
-        }
-
-        try {
-          await sendPasswordResetEmail(auth, resetEmail);
-          errorEl.style.color = "#bbf7d0"; // أخضر
+      if (!identifier.includes("@")) {
+        appUser = findUserByIdentifier(identifier);
+        if (!appUser || !appUser.email) {
           errorEl.textContent =
-            "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني (إن كان مسجّل في Firebase).";
-        } catch (err) {
-          console.error("reset error:", err);
-          let msg = "تعذر إرسال رابط إعادة تعيين كلمة المرور.";
+            "هذا المستخدم غير مرتبط بإيميل. برجاء مراجعة مسؤول النظام من صفحة إدارة المستخدمين.";
+          return;
+        }
+        loginEmail = appUser.email;
+      } else {
+        // identifier هو نفسه إيميل
+        appUser = findUserByIdentifier(identifier) || null;
+      }
+
+      try {
+        const cred   = await signInWithEmailAndPassword(auth, loginEmail, password);
+        const fbUser = cred.user;
+        console.log("Firebase login OK:", fbUser);
+
+        if (appUser && appUser.active === false) {
+          errorEl.textContent = "هذا المستخدم موقوف في النظام. برجاء مراجعة مسؤول النظام.";
+          return;
+        }
+
+        if (!appUser) {
+          const list = readStoredUsers();
+          appUser =
+            list.find(
+              (u) =>
+                (u.email || "").toLowerCase() === (fbUser.email || "").toLowerCase()
+            ) || null;
+        }
+
+        const sessionData = {
+          uid: fbUser.uid,
+          email: fbUser.email,
+          username: appUser?.username || fbUser.email,
+          role: appUser?.role || "admin", // تقدر تعدّل الديفولت بعدين
+          loginTime: new Date().toISOString()
+        };
+
+        localStorage.setItem("aln_session", JSON.stringify(sessionData));
+        window.location.href = "portal.html";
+      } catch (err) {
+        console.error("Firebase login error:", err);
+        let handled = false;
+
+        if (!identifier.includes("@")) {
+          // نجرب النظام القديم كـ fallback
+          handled = window.legacyLoginAttempt(identifier, password);
+        }
+
+        if (!handled) {
+          let msg = "تسجيل الدخول فشل في نظام Firebase.";
           if (err.code === "auth/user-not-found") {
             msg = "هذا الإيميل غير مسجّل في Firebase.";
-          } else if (err.code === "auth/invalid-email") {
-            msg = "الإيميل غير صالح.";
+          } else if (err.code === "auth/wrong-password") {
+            msg = "كلمة المرور غير صحيحة (من Firebase).";
+          } else if (err.code === "auth/invalid-login-credentials") {
+            msg = "بيانات الدخول غير صحيحة (من Firebase).";
           }
-          errorEl.style.color = "#ff8080";
-          errorEl.textContent = msg;
-        } finally {
-          setTimeout(() => {
-            errorEl.style.color = "#ff8080";
-          }, 6000);
+          errorEl.textContent = msg + " لو المشكلة مستمرة، راجع مسؤول النظام.";
         }
-      });
-    }
-
-    // ===== منطق طلب إنشاء حساب جديد (localStorage) =====
-    const SIGNUP_KEY = "ptw_signup_requests";
-
-    function readSignupRequests() {
-      try {
-        const raw = localStorage.getItem(SIGNUP_KEY);
-        if (!raw) return [];
-        const list = JSON.parse(raw);
-        return Array.isArray(list) ? list : [];
-      } catch (e) {
-        console.error("parse signup requests error", e);
-        return [];
       }
-    }
+    });
+  }
 
-    function writeSignupRequests(list) {
-      localStorage.setItem(SIGNUP_KEY, JSON.stringify(list));
-    }
+  // ===== زر "نسيت كلمة المرور؟" =====
+  if (forgotBtn) {
+    forgotBtn.addEventListener("click", async () => {
+      errorEl.textContent = "";
 
-    function openSignup() {
-      if (SIGNUP_OVERLAY) SIGNUP_OVERLAY.style.display = "flex";
-    }
-    function closeSignup() {
-      if (SIGNUP_OVERLAY) SIGNUP_OVERLAY.style.display = "none";
-    }
+      const identifier = (userEl.value || "").trim(); // username أو إيميل
 
-    if (OPEN_SIGNUP_BTN && SIGNUP_OVERLAY) {
-      OPEN_SIGNUP_BTN.addEventListener("click", openSignup);
-    }
-    if (CLOSE_SIGNUP_BTN) {
-      CLOSE_SIGNUP_BTN.addEventListener("click", closeSignup);
-    }
+      if (!identifier) {
+        errorEl.textContent = "من فضلك اكتب اسم المستخدم أو الإيميل أولًا.";
+        return;
+      }
 
-    if (SIGNUP_FORM) {
-      SIGNUP_FORM.addEventListener("submit", function (e) {
-        e.preventDefault();
-        if (!SIGNUP_FORM.checkValidity()) {
-          SIGNUP_FORM.reportValidity();
+      let resetEmail = identifier;
+
+      if (!identifier.includes("@")) {
+        const appUser = findUserByIdentifier(identifier);
+        if (!appUser || !appUser.email) {
+          errorEl.textContent =
+            "لا يوجد إيميل مرتبط بهذا المستخدم في النظام. برجاء مراجعة مسؤول النظام.";
           return;
         }
+        resetEmail = appUser.email;
+      }
 
-        const username = (document.getElementById("su_username").value || "").trim();
-        const email    = (document.getElementById("su_email").value || "").trim();
-        const phone    = (document.getElementById("su_phone").value || "").trim();
-        const password = document.getElementById("su_password").value || "";
-        const message  = (document.getElementById("su_message").value || "").trim();
-
-        if (!username || !email || !password) {
-          alert("من فضلك أكمل الحقول الإلزامية (الاسم، الإيميل، كلمة المرور).");
-          return;
+      try {
+        await sendPasswordResetEmail(auth, resetEmail);
+        errorEl.style.color = "#bbf7d0";
+        errorEl.textContent =
+          "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني (إن كان مسجّل في Firebase).";
+      } catch (err) {
+        console.error("reset error:", err);
+        errorEl.style.color = "#ff8080";
+        let msg = "تعذر إرسال رابط إعادة تعيين كلمة المرور.";
+        if (err.code === "auth/user-not-found") {
+          msg = "هذا الإيميل غير مسجّل في Firebase.";
+        } else if (err.code === "auth/invalid-email") {
+          msg = "الإيميل غير صالح.";
         }
+        errorEl.textContent = msg;
+      } finally {
+        setTimeout(() => {
+          errorEl.style.color = "#ff8080";
+        }, 6000);
+      }
+    });
+  }
 
-        const requests = readSignupRequests();
+  // ===== كود فورم "إنشاء حساب جديد" → حفظ في Firestore =====
+  const OPEN_SIGNUP_BTN  = document.getElementById("openSignup");
+  const SIGNUP_OVERLAY   = document.getElementById("signupOverlay");
+  const CLOSE_SIGNUP_BTN = document.getElementById("closeSignup");
+  const SIGNUP_FORM      = document.getElementById("signupForm");
 
-        const exists = requests.some(
-          (r) =>
-            (r.username && r.username.toLowerCase() === username.toLowerCase()) ||
-            (r.email && r.email.toLowerCase() === email.toLowerCase())
-        );
-        if (exists) {
-          alert("يوجد بالفعل طلب تسجيل بنفس اسم المستخدم أو البريد الإلكتروني قيد المراجعة.");
-          return;
-        }
+  function openSignup() {
+    if (SIGNUP_OVERLAY) SIGNUP_OVERLAY.style.display = "flex";
+  }
+  function closeSignup() {
+    if (SIGNUP_OVERLAY) SIGNUP_OVERLAY.style.display = "none";
+  }
 
-        const newReq = {
-          id: "req_" + Date.now(),
+  if (OPEN_SIGNUP_BTN && SIGNUP_OVERLAY) {
+    OPEN_SIGNUP_BTN.addEventListener("click", openSignup);
+  }
+  if (CLOSE_SIGNUP_BTN) {
+    CLOSE_SIGNUP_BTN.addEventListener("click", closeSignup);
+  }
+
+  if (SIGNUP_FORM) {
+    SIGNUP_FORM.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!SIGNUP_FORM.checkValidity()) {
+        SIGNUP_FORM.reportValidity();
+        return;
+      }
+
+      const username = (document.getElementById("su_username").value || "").trim();
+      const email    = (document.getElementById("su_email").value || "").trim();
+      const phone    = (document.getElementById("su_phone").value || "").trim();
+      const message  = (document.getElementById("su_message").value || "").trim();
+      // هنطنّش الباسورد هنا علشان الأمان، وتتعامل كباسورد مؤقت بعد الموافقة
+      // const password = document.getElementById("su_password").value || "";
+
+      if (!username || !email) {
+        alert("من فضلك أكمل الحقول الإلزامية (الاسم، الإيميل).");
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "signup_requests"), {
           username,
           email,
           phone,
-          password,
           message,
           status: "pending",
-          createdAt: new Date().toISOString()
-        };
-
-        requests.push(newReq);
-        writeSignupRequests(requests);
+          createdAt: serverTimestamp()
+        });
 
         SIGNUP_FORM.reset();
         closeSignup();
@@ -930,12 +916,17 @@
             "✅ تم إرسال طلب التسجيل بنجاح، وسيتم مراجعته من قِبَل مسؤول النظام.";
           setTimeout(() => {
             errorEl.style.color = "#ff8080";
+            errorEl.textContent = "";
           }, 7000);
         } else {
           alert("تم إرسال طلب التسجيل، سيتم مراجعته من قِبَل مسؤول النظام.");
         }
-      });
-    }
-  </script>
+      } catch (err) {
+        console.error("signup request error:", err);
+        alert("تعذر إرسال طلب التسجيل الآن. حاول مرة أخرى لاحقًا.");
+      }
+    });
+  }
+</script>
 </body>
 </html>

@@ -661,13 +661,18 @@
     signInWithEmailAndPassword,
     sendPasswordResetEmail
   } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-  import {
-    getFirestore,
-    collection,
-    addDoc,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-
+ import {
+  getFirestore,
+  collection,
+  addDoc,
+  serverTimestamp,
+  doc,
+  getDoc,
+  query,
+  where,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+   
   // إعدادات مشروعك
   const firebaseConfig = {
     apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
@@ -719,6 +724,44 @@
       );
     }
   }
+     // ===== قراءة بيانات المستخدم من Firestore collection: app_users =====
+  async function fetchAppUserProfile(identifier) {
+    if (!identifier) return null;
+
+    const value = (identifier || "").trim().toLowerCase();
+
+    try {
+      // لو اللي مكتوب إيميل → نبحث بالـ email
+      if (value.includes("@")) {
+        const q = query(
+          collection(db, "app_users"),
+          where("email", "==", value)
+        );
+        const snap = await getDocs(q);
+        if (snap.empty) {
+          console.log("[app_users] لا يوجد مستخدم بهذا الإيميل:", value);
+          return null;
+        }
+        const docSnap = snap.docs[0];
+        const data    = docSnap.data() || {};
+        return { id: docSnap.id, ...data };
+      }
+
+      // لو اللي مكتوب username → نقرأ دوكيومنت الـ ID بتاعه = username
+      const ref  = doc(db, "app_users", value);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        console.log("[app_users] لا يوجد مستخدم بهذا الـ username:", value);
+        return null;
+      }
+      const data = snap.data() || {};
+      return { id: snap.id, ...data };
+    } catch (err) {
+      console.error("fetchAppUserProfile error:", err);
+      return null;
+    }
+  }
+
 
   // ===== حدث تسجيل الدخول =====
   if (formEl) {
@@ -757,16 +800,27 @@
         appUser = findUserByIdentifier(identifier) || null;
       }
 
-      try {
+        try {
         const cred   = await signInWithEmailAndPassword(auth, loginEmail, password);
         const fbUser = cred.user;
         console.log("Firebase login OK:", fbUser);
 
-        if (appUser && appUser.active === false) {
-          errorEl.textContent = "هذا المستخدم موقوف في النظام. برجاء مراجعة مسؤول النظام.";
+        // 1) نحاول نجيب بيانات المستخدم من Firestore → app_users
+        //   - أولاً عن طريق الإيميل اللي دخلنا بيه Firebase
+        //   - لو مش لاقي، نجرب الـ identifier (لو كان username)
+        let profile = await fetchAppUserProfile(fbUser.email || loginEmail);
+
+        if (!profile && !identifier.includes("@")) {
+          profile = await fetchAppUserProfile(identifier);
+        }
+
+        // 2) لو موقوف في Firestore → نمنع الدخول
+        if (profile && profile.active === false) {
+          errorEl.textContent = "هذا المستخدم موقوف في النظام (من قاعدة البيانات). برجاء مراجعة مسؤول النظام.";
           return;
         }
 
+        // 3) لو مالقيناش profile في app_users، نرجع للنظام القديم (ptw_users) كـ fallback
         if (!appUser) {
           const list = readStoredUsers();
           appUser =
@@ -776,11 +830,22 @@
             ) || null;
         }
 
+        // 4) نختار الـ username والـ role النهائيين:
+        const finalUsername =
+          profile?.username ||
+          appUser?.username ||
+          fbUser.email;
+
+        const finalRole =
+          profile?.role ||
+          appUser?.role ||
+          "admin"; // الديفولت لو مفيش أي بيانات
+
         const sessionData = {
           uid: fbUser.uid,
           email: fbUser.email,
-          username: appUser?.username || fbUser.email,
-          role: appUser?.role || "admin", // تقدر تعدّل الديفولت بعدين
+          username: finalUsername,
+          role: finalRole,
           loginTime: new Date().toISOString()
         };
 

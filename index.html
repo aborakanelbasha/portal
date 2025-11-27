@@ -213,6 +213,19 @@
         0 0 10px antiquewhite,
         0 0 10px antiquewhite;
     }
+    .forgot-btn {
+      margin-top: 0.6rem;
+      background: none;
+      border: none;
+      color: #e5e7eb;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .forgot-btn:hover {
+      color: #bae6fd;
+    }
 
     .login-btn:hover {
       background-color: antiquewhite;
@@ -299,8 +312,16 @@
               </button>
             </div>
 
-            <button class="login-btn" type="submit">دخول</button>
-            <p class="login-error" id="login-error"></p>
+           <button class="login-btn" type="submit">دخول</button>
+           <button
+            type="button"
+            id="forgotPasswordBtn"
+            class="forgot-btn">
+            نسيت كلمة المرور؟
+            </button>
+
+<p class="login-error" id="login-error"></p>
+
           </form>
         </div>
       </div>

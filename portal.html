@@ -317,8 +317,13 @@
           return;
         }
 
-        CURRENT_USER = session;
-        const role = (session.role || "").toLowerCase();
+        // توحيد الـ role على lowercase وتثبيت شكل CURRENT_USER
+        CURRENT_USER = {
+          ...session,
+          role: (session.role || "").toLowerCase()
+        };
+
+        const role = CURRENT_USER.role;
 
         if (role === "najran") {
           ALLOWED_PROJECTS = ["najran"];
@@ -511,7 +516,6 @@
 
       // إظهار/إخفاء تنويه اجتماع السلامة حسب المشروع
       if (tbtNotice) {
-        // في وضع viewer Sharurah نخفي TBT وبالتالي لو مفيش TBT مش لازم التنويه
         const role = (CURRENT_USER?.role || "").toLowerCase();
         const showTbtNotice = (id === 'sharurah' && role !== 'sharurah_viewer');
         tbtNotice.hidden = !showTbtNotice;

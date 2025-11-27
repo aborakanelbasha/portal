@@ -364,6 +364,16 @@
       background:#ede9fe;
       color:#6d28d9;
     }
+    .tag.role-najran_viewer{
+      border-color:#0ea5e9;
+      background:#e0f2fe;
+      color:#0369a1;
+    }
+    .tag.role-sharurah_viewer{
+      border-color:#a855f7;
+      background:#f3e8ff;
+      color:#6b21a8;
+    }
 
     .actions-cell{
       display:flex;
@@ -585,6 +595,8 @@
               <option value="admin">Admin</option>
               <option value="najran">Najran</option>
               <option value="sharurah">Sharurah</option>
+              <option value="najran_viewer">Najran Viewer</option>
+              <option value="sharurah_viewer">Sharurah Viewer</option>
             </select>
             <select id="filterStatus">
               <option value="">كل الحالات</option>
@@ -662,6 +674,8 @@
                   <option value="najran">Najran فقط</option>
                   <option value="sharurah">Sharurah فقط</option>
                   <option value="admin">Admin (كل المشاريع)</option>
+                  <option value="najran_viewer">Najran Viewer (عرض فقط)</option>
+                  <option value="sharurah_viewer">Sharurah Viewer (عرض فقط)</option>
                 </select>
               </div>
               <div class="form-group">
@@ -723,6 +737,8 @@
           <option value="admin">Admin (كل المشاريع)</option>
           <option value="najran">Najran فقط</option>
           <option value="sharurah">Sharurah فقط</option>
+          <option value="najran_viewer">Najran Viewer (عرض فقط)</option>
+          <option value="sharurah_viewer">Sharurah Viewer (عرض فقط)</option>
         </select>
         <div class="hint" style="margin-top:6px;">
           سيتم تحديث الدور محليًا في <span class="mono small">ptw_users</span>، ويمكنك مزامنته مع Firestore لاحقًا.
@@ -943,10 +959,24 @@
         const roleRaw = (u.role || "").toLowerCase();
         let roleLabel = "-";
         let roleClass = "";
-        if (roleRaw === "admin"){ roleLabel = "Admin"; roleClass = "role-admin"; }
-        else if (roleRaw === "najran"){ roleLabel = "Najran"; roleClass = "role-najran"; }
-        else if (roleRaw === "sharurah"){ roleLabel = "Sharurah"; roleClass = "role-sharurah"; }
-        else { roleLabel = u.role || "-"; }
+        if (roleRaw === "admin"){ 
+          roleLabel = "Admin"; 
+          roleClass = "role-admin"; 
+        } else if (roleRaw === "najran"){ 
+          roleLabel = "Najran"; 
+          roleClass = "role-najran"; 
+        } else if (roleRaw === "sharurah"){ 
+          roleLabel = "Sharurah"; 
+          roleClass = "role-sharurah"; 
+        } else if (roleRaw === "najran_viewer"){
+          roleLabel = "Najran Viewer (عرض فقط)";
+          roleClass = "role-najran_viewer";
+        } else if (roleRaw === "sharurah_viewer"){
+          roleLabel = "Sharurah Viewer (عرض فقط)";
+          roleClass = "role-sharurah_viewer";
+        } else { 
+          roleLabel = u.role || "-"; 
+        }
 
         const createdAt = formatCreatedAt(u.createdAt);
 
@@ -1153,7 +1183,7 @@
       if (usernameSpan) usernameSpan.textContent = username;
       if (select){
         const role = (user.role || "najran").toLowerCase();
-        if (["admin","najran","sharurah"].includes(role)){
+        if (["admin","najran","sharurah","najran_viewer","sharurah_viewer"].includes(role)){
           select.value = role;
         }else{
           select.value = "najran";
@@ -1180,7 +1210,7 @@
         return;
       }
 
-      if (!["admin","najran","sharurah"].includes(newRole)){
+      if (!["admin","najran","sharurah","najran_viewer","sharurah_viewer"].includes(newRole)){
         alert("الدور غير صالح.");
         return;
       }
@@ -1455,14 +1485,14 @@
       }
 
       let role = prompt(
-        'حدد الدور للمستخدم الجديد (admin / najran / sharurah):',
+        'حدد الدور للمستخدم الجديد (admin / najran / sharurah / najran_viewer / sharurah_viewer):',
         data.role || 'najran'
       );
       if (role === null) return;
 
       role = role.trim().toLowerCase();
-      if (!["admin","najran","sharurah"].includes(role)){
-        alert("الدور غير صالح. استخدم admin أو najran أو sharurah.");
+      if (!["admin","najran","sharurah","najran_viewer","sharurah_viewer"].includes(role)){
+        alert("الدور غير صالح. استخدم: admin أو najran أو sharurah أو najran_viewer أو sharurah_viewer.");
         return;
       }
 

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>بوابة العرض | تصاريح العمل</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark light" />
+  <style>
+    :root{
+      --bg:#020617;
+      --card-bg:rgba(15,23,42,.9);
+      --card-bg-hover:rgba(15,23,42,.98);
+      --card-brd:rgba(148,163,184,.6);
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --accent:#3b82f6;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:'Segoe UI',system-ui,Tahoma;
+      background:radial-gradient(circle at top,#0f172a 0,#020617 55%,#000 100%);
+      color:var(--text);
+      min-height:100vh;
+      padding:12px 10px 24px;
+    }
+    .overlay{position:fixed;inset:0;backdrop-filter:blur(6px) brightness(.65);z-index:0}
+    .container{
+      position:relative;
+      z-index:1;
+      max-width:960px;
+      margin:0 auto;
+    }
+
+    .user-bar{
+      margin-bottom:14px;
+      margin-top:4px;
+      padding:8px 10px;
+      border-radius:999px;
+      background:linear-gradient(135deg,rgba(15,23,42,.98),rgba(37,99,235,.9));
+      border:1px solid rgba(148,163,184,.7);
+      display:flex;
+      align-items:center;
+      gap:8px;
+      box-shadow:0 16px 40px rgba(15,23,42,.9);
+      font-size:.82rem;
+    }
+    #welcomeUser{
+      flex:1;
+      min-width:0;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .user-bar-actions{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+    .btn-chip{
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.85);
+      background:rgba(15,23,42,.9);
+      color:#e5e7eb;
+      padding:5px 10px;
+      font-size:.78rem;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      font-weight:600;
+    }
+    .btn-chip.logout{
+      border-color:rgba(248,113,113,1);
+      background:rgba(127,29,29,.4);
+      color:#fee2e2;
+    }
+    .btn-chip:hover{
+      filter:brightness(1.06);
+      transform:translateY(-1px);
+    }
+
+    h1{
+      margin:8px 0 4px;
+      font-size:1.55rem;
+      text-align:right;
+    }
+    .subtitle{
+      margin:0 0 12px;
+      font-size:.9rem;
+      color:var(--muted);
+      text-align:right;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:14px;
+      margin-top:14px;
+    }
+    .card{
+      text-decoration:none;
+      color:var(--text);
+      background:var(--card-bg);
+      border-radius:18px;
+      border:1px solid var(--card-brd);
+      padding:14px 14px 12px;
+      box-shadow:0 16px 45px rgba(15,23,42,.85);
+      display:flex;
+      flex-direction:column;
+      min-height:120px;
+      transition:.22s;
+    }
+    .card:hover{
+      background:var(--card-bg-hover);
+      transform:translateY(-3px) scale(1.01);
+      box-shadow:0 22px 60px rgba(37,99,235,.7);
+    }
+    .card-header{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:6px;
+    }
+    .card-icon{
+      width:32px;
+      height:32px;
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(37,99,235,.16);
+      border:1px solid rgba(129,140,248,.6);
+      font-size:1.1rem;
+    }
+    .card-title{
+      font-weight:700;
+      font-size:.98rem;
+    }
+    .card-badge{
+      margin-inline-start:auto;
+      font-size:.78rem;
+      padding:4px 8px;
+      border-radius:999px;
+      background:rgba(15,23,42,.9);
+      border:1px solid rgba(148,163,184,.7);
+      color:#e5e7eb;
+    }
+    .card-desc{
+      font-size:.86rem;
+      color:var(--muted);
+      margin-bottom:10px;
+    }
+    .card-footer{
+      margin-top:auto;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:.78rem;
+      color:var(--muted);
+    }
+    .pill{
+      padding:3px 8px;
+      border-radius:999px;
+      background:rgba(15,23,42,.9);
+      border:1px solid rgba(148,163,184,.7);
+    }
+
+    .section-title{
+      margin-top:18px;
+      font-size:1rem;
+      border-bottom:1px solid rgba(75,85,99,.9);
+      padding-bottom:6px;
+    }
+
+    .hint-box{
+      margin-top:10px;
+      padding:8px 10px;
+      border-radius:12px;
+      border:1px solid rgba(148,163,184,.7);
+      background:rgba(15,23,42,.92);
+      font-size:.8rem;
+      color:var(--muted);
+    }
+
+    footer{
+      margin-top:20px;
+      text-align:center;
+      font-size:.78rem;
+      color:var(--muted);
+    }
+
+    @media(max-width:640px){
+      body{padding-inline:8px;}
+      .user-bar{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .user-bar-actions{
+        justify-content:flex-start;
+      }
+      h1{font-size:1.35rem;}
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="user-bar">
+      <span id="welcomeUser">👋 أهلاً بك — يوم جميل عليك</span>
+      <div class="user-bar-actions">
+        <button type="button" class="btn-chip" id="btnProfile">👤 الملف الشخصي</button>
+        <button type="button" class="btn-chip logout" id="btnLogout">🚪 تسجيل الخروج</button>
+      </div>
+    </div>
+
+    <h1 id="pageTitle">لوحة عرض التصاريح</h1>
+    <p class="subtitle" id="pageSubtitle">عرض الجالري وتقييمات المخاطر للمشروع.</p>
+
+    <h2 class="section-title">📸 جالري التصاريح</h2>
+    <div class="grid" id="galleryGrid"></div>
+
+    <h2 class="section-title">🧮 تقييمات المخاطر</h2>
+    <div class="grid" id="raGrid"></div>
+
+    <div class="hint-box">
+      🔎 يمكنك فتح الروابط في تبويب جديد للاطلاع على التصاريح أو نماذج تقييم المخاطر بسهولة من الجوال.
+    </div>
+
+    <footer>بوابة العرض (Viewer) — جميع الحقوق محفوظة © Eng.Ahmed El-Basha</footer>
+  </div>
+
+  <script>
+    "use strict";
+
+    const welcomeUser   = document.getElementById("welcomeUser");
+    const btnProfile    = document.getElementById("btnProfile");
+    const btnLogout     = document.getElementById("btnLogout");
+    const pageTitle     = document.getElementById("pageTitle");
+    const pageSubtitle  = document.getElementById("pageSubtitle");
+    const galleryGrid   = document.getElementById("galleryGrid");
+    const raGrid        = document.getElementById("raGrid");
+
+    let CURRENT_USER = null;
+
+    function protectViewerPortal(){
+      try{
+        const raw = localStorage.getItem("aln_session");
+        if (!raw){
+          window.location.href = "/";
+          return;
+        }
+        const session = JSON.parse(raw);
+        if (!session || !session.username || !session.role){
+          localStorage.removeItem("aln_session");
+          window.location.href = "/";
+          return;
+        }
+
+        const role = (session.role || "").toLowerCase();
+        if (role !== "najran_viewer" && role !== "sharurah_viewer"){
+          // مش Viewer → يرجع للبوابة الأساسية
+          window.location.href = "/portal";
+          return;
+        }
+
+        CURRENT_USER = { ...session, role };
+
+        welcomeUser.textContent = `👋 أهلاً ${session.username} — يوم جميل عليك`;
+
+        if (role === "najran_viewer"){
+          pageTitle.textContent    = "جالري وتصاريح مشروع نجران";
+          pageSubtitle.textContent = "عرض تصاريح العمل وتقييمات المخاطر لمبنى إداري ومبنى التحكم بمحطة كهرباء نجران.";
+          renderNajran();
+        }else{
+          pageTitle.textContent    = "جالري وتصاريح مشروع شرورة";
+          pageSubtitle.textContent = "عرض تصاريح العمل وتقييمات المخاطر لمشروع إنشاء بوابات أمنية بمحطة كهرباء شرورة.";
+          renderSharurah();
+        }
+      }catch(e){
+        console.error(e);
+        window.location.href = "/";
+      }
+    }
+
+    function createCard(item){
+      const a = document.createElement("a");
+      a.className = "card";
+      a.href = item.href;
+      a.target = "_blank";
+      a.rel = "noopener";
+
+      a.innerHTML = `
+        <div class="card-header">
+          <div class="card-icon">${item.icon || "📄"}</div>
+          <div class="card-title">${item.title}</div>
+          <div class="card-badge">${item.badge}</div>
+        </div>
+        <div class="card-desc">${item.desc}</div>
+        <div class="card-footer">
+          <span>${item.footer || ""}</span>
+          <span class="pill">فتح في تبويب جديد</span>
+        </div>
+      `;
+
+      return a;
+    }
+
+    function renderNajran(){
+      galleryGrid.innerHTML = "";
+      raGrid.innerHTML = "";
+
+      const galleryItems = [
+        {
+          title:"جالري تصاريح الأعمال — نجران",
+          badge:"LOG",
+          desc:"عرض وتتبع جميع تصاريح العمل الصادرة لمشروع نجران.",
+          footer:"ptw Najran",
+          href:"https://gwp-gallery.pages.dev/",
+          icon:"🗂️"
+        }
+      ];
+      const raItems = [
+        {
+          title:"تقييمات المخاطر — نجران",
+          badge:"RA",
+          desc:"نماذج وإرشادات تقييم المخاطر لمشروع محطة كهرباء نجران.",
+          footer:"Google Sites",
+          href:"https://sites.google.com/view/najran-ra/home",
+          icon:"📊"
+        }
+      ];
+
+      galleryItems.forEach(i => galleryGrid.appendChild(createCard(i)));
+      raItems.forEach(i => raGrid.appendChild(createCard(i)));
+    }
+
+    function renderSharurah(){
+      galleryGrid.innerHTML = "";
+      raGrid.innerHTML = "";
+
+      const galleryItems = [
+        {
+          title:"جالري تصاريح الأعمال — شرورة",
+          badge:"LOG",
+          desc:"عرض وتتبع جميع تصاريح العمل الصادرة لمشروع شرورة.",
+          footer:"ptw Sharurah",
+          href:"https://sharura-gallery.pages.dev/",
+          icon:"🗂️"
+        }
+      ];
+      const raItems = [
+        {
+          title:"تقييمات المخاطر — شرورة",
+          badge:"RA",
+          desc:"نماذج وإرشادات تقييم المخاطر لمشروع إنشاء البوابات الأمنية بشرورة.",
+          footer:"Google Sites",
+          href:"https://sites.google.com/d/1GcTU71M0DlHm8LBQZ_osejInCnqfdOUq/p/1CslJgVDImOo_PSOLHpDuvoe2HfdpIUfF/edit",
+          icon:"📊"
+        }
+      ];
+
+      galleryItems.forEach(i => galleryGrid.appendChild(createCard(i)));
+      raItems.forEach(i => raGrid.appendChild(createCard(i)));
+    }
+
+    btnProfile.addEventListener("click", () => {
+      window.location.href = "/profile.html";
+    });
+
+    btnLogout.addEventListener("click", () => {
+      localStorage.removeItem("aln_session");
+      window.location.href = "/";
+    });
+
+    (function init(){
+      protectViewerPortal();
+    })();
+  </script>
+</body>
+</html>

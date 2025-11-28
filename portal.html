@@ -117,6 +117,12 @@
     }
     .search{ display:flex; background:var(--panel); border:1px solid var(--panel-brd); border-radius:12px; padding:6px; }
     #searchInput{ flex:1; min-width:0; padding:10px 12px; border-radius:8px; border:none; background:rgba(255,255,255,.10); color:var(--text); text-align:right; }
+    .user-actions-bar{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+      margin-inline-start:auto;
+    }
 
     .install-btn{
       background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.06));
@@ -236,11 +242,23 @@
   <div class="overlay"></div>
   <div class="container">
 
-    <!-- شريط الترحيب في الكورنر -->
+       <!-- شريط الترحيب في الكورنر -->
     <div class="user-bar">
       <span id="welcomeUser">👋 أهلاً بك</span>
-      <button id="btnLogout" class="logout-btn">تسجيل الخروج</button>
+      <div class="user-actions-bar">
+        <button id="btnProfile" class="logout-btn" type="button" style="background:rgba(15,23,42,.5);border-color:rgba(148,163,184,.9);color:#e5e7eb;">
+          👤 الملف الشخصي
+        </button>
+        <button id="btnAdminPanel" class="logout-btn" type="button" style="display:none;">
+          ⚙️ لوحة التحكم
+        </button>
+        <button id="btnActivity" class="logout-btn" type="button" style="display:none;">
+          📜 سجل النشاط
+        </button>
+        <button id="btnLogout" class="logout-btn">تسجيل الخروج</button>
+      </div>
     </div>
+
 
     <h1>بوابة تصاريح العمل</h1>
     <p class="subtitle">مرحبًا بك في بوابة تصاريح العمل الخاصة بشركة النجار للمقاولات</p>
@@ -625,26 +643,30 @@
     (function init(){
       applyRoleVisibility();
 
-      if (CURRENT_USER && welcomeUser) {
-        const role = (CURRENT_USER.role || "").toLowerCase();
-        let roleText = '';
-
-        if (role === 'admin') {
-          roleText = 'صلاحياتك: نجران وشرورة';
-        } else if (role === 'najran') {
-          roleText = 'صلاحياتك: مشروع نجران فقط';
-        } else if (role === 'sharurah') {
-          roleText = 'صلاحياتك: مشروع شرورة فقط';
-        } else if (role === 'najran_viewer') {
-          roleText = 'وضع عرض فقط: جالري + تقييم مخاطر نجران';
-        } else if (role === 'sharurah_viewer') {
-          roleText = 'وضع عرض فقط: جالري + تقييم مخاطر شرورة';
-        } else {
-          roleText = `دورك: ${CURRENT_USER.role}`;
-        }
-
-        welcomeUser.textContent = `👋 أهلاً ${CURRENT_USER.username} — ${roleText}`;
+           if (CURRENT_USER && welcomeUser) {
+        welcomeUser.textContent = `👋 أهلاً ${CURRENT_USER.username} — يوم جميل عليك`;
       }
+
+      const btnProfile   = document.getElementById('btnProfile');
+      const btnAdminPanel= document.getElementById('btnAdminPanel');
+      const btnActivity  = document.getElementById('btnActivity');
+
+      btnProfile?.addEventListener('click', () => {
+        window.location.href = '/profile.html';
+      });
+
+      if ((CURRENT_USER.role || '').toLowerCase() === 'admin') {
+        if (btnAdminPanel) btnAdminPanel.style.display = 'inline-flex';
+        if (btnActivity)   btnActivity.style.display   = 'inline-flex';
+
+        btnAdminPanel?.addEventListener('click', () => {
+          window.location.href = '/users.html';
+        });
+        btnActivity?.addEventListener('click', () => {
+          window.location.href = '/activity.html';
+        });
+      }
+
 
       const saved = localStorage.getItem('preferredProject');
       let first = getParam('project') || saved || 'najran';

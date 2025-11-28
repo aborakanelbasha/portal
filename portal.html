@@ -45,24 +45,47 @@
     .subtitle{color:#cbd5e1;text-align:center;margin:0 0 18px}
 
     /* ===== شريط الترحيب الصغير في الكورنر ===== */
-    .user-bar {
-      position:absolute;
-      top:12px;
-      inset-inline-end:16px;
-      max-width:320px;
-      margin:0;
-      display:flex;
-      justify-content:flex-start;
-      align-items:center;
-      gap:8px;
-      padding:8px 12px;
-      border-radius:999px;
-      background: linear-gradient(135deg, rgba(15,23,42,.98), rgba(30,64,175,.92));
-      border:1px solid rgba(148,163,184,.7);
-      box-shadow:0 18px 40px rgba(15,23,42,.8);
-      font-size:0.82rem;
-      direction:rtl;
-    }
+    /* كارت المستخدم الزجاجي في الكورنر */
+.user-bar{
+  position:fixed;
+  top:16px;
+  inset-inline-end:18px;        /* يمين في RTL */
+  z-index:40;
+
+  width:280px;
+  max-width:92vw;
+
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:8px;
+
+  padding:12px 14px;
+  border-radius:18px;
+  background:rgba(15,23,42,.88);
+  border:1px solid rgba(148,163,184,.70);
+  box-shadow:0 22px 60px rgba(15,23,42,.90);
+  backdrop-filter:blur(10px) saturate(130%);
+  font-size:0.82rem;
+  direction:rtl;
+}
+
+/* تيكست الترحيب */
+#welcomeUser{
+  font-weight:600;
+  color:#e5e7eb;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* صف الأزرار تحت الترحيب */
+.user-actions-bar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
     #welcomeUser {
       font-weight:600;
       color:#e5e7eb;
@@ -70,20 +93,35 @@
       overflow:hidden;
       text-overflow:ellipsis;
     }
-    .logout-btn{
-      background: rgba(239,68,68,.15);
-      border:1px solid rgba(248,113,113,1);
-      color:#fee2e2;
-      padding:5px 10px;
-      border-radius:999px;
-      cursor:pointer;
-      font-weight:700;
-      font-size:0.78rem;
-      white-space:nowrap;
-    }
-    .logout-btn:hover{
-      background: rgba(239,68,68,.25);
-    }
+    /* زرّار صغير كـ chip */
+.logout-btn{
+  background:rgba(15,23,42,.92);
+  border:1px solid rgba(148,163,184,.85);
+  color:#e5e7eb;
+  padding:5px 11px;
+  border-radius:999px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:0.78rem;
+  white-space:nowrap;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+}
+.logout-btn:hover{
+  filter:brightness(1.06);
+  transform:translateY(-1px);
+}
+.logout-btn:active{
+  transform:translateY(0);
+}
+
+/* لون خاص لزر تسجيل الخروج */
+.logout-danger{
+  background:rgba(127,29,29,.80);
+  border-color:#fca5a5;
+  color:#fee2e2;
+}
 
     .soft-note{
       text-align:center; margin:12px auto 18px; max-width:980px;
@@ -162,7 +200,7 @@
       .subtitle{font-size:.9rem}
       .user-bar{
         top:8px;
-        inset-inline:8px;
+        inset-inline:10px;
         max-width:none;
         justify-content:space-between;
         gap:6px;
@@ -356,10 +394,15 @@
           ALLOWED_PROJECTS = ["sharurah"];
         } else if (role === "najran_viewer") {
           ALLOWED_PROJECTS = ["najran"];
+          window.location.href = '/portal-viewer.html';
+          return;
           VIEW_ONLY_MODE = true;
         } else if (role === "sharurah_viewer") {
           ALLOWED_PROJECTS = ["sharurah"];
+          window.location.href = '/portal-viewer.html';
+          return;
           VIEW_ONLY_MODE = true;
+          
         } else {
           // admin أو أي رول عام
           ALLOWED_PROJECTS = ["najran", "sharurah"];

@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>الملف الشخصي | بوابة تصاريح العمل</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark light" />
+  <style>
+    :root{
+      --bg:#020617;
+      --card-bg:rgba(15,23,42,.96);
+      --card-brd:rgba(148,163,184,.6);
+      --accent:#3b82f6;
+      --accent-soft:rgba(59,130,246,.12);
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --danger:#ef4444;
+      --success:#22c55e;
+      --radius:18px;
+      --shadow:0 22px 60px rgba(15,23,42,.85);
+    }
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family:'Segoe UI',system-ui,Tahoma;
+      background:
+        radial-gradient(circle at top,#1f2937 0,#020617 60%,#000 100%);
+      color:var(--text);
+      min-height:100vh;
+      padding:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .wrap{
+      width:100%;
+      max-width:480px;
+      position:relative;
+    }
+    .card{
+      background:var(--card-bg);
+      border-radius:var(--radius);
+      border:1px solid var(--card-brd);
+      box-shadow:var(--shadow);
+      padding:18px 16px 16px;
+      backdrop-filter:blur(10px);
+    }
+    .header{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:14px;
+    }
+    .avatar{
+      width:52px;
+      height:52px;
+      border-radius:999px;
+      background:linear-gradient(135deg,#3b82f6,#22c55e);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+      font-size:1.4rem;
+      color:#eff6ff;
+      box-shadow:0 14px 35px rgba(37,99,235,.8);
+      flex-shrink:0;
+    }
+    .header-main{
+      flex:1;
+      min-width:0;
+    }
+    .header-main h1{
+      margin:0;
+      font-size:1.25rem;
+    }
+    .header-main p{
+      margin:2px 0 0;
+      font-size:.86rem;
+      color:var(--muted);
+      word-break:break-all;
+    }
+    .chip-role{
+      margin-top:6px;
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      padding:3px 9px;
+      border-radius:999px;
+      background:rgba(148,163,184,.12);
+      border:1px solid rgba(148,163,184,.5);
+      font-size:.78rem;
+      color:#e5e7eb;
+    }
+    .badge-pill{
+      position:absolute;
+      inset-inline-end:0;
+      top:-10px;
+      padding:5px 10px;
+      font-size:.78rem;
+      border-radius:999px;
+      background:rgba(15,23,42,.96);
+      border:1px solid rgba(148,163,184,.7);
+      color:#e5e7eb;
+      box-shadow:0 15px 40px rgba(15,23,42,.9);
+    }
+
+    .section{
+      margin-top:14px;
+      padding-top:10px;
+      border-top:1px dashed rgba(75,85,99,.8);
+    }
+    .section h2{
+      margin:0 0 8px;
+      font-size:.98rem;
+    }
+    .section p{
+      margin:0 0 8px;
+      font-size:.8rem;
+      color:var(--muted);
+    }
+    .grid{
+      display:grid;
+      gap:8px;
+    }
+
+    label{
+      display:block;
+      font-size:.8rem;
+      margin-bottom:2px;
+    }
+    .input{
+      width:100%;
+      border-radius:11px;
+      border:1px solid rgba(148,163,184,.7);
+      background:rgba(15,23,42,.9);
+      color:var(--text);
+      padding:8px 10px;
+      font-size:.86rem;
+    }
+    .input[disabled]{
+      opacity:.75;
+      background:rgba(15,23,42,.7);
+    }
+    .input:focus{
+      outline:none;
+      border-color:var(--accent);
+      box-shadow:0 0 0 1px rgba(59,130,246,.55);
+    }
+
+    .btn-row{
+      display:flex;
+      gap:8px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.8);
+      background:rgba(15,23,42,.9);
+      color:var(--text);
+      padding:8px 14px;
+      font-size:.86rem;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-weight:600;
+    }
+    .btn-primary{
+      border-color:var(--accent);
+      background:linear-gradient(135deg,#3b82f6,#2563eb);
+      color:#eff6ff;
+    }
+    .btn-danger{
+      border-color:var(--danger);
+      color:#fecaca;
+    }
+    .btn:hover{
+      filter:brightness(1.05);
+      transform:translateY(-1px);
+    }
+    .btn:active{
+      transform:translateY(0);
+    }
+
+    .hint{
+      margin-top:4px;
+      font-size:.76rem;
+      color:var(--muted);
+    }
+
+    .alert{
+      margin-top:8px;
+      font-size:.8rem;
+      border-radius:10px;
+      padding:7px 9px;
+      border:1px solid rgba(148,163,184,.6);
+      background:rgba(15,23,42,.8);
+      color:var(--muted);
+    }
+    .alert.success{
+      border-color:rgba(34,197,94,.7);
+      background:rgba(22,163,74,.18);
+      color:#bbf7d0;
+    }
+    .alert.error{
+      border-color:rgba(239,68,68,.7);
+      background:rgba(127,29,29,.35);
+      color:#fee2e2;
+    }
+
+    .links-row{
+      margin-top:12px;
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      font-size:.78rem;
+      color:var(--muted);
+    }
+    .link{
+      color:#bfdbfe;
+      text-decoration:none;
+    }
+    .link:hover{
+      text-decoration:underline;
+    }
+
+    @media(max-width:640px){
+      body{
+        padding:10px 10px 18px;
+        align-items:flex-start;
+      }
+      .wrap{margin-top:24px;}
+      .card{padding-inline:14px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="badge-pill">
+        👋 أهلاً <span id="badgeName">ضيف</span> — يوم جميل عليك
+      </div>
+
+      <header class="header">
+        <div class="avatar" id="avatarCircle">U</div>
+        <div class="header-main">
+          <h1 id="displayName">المستخدم</h1>
+          <p id="displayEmail">email@example.com</p>
+          <div class="chip-role" id="displayRoleChip">
+            🎫 <span id="displayRoleText">دور المستخدم</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- قسم بيانات البروفايل -->
+      <section class="section">
+        <h2>بياناتي</h2>
+        <p>يمكنك تحديث بعض البيانات التعريفية الخاصة بك. هذه البيانات تُحفظ في <span class="mono">app_users</span>.</p>
+
+        <form id="profileForm" class="grid">
+          <div>
+            <label for="fullName">الاسم الكامل</label>
+            <input id="fullName" class="input" type="text" autocomplete="name" />
+          </div>
+          <div>
+            <label for="phone">رقم الجوال</label>
+            <input id="phone" class="input" type="tel" autocomplete="tel" />
+          </div>
+          <div>
+            <label for="jobTitle">المسمى الوظيفي</label>
+            <input id="jobTitle" class="input" type="text" />
+          </div>
+          <div>
+            <label for="emailDisplay">الإيميل (للقراءة فقط)</label>
+            <input id="emailDisplay" class="input" type="email" disabled />
+            <div class="hint">لتعديل الإيميل المستخدم في تسجيل الدخول يجب التواصل مع المسؤول.</div>
+          </div>
+
+          <div class="btn-row">
+            <button type="submit" class="btn btn-primary">💾 حفظ التعديلات</button>
+            <button type="button" class="btn" id="btnBackPortal">⬅ الرجوع للبوابة</button>
+          </div>
+          <div id="profileMsg" class="alert" style="display:none;"></div>
+        </form>
+      </section>
+
+      <!-- قسم تغيير كلمة المرور -->
+      <section class="section">
+        <h2>تغيير كلمة المرور</h2>
+        <p>سيتم تغيير كلمة المرور في <strong>Firebase Auth</strong> للمستخدم الحالي.</p>
+
+        <form id="passwordForm" class="grid">
+          <div>
+            <label for="newPassword">كلمة المرور الجديدة</label>
+            <input id="newPassword" class="input" type="password" autocomplete="new-password" required />
+          </div>
+          <div>
+            <label for="confirmPassword">تأكيد كلمة المرور الجديدة</label>
+            <input id="confirmPassword" class="input" type="password" autocomplete="new-password" required />
+          </div>
+
+          <div class="btn-row">
+            <button type="submit" class="btn btn-primary">🔐 تحديث كلمة المرور</button>
+            <button type="button" class="btn btn-danger" id="btnLogout">تسجيل الخروج</button>
+          </div>
+          <div id="passwordMsg" class="alert" style="display:none;"></div>
+        </form>
+        <div class="hint">
+          في حال ظهور رسالة بضرورة تسجيل الدخول مرة أخرى، قم بتسجيل الخروج ثم الدخول من جديد قبل محاولة تغيير كلمة المرور.
+        </div>
+      </section>
+
+      <div class="links-row">
+        <span>بوابة تصاريح العمل</span>
+        <a href="/portal" class="link">العودة للبوابة الرئيسية</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import {
+      getAuth,
+      updatePassword
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
+      authDomain: "ptw-najran-sharurah.firebaseapp.com",
+      projectId: "ptw-najran-sharurah",
+      storageBucket: "ptw-najran-sharurah.firebasestorage.app",
+      messagingSenderId: "848619550286",
+      appId: "1:848619550286:web:fe5c470f67236b2519751f"
+    };
+
+    let app;
+    if (!getApps().length) {
+      app = initializeApp(firebaseConfig);
+    } else {
+      app = getApp();
+    }
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    const USERS_KEY = "ptw_users";
+
+    const badgeName      = document.getElementById("badgeName");
+    const avatarCircle   = document.getElementById("avatarCircle");
+    const displayName    = document.getElementById("displayName");
+    const displayEmail   = document.getElementById("displayEmail");
+    const displayRoleChip= document.getElementById("displayRoleChip");
+    const displayRoleTxt = document.getElementById("displayRoleText");
+
+    const fullNameInput  = document.getElementById("fullName");
+    const phoneInput     = document.getElementById("phone");
+    const jobTitleInput  = document.getElementById("jobTitle");
+    const emailDisplay   = document.getElementById("emailDisplay");
+
+    const profileForm    = document.getElementById("profileForm");
+    const passwordForm   = document.getElementById("passwordForm");
+    const profileMsg     = document.getElementById("profileMsg");
+    const passwordMsg    = document.getElementById("passwordMsg");
+    const btnBackPortal  = document.getElementById("btnBackPortal");
+    const btnLogout      = document.getElementById("btnLogout");
+
+    let CURRENT_USER = null;
+    let LOCAL_USER   = null;
+
+    function readUsers(){
+      try{
+        const raw = localStorage.getItem(USERS_KEY);
+        if (!raw) return [];
+        const list = JSON.parse(raw);
+        return Array.isArray(list) ? list : [];
+      }catch(e){
+        console.error("readUsers error", e);
+        return [];
+      }
+    }
+    function writeUsers(list){
+      try{
+        localStorage.setItem(USERS_KEY, JSON.stringify(list));
+      }catch(e){
+        console.error("writeUsers error", e);
+      }
+    }
+
+    function protectProfile(){
+      try{
+        const raw = localStorage.getItem("aln_session");
+        if (!raw){
+          window.location.href = "/";
+          return;
+        }
+        const session = JSON.parse(raw);
+        if (!session || !session.username || !session.role){
+          localStorage.removeItem("aln_session");
+          window.location.href = "/";
+          return;
+        }
+        CURRENT_USER = {
+          ...session,
+          role:(session.role || "").toLowerCase()
+        };
+      }catch(e){
+        console.error(e);
+        window.location.href = "/";
+      }
+    }
+
+    function mapRoleText(role){
+      switch(role){
+        case "admin": return "مسؤول النظام (Admin)";
+        case "najran": return "مشروع نجران";
+        case "sharurah": return "مشروع شرورة";
+        case "najran_viewer": return "عارض نجران (Viewer)";
+        case "sharurah_viewer": return "عارض شرورة (Viewer)";
+        default: return role || "مستخدم";
+      }
+    }
+
+    function showProfileData(){
+      if (!CURRENT_USER) return;
+
+      const username = CURRENT_USER.username;
+      const email    = CURRENT_USER.email || "";
+      const role     = (CURRENT_USER.role || "").toLowerCase();
+
+      const firstLetter = (username && username[0] || "U").toUpperCase();
+      avatarCircle.textContent = firstLetter;
+      displayName.textContent  = username;
+      displayEmail.textContent = email || "لا يوجد إيميل مسجل";
+      badgeName.textContent    = username;
+      displayRoleTxt.textContent = mapRoleText(role);
+
+      emailDisplay.value = email;
+
+      const list = readUsers();
+      LOCAL_USER = list.find(u => (u.username || "").toLowerCase() === String(username).toLowerCase()) || null;
+
+      if (LOCAL_USER){
+        fullNameInput.value = LOCAL_USER.fullName || "";
+        phoneInput.value    = LOCAL_USER.phone || "";
+        jobTitleInput.value = LOCAL_USER.jobTitle || "";
+      }
+    }
+
+    async function saveProfileToFirestore(profile){
+      try{
+        const username = CURRENT_USER.username;
+        if (!username) return;
+
+        const docRef = doc(db, "app_users", username.toLowerCase());
+        await setDoc(docRef, {
+          username: username,
+          email: CURRENT_USER.email || null,
+          role: CURRENT_USER.role || null,
+          active: true,
+          fullName: profile.fullName || null,
+          phone: profile.phone || null,
+          jobTitle: profile.jobTitle || null,
+          updatedAt: serverTimestamp(),
+          source: "profile_page"
+        }, { merge:true });
+      }catch(e){
+        console.error("saveProfileToFirestore error", e);
+        throw e;
+      }
+    }
+
+    profileForm.addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      if (!CURRENT_USER) return;
+
+      const fullName = fullNameInput.value.trim();
+      const phone    = phoneInput.value.trim();
+      const jobTitle = jobTitleInput.value.trim();
+
+      profileMsg.style.display = "none";
+
+      try{
+        const list = readUsers();
+        const idx = list.findIndex(u =>
+          (u.username || "").toLowerCase() === String(CURRENT_USER.username).toLowerCase()
+        );
+
+        const nowIso = new Date().toISOString();
+
+        if (idx === -1){
+          list.push({
+            username: CURRENT_USER.username,
+            email: CURRENT_USER.email || null,
+            password: null,
+            role: CURRENT_USER.role || "najran",
+            active: true,
+            createdAt: nowIso,
+            fullName,
+            phone,
+            jobTitle
+          });
+        }else{
+          list[idx] = {
+            ...list[idx],
+            fullName,
+            phone,
+            jobTitle
+          };
+        }
+        writeUsers(list);
+
+        await saveProfileToFirestore({ fullName, phone, jobTitle });
+
+        profileMsg.textContent = "تم حفظ بيانات البروفايل بنجاح.";
+        profileMsg.className = "alert success";
+        profileMsg.style.display = "block";
+      }catch(err){
+        console.error(err);
+        profileMsg.textContent = "تعذر حفظ البيانات الآن، حاول مرة أخرى.";
+        profileMsg.className = "alert error";
+        profileMsg.style.display = "block";
+      }
+    });
+
+    passwordForm.addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      passwordMsg.style.display = "none";
+
+      const newPass = document.getElementById("newPassword").value.trim();
+      const confirm = document.getElementById("confirmPassword").value.trim();
+
+      if (!newPass || newPass.length < 6){
+        passwordMsg.textContent = "كلمة المرور الجديدة يجب ألا تقل عن 6 أحرف.";
+        passwordMsg.className = "alert error";
+        passwordMsg.style.display = "block";
+        return;
+      }
+      if (newPass !== confirm){
+        passwordMsg.textContent = "تأكيد كلمة المرور غير مطابق.";
+        passwordMsg.className = "alert error";
+        passwordMsg.style.display = "block";
+        return;
+      }
+
+      try{
+        const user = auth.currentUser;
+        if (!user){
+          passwordMsg.textContent = "لا يوجد جلسة تسجيل دخول على Firebase، قم بتسجيل الدخول ثم حاول مجددًا.";
+          passwordMsg.className = "alert error";
+          passwordMsg.style.display = "block";
+          return;
+        }
+
+        await updatePassword(user, newPass);
+
+        try{
+          const list = readUsers();
+          const idx = list.findIndex(u =>
+            (u.username || "").toLowerCase() === String(CURRENT_USER.username).toLowerCase()
+          );
+          if (idx !== -1){
+            list[idx].password = newPass;
+            writeUsers(list);
+          }
+        }catch(e){
+          console.error("update local password error", e);
+        }
+
+        passwordMsg.textContent = "تم تحديث كلمة المرور بنجاح.";
+        passwordMsg.className = "alert success";
+        passwordMsg.style.display = "block";
+
+        document.getElementById("newPassword").value = "";
+        document.getElementById("confirmPassword").value = "";
+      }catch(err){
+        console.error("updatePassword error", err);
+        let msg = "تعذر تغيير كلمة المرور الآن.";
+        if (err.code === "auth/requires-recent-login"){
+          msg = "يجب تسجيل الدخول مرة أخرى ثم إعادة المحاولة لتغيير كلمة المرور.";
+        }
+        passwordMsg.textContent = msg;
+        passwordMsg.className = "alert error";
+        passwordMsg.style.display = "block";
+      }
+    });
+
+    btnBackPortal.addEventListener("click", () => {
+      window.location.href = "/portal";
+    });
+
+    btnLogout.addEventListener("click", () => {
+      localStorage.removeItem("aln_session");
+      window.location.href = "/";
+    });
+
+    (function init(){
+      protectProfile();
+      if (!CURRENT_USER) return;
+      showProfileData();
+      document.title = `الملف الشخصي | ${CURRENT_USER.username}`;
+    })();
+  </script>
+</body>
+</html>

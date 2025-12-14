@@ -169,14 +169,13 @@
       <div id="userInfo">👋 جاري التحقق من المستخدم…</div>
       <div style="display:flex;gap:8px">
         <button type="button" class="btn" onclick="goPortal()">الرجوع للبوابة</button>
-        <button type="button" class="btn" onclick="clearLog()">مسح السجل من هذا الجهاز</button>
+        <button type="button" class="btn" onclick="clearLog()">مسح السجل من النظام</button>
       </div>
     </div>
 
     <h1>سجل النشاط</h1>
     <p class="subtitle">
-      هذه الصفحة تعرض سجل النشاط المخزّن محليًا في هذا المتصفح
-      (<span class="mono small">ptw_activity_log</span>).
+      هذه الصفحة تعرض سجل النشاط المسجَّل على نظام البوابة لجميع المستخدمين.
     </p>
 
     <div class="panel">
@@ -201,8 +200,8 @@
             </tr>
           </thead>
           <tbody id="logBody">
-            <tr id="emptyRow">
-              <td colspan="6" class="empty">لا توجد بيانات في سجل النشاط على هذا المتصفح حتى الآن.</td>
+            <tr>
+              <td colspan="6" class="empty">جاري تحميل سجل النشاط…</td>
             </tr>
           </tbody>
         </table>
@@ -210,6 +209,9 @@
 
     </div>
   </div>
+
+  <!-- 🔗 ربط الصفحة بملف سجل النشاط (Firebase / Firestore) -->
+  <script type="module" src="activity-log.js"></script>
 
   <script>
     let CURRENT_USER = null;
@@ -261,59 +263,66 @@
       return d.toLocaleString("ar-EG");
     }
 
-    function loadLog(){
-      const key = "ptw_activity_log";
-      const raw = localStorage.getItem(key);
-      const tbody = document.getElementById("logBody");
-      const emptyRow = document.getElementById("emptyRow");
+    // ✅ تحميل السجل من Firestore
+    async function loadLog(){
+      const tbody     = document.getElementById("logBody");
       const countSpan = document.getElementById("eventsCount");
 
       if (!tbody) return;
 
-      let list = [];
-      if (raw){
-        try{
-          list = JSON.parse(raw) || [];
-        }catch(e){
-          console.error("Error parsing log", e);
-          list = [];
+      try{
+        // الدالة دي جاية من activity-log.js
+        let list = await window.fetchActivityLog();
+
+        if (!Array.isArray(list) || !list.length){
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" class="empty">لا توجد بيانات في سجل النشاط حتى الآن.</td>
+            </tr>`;
+          if (countSpan) countSpan.textContent = "0";
+          return;
         }
-      }
 
-      // لو مفيش بيانات
-      if (!list.length){
-        if (emptyRow) emptyRow.style.display = "";
+        // نخلي الأحدث فوق
+        list = list.slice().reverse();
+
+        tbody.innerHTML = "";
+        list.forEach((item, index) => {
+          const tr = document.createElement("tr");
+          const detailsText = item.details ? JSON.stringify(item.details) : "";
+
+          tr.innerHTML = `
+            <td>${index + 1}</td>
+            <td class="time-cell">${formatTime(item.time)}</td>
+            <td>${item.user || "-"}</td>
+            <td>${item.role || "-"}</td>
+            <td class="mono small">${item.type || "-"}</td>
+            <td class="mono small">${detailsText}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        if (countSpan) countSpan.textContent = String(list.length);
+      } catch(err){
+        console.error("Error loading activity log:", err);
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="empty">حدث خطأ أثناء تحميل سجل النشاط.</td>
+          </tr>`;
         if (countSpan) countSpan.textContent = "0";
-        return;
       }
-
-      // نخلي الأحدث فوق
-      list = list.slice().reverse();
-
-      tbody.innerHTML = "";
-      list.forEach((item, index) => {
-        const tr = document.createElement("tr");
-
-        const detailsText = item.details ? JSON.stringify(item.details) : "";
-
-        tr.innerHTML = `
-          <td>${index + 1}</td>
-          <td class="time-cell">${formatTime(item.time)}</td>
-          <td>${item.user || "-"}</td>
-          <td>${item.role || "-"}</td>
-          <td class="mono small">${item.type || "-"}</td>
-          <td class="mono small">${detailsText}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      if (countSpan) countSpan.textContent = String(list.length);
     }
 
-    function clearLog(){
-      if (!confirm("هل أنت متأكد من مسح سجل النشاط من هذا المتصفح؟")) return;
-      localStorage.removeItem("ptw_activity_log");
-      loadLog();
+    // ✅ مسح السجل من Firestore
+    async function clearLog(){
+      if (!confirm("هل أنت متأكد من مسح سجل النشاط من النظام بالكامل؟")) return;
+      try{
+        await window.clearActivityLog(); // من activity-log.js
+        loadLog();
+      } catch(err){
+        console.error("Error clearing log:", err);
+        alert("حدث خطأ أثناء مسح السجل.");
+      }
     }
 
     // تحميل السجل عند فتح الصفحة

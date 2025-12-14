@@ -2,20 +2,26 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>سجل النشاط | بوابة تصاريح العمل</title>
+  <title>لوحة سجل النشاط | بوابة تصاريح العمل</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="dark light" />
 
   <style>
     :root{
-      --bg: radial-gradient(circle at top, #1e293b 0, #020617 55%, #000 100%);
-      --panel: rgba(15,23,42,.92);
-      --panel-brd: rgba(148,163,184,.65);
-      --accent: #38bdf8;
-      --accent-soft: rgba(56,189,248,.14);
-      --text:#f9fafb;
-      --muted:#cbd5f5;
+      --bg: radial-gradient(circle at top, #020617 0, #020617 40%, #000 100%);
+      --panel: rgba(15,23,42,.96);
+      --border: rgba(30,64,175,.7);
+      --border-soft: rgba(51,65,85,.9);
+      --text: #e5e7eb;
+      --muted:#9ca3af;
+      --accent:#38bdf8;
+      --accent-soft:rgba(56,189,248,.16);
       --danger:#f97373;
+      --danger-soft:rgba(248,113,113,.12);
+      --success:#4ade80;
+      --success-soft:rgba(22,163,74,.18);
+      --warning:#fbbf24;
+      --warning-soft:rgba(245,158,11,.16);
     }
 
     *{box-sizing:border-box;}
@@ -25,157 +31,265 @@
       font-family:'Segoe UI',system-ui,Tahoma;
       background:var(--bg);
       color:var(--text);
-      padding:20px 14px 80px;
+      min-height:100vh;
+      padding:18px 14px 40px;
     }
 
-    .container{
-      max-width:1100px;
+    .shell{
+      max-width:1200px;
       margin:0 auto;
     }
 
-    /* شريط المستخدم العلوي */
-    .user-bar{
-      margin:0 0 20px;
-      padding:12px 16px;
-      border-radius:16px;
-      background:linear-gradient(135deg, rgba(15,23,42,.96), rgba(30,64,175,.95));
-      border:1px solid var(--panel-brd);
+    /* ===== أعلى الصفحة (الترويسة) ===== */
+    .topbar{
       display:flex;
       justify-content:space-between;
       align-items:center;
       gap:10px;
-      box-shadow:0 22px 55px rgba(15,23,42,.9);
-      font-size:.9rem;
+      margin-bottom:18px;
     }
 
-    .user-main{
+    .topbar-title{
       display:flex;
       flex-direction:column;
       gap:4px;
     }
 
-    .user-main strong{
-      font-size:.95rem;
+    .topbar-title h1{
+      margin:0;
+      font-size:1.6rem;
+      letter-spacing:.03em;
     }
 
-    .user-meta{
+    .topbar-sub{
+      margin:0;
+      font-size:.87rem;
       color:var(--muted);
-      font-size:.8rem;
     }
 
-    .user-actions{
+    .user-chip{
+      padding:9px 12px;
+      border-radius:999px;
+      background:rgba(15,23,42,.92);
+      border:1px solid rgba(148,163,184,.7);
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:.83rem;
+      box-shadow:0 16px 40px rgba(15,23,42,.8);
+      white-space:nowrap;
+    }
+
+    .user-dot{
+      width:9px;
+      height:9px;
+      border-radius:999px;
+      background:var(--success);
+      box-shadow:0 0 0 4px rgba(34,197,94,.25);
+    }
+
+    .user-chip span strong{
+      font-weight:600;
+    }
+
+    /* ===== أزرار أعلى يمين ===== */
+    .top-actions{
       display:flex;
       flex-wrap:wrap;
       gap:8px;
       justify-content:flex-end;
+      margin-bottom:14px;
     }
 
     .btn{
       border-radius:999px;
-      border:1px solid rgba(148,163,184,.8);
-      background:rgba(15,23,42,.9);
+      border:1px solid rgba(148,163,184,.75);
+      background:rgba(15,23,42,.96);
       color:var(--text);
       padding:7px 14px;
       cursor:pointer;
+      font-size:.83rem;
       font-weight:600;
-      font-size:.85rem;
       display:inline-flex;
       align-items:center;
       gap:6px;
     }
-
     .btn:hover{
       box-shadow:0 0 0 1px rgba(56,189,248,.7);
     }
 
     .btn-danger{
       border-color:#fecaca;
-      background:rgba(127,29,29,.9);
-      color:#fee2e2;
+      background:var(--danger-soft);
+      color:#fecaca;
+    }
+    .btn-danger:hover{
+      box-shadow:0 0 0 1px rgba(248,113,113,.8);
     }
 
-    h1{
-      margin:0 0 6px;
-      font-size:1.9rem;
-      text-align:right;
+    /* ===== كروت الإحصائيات ===== */
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+      gap:10px;
+      margin-bottom:16px;
     }
 
-    .subtitle{
-      margin:0 0 18px;
+    .stat-card{
+      background:var(--panel);
+      border-radius:14px;
+      border:1px solid rgba(31,41,55,.9);
+      padding:10px 12px;
+      box-shadow:0 14px 34px rgba(15,23,42,.85);
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      min-height:70px;
+    }
+
+    .stat-label{
+      font-size:.78rem;
       color:var(--muted);
-      font-size:.92rem;
-      text-align:right;
     }
 
-    .badge-strip{
+    .stat-value{
+      font-size:1.1rem;
+      font-weight:700;
+    }
+
+    .stat-pill{
       display:inline-flex;
       align-items:center;
-      gap:8px;
-      padding:4px 10px;
+      gap:6px;
+      padding:3px 9px;
       border-radius:999px;
-      border:1px solid rgba(148,163,184,.7);
-      background:rgba(15,23,42,.9);
-      font-size:.8rem;
+      font-size:.72rem;
+      border:1px solid rgba(148,163,184,.65);
+      align-self:flex-start;
+    }
+
+    .stat-pill.success{
+      border-color:var(--success);
+      background:var(--success-soft);
+      color:#bbf7d0;
+    }
+
+    .stat-pill.info{
+      border-color:var(--accent);
+      background:var(--accent-soft);
+      color:#bae6fd;
+    }
+
+    .stat-pill.warn{
+      border-color:var(--warning);
+      background:var(--warning-soft);
+      color:#fef3c7;
+    }
+
+    /* ===== شريط الفلاتر ===== */
+    .filters-bar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
       margin-bottom:10px;
     }
 
-    .status-dot{
-      width:9px;
-      height:9px;
+    .search-box{
+      flex:1;
+      min-width:190px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
       border-radius:999px;
-      background:#22c55e;
+      border:1px solid rgba(55,65,81,.9);
+      background:rgba(15,23,42,.9);
     }
 
+    .search-box input{
+      flex:1;
+      border:none;
+      outline:none;
+      background:transparent;
+      color:var(--text);
+      font-size:.82rem;
+      text-align:right;
+    }
+
+    .search-box input::placeholder{
+      color:#6b7280;
+    }
+
+    .filter-chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+    }
+
+    .chip{
+      border-radius:999px;
+      border:1px solid rgba(75,85,99,.9);
+      background:rgba(15,23,42,.92);
+      color:var(--muted);
+      padding:5px 10px;
+      font-size:.78rem;
+      cursor:pointer;
+    }
+    .chip.active{
+      border-color:var(--accent);
+      color:#e0f2fe;
+      background:var(--accent-soft);
+    }
+
+    /* ===== اللوحة الرئيسية (الجدول) ===== */
     .panel{
-      margin-top:8px;
       background:var(--panel);
       border-radius:18px;
-      border:1px solid var(--panel-brd);
-      padding:14px 14px 10px;
+      border:1px solid var(--border);
       box-shadow:0 20px 55px rgba(15,23,42,.9);
+      overflow:hidden;
     }
 
-    .panel-head{
+    .panel-header{
+      padding:10px 14px 8px;
+      border-bottom:1px solid var(--border-soft);
       display:flex;
       justify-content:space-between;
       align-items:center;
       gap:10px;
-      margin-bottom:8px;
+      font-size:.85rem;
+    }
+
+    .panel-header-title{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+
+    .panel-header-title strong{
       font-size:.9rem;
     }
 
-    .panel-head h2{
-      margin:0;
-      font-size:1rem;
+    .panel-header-title span{
+      font-size:.78rem;
+      color:var(--muted);
     }
 
-    .count-pill{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:4px 10px;
-      border-radius:999px;
-      background:var(--accent-soft);
-      border:1px solid rgba(56,189,248,.6);
-      font-size:.8rem;
+    .panel-header-meta{
+      font-size:.78rem;
+      color:var(--muted);
     }
 
-    .count-pill span:first-child{
-      font-weight:700;
-    }
-
-    .scroll-wrap{
-      margin-top:8px;
-      max-height:65vh;
+    .table-wrap{
+      max-height:64vh;
       overflow:auto;
-      border-radius:12px;
-      border:1px solid rgba(30,64,175,.7);
     }
 
     table{
       width:100%;
       border-collapse:collapse;
-      font-size:.84rem;
+      font-size:.82rem;
       direction:rtl;
     }
 
@@ -184,23 +298,28 @@
     }
 
     th,td{
-      padding:8px 6px;
-      border-bottom:1px solid rgba(31,41,55,.95);
-      text-align:right;
+      padding:7px 6px;
+      border-bottom:1px solid var(--border-soft);
       vertical-align:top;
+      text-align:right;
     }
 
     th{
-      font-weight:700;
-      color:#e5e7eb;
       position:sticky;
       top:0;
-      background:rgba(15,23,42,.98);
       z-index:1;
+      background:rgba(15,23,42,.98);
+      font-weight:600;
+      color:#e5e7eb;
+      font-size:.78rem;
     }
 
     tbody tr:nth-child(even){
-      background:rgba(15,23,42,.8);
+      background:rgba(15,23,42,.9);
+    }
+
+    tbody tr:hover{
+      background:rgba(30,64,175,.65);
     }
 
     .mono{
@@ -209,77 +328,85 @@
       text-align:left;
     }
 
-    .small{font-size:.78rem;}
-
-    .time-cell{white-space:nowrap;}
-
-    .empty{
-      text-align:center;
-      padding:24px 8px;
-      color:var(--muted);
-      font-size:.9rem;
+    .time-cell{
+      white-space:nowrap;
     }
 
-    .error-msg{
-      margin-top:10px;
-      padding:8px 10px;
-      border-radius:10px;
-      border:1px solid rgba(248,113,113,.8);
-      background:rgba(127,29,29,.85);
-      color:#fee2e2;
-      font-size:.8rem;
+    .small{
+      font-size:.74rem;
     }
 
-    .tag{
+    .tag-role{
       display:inline-flex;
       align-items:center;
       gap:4px;
       padding:2px 8px;
       border-radius:999px;
-      border:1px solid rgba(148,163,184,.6);
-      font-size:.75rem;
+      border:1px solid rgba(148,163,184,.7);
+      font-size:.72rem;
+      color:#e5e7eb;
       background:rgba(15,23,42,.96);
-      color:var(--muted);
     }
 
     .type-pill{
       display:inline-flex;
       align-items:center;
-      padding:2px 8px;
+      padding:2px 9px;
       border-radius:999px;
-      font-size:.75rem;
+      font-size:.72rem;
       border:1px solid rgba(148,163,184,.6);
-      background:rgba(15,23,42,.96);
+      background:rgba(15,23,42,.98);
+      color:#e5e7eb;
     }
 
     .type-pill[data-kind="login"]{
-      border-color:#4ade80;
+      border-color:var(--success);
+      background:var(--success-soft);
       color:#bbf7d0;
     }
+    .type-pill[data-kind="portal"]{
+      border-color:var(--warning);
+      background:var(--warning-soft);
+      color:#fef9c3;
+    }
     .type-pill[data-kind="permit"]{
-      border-color:#38bdf8;
+      border-color:var(--accent);
+      background:var(--accent-soft);
       color:#bae6fd;
     }
-    .type-pill[data-kind="portal"]{
-      border-color:#fbbf24;
-      color:#fef3c7;
+
+    .empty-row td{
+      text-align:center;
+      padding:24px 8px;
+      color:var(--muted);
+      font-size:.86rem;
     }
 
-    @media(max-width:780px){
-      .user-bar{
+    .error-box{
+      padding:7px 10px;
+      border-top:1px solid rgba(127,29,29,.9);
+      background:var(--danger-soft);
+      color:#fecaca;
+      font-size:.76rem;
+    }
+
+    @media(max-width:860px){
+      .topbar{
         flex-direction:column;
         align-items:flex-start;
       }
-      .panel-head{
-        flex-direction:column;
-        align-items:flex-start;
+      .user-chip{
+        align-self:stretch;
+        justify-content:space-between;
       }
     }
 
     @media(max-width:640px){
-      body{padding:14px 10px 70px;}
-      h1{font-size:1.6rem;}
-      .subtitle{font-size:.86rem;}
+      body{padding:12px 10px 30px;}
+      .panel-header{
+        flex-direction:column;
+        align-items:flex-start;
+      }
       th:nth-child(1),
       td:nth-child(1){
         display:none;
@@ -288,49 +415,99 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- شريط المستخدم -->
-    <div class="user-bar">
-      <div class="user-main">
-        <strong id="userWelcome">👋 جاري التحقق من المستخدم…</strong>
-        <div class="user-meta" id="userMeta"></div>
+  <div class="shell">
+    <!-- ===== ترويسة الصفحة / بيانات المستخدم ===== -->
+    <div class="topbar">
+      <div class="topbar-title">
+        <h1>لوحة سجل النشاط</h1>
+        <p class="topbar-sub">
+          متابعة مركزية لكل الحركات في بوابة تصاريح العمل لجميع المستخدمين.
+        </p>
       </div>
-      <div class="user-actions">
-        <button type="button" class="btn" onclick="goPortal()">
-          ⬅️ الرجوع للبوابة
-        </button>
-        <button type="button" class="btn" onclick="clearLocalLog()">
-          🧹 مسح السجل من هذا المتصفح
-        </button>
-        <button type="button" class="btn btn-danger" onclick="clearServerLog()">
-          ⚠️ مسح السجل من النظام
-        </button>
+
+      <div class="user-chip" id="userChip">
+        <span class="user-dot"></span>
+        <span id="userChipText">جاري التحقق من المستخدم…</span>
       </div>
     </div>
 
-    <span class="badge-strip">
-      <span class="status-dot"></span>
-      <span>هذا السجل مركزي من قاعدة بيانات Firestore لجميع المستخدمين.</span>
-    </span>
+    <!-- أزرار رئيسية -->
+    <div class="top-actions">
+      <button class="btn" type="button" onclick="goPortal()">
+        ⬅️ الرجوع للبوابة
+      </button>
+      <button class="btn" type="button" onclick="clearLocalLog()">
+        🧹 مسح السجل من هذا المتصفح
+      </button>
+      <button class="btn btn-danger" type="button" onclick="clearServerLog()">
+        ⚠️ مسح السجل من النظام (Firestore)
+      </button>
+    </div>
 
-    <h1>سجل النشاط</h1>
-    <p class="subtitle">
-      تعرض هذه الصفحة جميع الأحداث المسجّلة على نظام بوابة التصاريح
-      (تسجيل دخول، فتح بوابة، فتح تصاريح، تبديل مشروع، تسجيل خروج، وغيرها).
-    </p>
+    <!-- كروت إحصائيات -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">إجمالي الحركات</div>
+        <div class="stat-value" id="statTotal">0</div>
+        <span class="stat-pill info">
+          🔁 الأحداث المسجّلة
+        </span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">أحداث تسجيل الدخول / الخروج</div>
+        <div class="stat-value" id="statLogin">0</div>
+        <span class="stat-pill success">
+          👤 دخول / خروج
+        </span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">حركات مرتبطة بالبوابة</div>
+        <div class="stat-value" id="statPortal">0</div>
+        <span class="stat-pill warn">
+          🧭 فتح البوابة / تغيير مشروع
+        </span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">حركات مرتبطة بالتصاريح</div>
+        <div class="stat-value" id="statPermits">0</div>
+        <span class="stat-pill info">
+          📄 فتح وتصاريح
+        </span>
+      </div>
+    </div>
 
+    <!-- شريط الفلاتر -->
+    <div class="filters-bar">
+      <div class="search-box">
+        <span class="small">🔎</span>
+        <input
+          id="searchInput"
+          type="text"
+          placeholder="ابحث في المستخدم أو نوع الحدث أو التفاصيل…"
+        />
+      </div>
+      <div class="filter-chips">
+        <button class="chip active" data-filter="all">الكل</button>
+        <button class="chip" data-filter="login">دخول/خروج</button>
+        <button class="chip" data-filter="portal">البوابة</button>
+        <button class="chip" data-filter="permit">التصاريح</button>
+        <button class="chip" data-filter="other">أخرى</button>
+      </div>
+    </div>
+
+    <!-- اللوحة الرئيسية -->
     <div class="panel">
-      <div class="panel-head">
-        <h2>أحدث الأحداث المسجّلة</h2>
-        <div class="count-pill">
-          <span id="eventsCount">0</span>
-          <span>حركة</span>
+      <div class="panel-header">
+        <div class="panel-header-title">
+          <strong>أحدث الأحداث المسجّلة</strong>
+          <span id="panelSub">يجري تحميل البيانات…</span>
+        </div>
+        <div class="panel-header-meta">
+          العدد الحالي: <strong id="eventsCount">0</strong> حركة
         </div>
       </div>
 
-      <div id="errorBox" class="error-msg" style="display:none;"></div>
-
-      <div class="scroll-wrap">
+      <div class="table-wrap">
         <table>
           <thead>
             <tr>
@@ -343,25 +520,29 @@
             </tr>
           </thead>
           <tbody id="logBody">
-            <tr id="emptyRow">
-              <td colspan="6" class="empty">
+            <tr class="empty-row">
+              <td colspan="6">
                 لا توجد بيانات في سجل النشاط بعد.
               </td>
             </tr>
           </tbody>
         </table>
       </div>
+
+      <div id="errorBox" class="error-box" style="display:none;"></div>
     </div>
   </div>
 
-  <!-- سكربت سجل النشاط المركزي -->
+  <!-- سكربت Firestore (activity-log) -->
   <script type="module" src="activity-log.js"></script>
 
-  <!-- سكربت من نوع عادي (عشان الدوال تكون Global للـ onclick) -->
+  <!-- سكربت عام (غير module) عشان الدوال تكون global -->
   <script>
     let CURRENT_USER = null;
+    let currentFilter = "all";
+    let currentSearch = "";
 
-    // حماية الصفحة - مسموح فقط للـ admin
+    // ===== حماية الصفحة (admin فقط) =====
     (function protectActivityPage(){
       try{
         const raw = localStorage.getItem("aln_session");
@@ -378,7 +559,7 @@
           return;
         }
 
-        if ((session.role || "").toLowerCase() !== "admin"){
+        if (String(session.role || "").toLowerCase() !== "admin"){
           alert("هذه الصفحة متاحة لمسؤول النظام (admin) فقط.");
           window.location.href = "/portal";
           return;
@@ -386,16 +567,11 @@
 
         CURRENT_USER = session;
 
-        const welcomeEl = document.getElementById("userWelcome");
-        const metaEl    = document.getElementById("userMeta");
-        if (welcomeEl){
-          welcomeEl.textContent = `👋 مرحبًا ${session.username} — دورك: ${session.role}`;
+        const chipTxt = document.getElementById("userChipText");
+        if (chipTxt){
+          chipTxt.innerHTML = `مسجّل دخولك كـ <strong>${session.username}</strong> — الدور: <strong>${session.role}</strong>`;
         }
-        if (metaEl){
-          const t = new Date();
-          metaEl.textContent = `تم فتح الصفحة في ${t.toLocaleString("ar-EG")}`;
-        }
-      } catch(e){
+      }catch(e){
         console.error(e);
         alert("حدث خطأ في قراءة جلسة المستخدم.");
         window.location.href = "/";
@@ -418,35 +594,58 @@
       if (t.startsWith("LOGIN") || t === "LOGOUT") return "login";
       if (t.startsWith("PERMIT") || t === "OPEN_PERMIT") return "permit";
       if (t === "PORTAL_OPEN" || t === "SWITCH_PROJECT") return "portal";
-      return "";
+      return "other";
+    }
+
+    function applyFilters(){
+      const rows = document.querySelectorAll("#logBody tr[data-kind]");
+      const search = currentSearch.trim().toLowerCase();
+
+      rows.forEach(row => {
+        const kind  = row.dataset.kind || "other";
+        const text  = row.dataset.text || "";
+        let ok = true;
+
+        if (currentFilter !== "all" && kind !== currentFilter){
+          ok = false;
+        }
+
+        if (ok && search){
+          if (!text.includes(search)){
+            ok = false;
+          }
+        }
+
+        row.style.display = ok ? "" : "none";
+      });
     }
 
     async function loadLog(){
       const tbody    = document.getElementById("logBody");
-      const emptyRow = document.getElementById("emptyRow");
       const countEl  = document.getElementById("eventsCount");
       const errorBox = document.getElementById("errorBox");
+      const panelSub = document.getElementById("panelSub");
 
       if (!tbody) return;
 
       errorBox.style.display = "none";
-      errorBox.textContent = "";
+      errorBox.textContent   = "";
+      panelSub.textContent   = "يجري تحميل البيانات…";
 
       let list = [];
 
       try{
         if (window.fetchActivityLog){
           list = await window.fetchActivityLog();
-        } else {
+        }else{
           const raw = localStorage.getItem("ptw_activity_log");
           list = raw ? (JSON.parse(raw) || []) : [];
         }
       }catch(e){
         console.error("Error loading activity log:", e);
         errorBox.style.display = "block";
-        errorBox.textContent = "حدث خطأ أثناء الاتصال بقاعدة البيانات. سيتم عرض أي سجل محلي متاح (إن وجد).";
+        errorBox.textContent = "تعذر الاتصال بقاعدة البيانات. سيتم عرض أي سجل محلي متوفر (إن وجد).";
 
-        // محاولة أخيرة من الـ localStorage
         try{
           const raw = localStorage.getItem("ptw_activity_log");
           list = raw ? (JSON.parse(raw) || []) : [];
@@ -455,54 +654,83 @@
 
       if (!Array.isArray(list)) list = [];
 
-      // الأحدث أولاً
+      // ترتيب الأحدث أولاً
       list = list.slice().sort((a,b)=>{
         const ta = a.time || "";
         const tb = b.time || "";
         return ta < tb ? 1 : -1;
       });
 
-      if (!list.length){
-        tbody.innerHTML = "";
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td colspan="6" class="empty">لا توجد بيانات في سجل النشاط بعد.</td>`;
-        tbody.appendChild(tr);
-        if (countEl) countEl.textContent = "0";
-        return;
-      }
+      // إحصائيات
+      let total = list.length;
+      let loginCount = 0, portalCount = 0, permitCount = 0;
 
       tbody.innerHTML = "";
-      list.forEach((item, index) => {
+
+      if (!list.length){
         const tr = document.createElement("tr");
-        const detailsText = item.details ? JSON.stringify(item.details) : "";
-        const kind = classifyType(item.type);
-
-        tr.innerHTML = `
-          <td>${index + 1}</td>
-          <td class="time-cell small mono">${formatTime(item.time)}</td>
-          <td class="small">${item.user || "-"}</td>
-          <td class="small">
-            <span class="tag">
-              <span></span>
-              <span>${item.role || "-"}</span>
-            </span>
-          </td>
-          <td>
-            <span class="type-pill small" data-kind="${kind}">
-              ${item.type || "-"}
-            </span>
-          </td>
-          <td class="mono small">${detailsText}</td>
-        `;
+        tr.className = "empty-row";
+        tr.innerHTML = `<td colspan="6">لا توجد بيانات في سجل النشاط بعد.</td>`;
         tbody.appendChild(tr);
-      });
 
-      if (countEl) countEl.textContent = String(list.length);
+        if (countEl) countEl.textContent = "0";
+        if (panelSub) panelSub.textContent = "لا توجد حركات مسجّلة حتى الآن.";
+      }else{
+        list.forEach((item, index) => {
+          const kind = classifyType(item.type);
+          if (kind === "login")  loginCount++;
+          if (kind === "portal") portalCount++;
+          if (kind === "permit") permitCount++;
+
+          const detailsText = item.details ? JSON.stringify(item.details) : "";
+          const searchText  = [
+            item.user || "",
+            item.role || "",
+            item.type || "",
+            detailsText
+          ].join(" ").toLowerCase();
+
+          const tr = document.createElement("tr");
+          tr.dataset.kind = kind;
+          tr.dataset.text = searchText;
+
+          tr.innerHTML = `
+            <td class="small">${index + 1}</td>
+            <td class="time-cell small mono">${formatTime(item.time)}</td>
+            <td class="small">${item.user || "-"}</td>
+            <td class="small">
+              <span class="tag-role">
+                <span>🎯</span>
+                <span>${item.role || "-"}</span>
+              </span>
+            </td>
+            <td class="small">
+              <span class="type-pill" data-kind="${kind}">
+                ${item.type || "-"}
+              </span>
+            </td>
+            <td class="mono small">${detailsText}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        if (countEl) countEl.textContent = String(total);
+        if (panelSub) panelSub.textContent = "الأحداث مرتّبة من الأحدث إلى الأقدم.";
+      }
+
+      // ضبط أرقام الإحصائيات
+      document.getElementById("statTotal").textContent   = String(total);
+      document.getElementById("statLogin").textContent   = String(loginCount);
+      document.getElementById("statPortal").textContent  = String(portalCount);
+      document.getElementById("statPermits").textContent = String(permitCount);
+
+      // إعادة تطبيق الفلاتر
+      applyFilters();
     }
 
     async function clearServerLog(){
       if (!window.clearActivityLog){
-        alert("لا يمكن مسح سجل النظام حاليًا، ملف activity-log غير متوفر.");
+        alert("لا يمكن مسح سجل النظام حاليًا، ملف activity-log غير متاح.");
         return;
       }
       if (!confirm("⚠ هل أنت متأكد من مسح سجل النشاط بالكامل من النظام (Firestore)؟")) return;
@@ -518,13 +746,34 @@
     }
 
     function clearLocalLog(){
-      if (!confirm("هل أنت متأكد من مسح السجل المحلي من هذا المتصفح فقط؟")) return;
+      if (!confirm("هل أنت متأكد من مسح السجل من هذا المتصفح فقط؟")) return;
       localStorage.removeItem("ptw_activity_log");
       loadLog();
     }
 
-    // تحميل السجل عند فتح الصفحة
-    document.addEventListener("DOMContentLoaded", loadLog);
+    // ===== ربط الفلاتر و البحث =====
+    document.addEventListener("DOMContentLoaded", () => {
+      loadLog();
+
+      const searchInput = document.getElementById("searchInput");
+      if (searchInput){
+        searchInput.addEventListener("input", (e)=>{
+          currentSearch = e.target.value || "";
+          applyFilters();
+        });
+      }
+
+      document.querySelectorAll(".chip[data-filter]").forEach(chip=>{
+        chip.addEventListener("click", ()=>{
+          const f = chip.dataset.filter || "all";
+          currentFilter = f;
+          document.querySelectorAll(".chip[data-filter]").forEach(c=>{
+            c.classList.toggle("active", c === chip);
+          });
+          applyFilters();
+        });
+      });
+    });
   </script>
 </body>
 </html>

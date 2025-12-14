@@ -342,7 +342,10 @@
 
     <footer>جميع الحقوق محفوظة © Eng.Ahmed El-Basha</footer>
   </div>
-
+ <!-- ملف سجل النشاط المركزي -->
+  <script type="module" src="activity-log.js">
+    
+  </script>
   <script>
     // ===== حماية البوابة + بيانات المستخدم =====
     let CURRENT_USER = null;
@@ -441,20 +444,27 @@
       }
     };
 
-    // ===== سجل نشاط بسيط في localStorage =====
-    function logAction(type, details) {
+      // ===== سجل نشاط مركزي (Firestore عن طريق activity-log.js) مع fallback محلي =====
+    async function logAction(type, details) {
       try {
+        // لو ملف activity-log.js محمّل → نسجّل في Firestore
+        if (window.logActivity) {
+          await window.logActivity(type, details || {});
+          return;
+        }
+
+        // لو لأي سبب مش متاح → نرجع للـ localStorage كـ احتياطي
         const key = "ptw_activity_log";
         const raw = localStorage.getItem(key);
         let list = [];
         if (raw) {
-          try { list = JSON.parse(raw); } catch(e) { list = []; }
+          try { list = JSON.parse(raw) || []; } catch (_) { list = []; }
         }
 
         list.push({
           user: CURRENT_USER ? CURRENT_USER.username : null,
           role: CURRENT_USER ? CURRENT_USER.role : null,
-          type: type,
+          type,
           details: details || null,
           time: new Date().toISOString()
         });
@@ -468,6 +478,7 @@
         console.error("logAction error", e);
       }
     }
+
 
     // ===== DOM =====
     const grid = document.getElementById('grid');
@@ -708,7 +719,13 @@
         first = ALLOWED_PROJECTS[0] || 'najran';
       }
 
-      renderProject(first);
+           renderProject(first);
+
+      // سجل فتح البوابة في سجل النشاط
+      logAction("PORTAL_OPEN", {
+        project: first
+      });
+
       const q = getParam('q');
       if(q){ const si=document.getElementById('searchInput'); si.value=q; filterPermits(); }
 
@@ -716,6 +733,7 @@
       img.onload = ()=> document.body.style.background = "#0f172a url('https://i.postimg.cc/RVdVFtz0/hero.png') no-repeat center/cover fixed";
       img.src = 'https://i.postimg.cc/RVdVFtz0/hero.png';
     })();
+
 
     // ==== PWA Install Button ====
     let deferredPrompt = null;

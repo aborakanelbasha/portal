@@ -569,7 +569,11 @@
     })();
   </script>
 
-  <!-- سكريبت Firebase: Auth + Firestore (app_users + signup_requests) -->
+  <!-- سكريبت Firebase: Auth + Firestore (app_users + signup_requests) + سجل النشاط -->
+  <!-- أولاً: ملف سجل النشاط (لازم ييجي قبل سكربت اللوجين) -->
+  <script type="module" src="activity-log.js"></script>
+
+  <!-- ثانياً: سكربت Firebase الخاص باللوجين وطلبات التسجيل -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import {
@@ -647,7 +651,7 @@
       }
     }
 
-    // ===== حدث تسجيل الدخول (Firebase Auth + app_users فقط) =====
+    // ===== حدث تسجيل الدخول (Firebase Auth + app_users + سجل النشاط) =====
     if (formEl) {
       formEl.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -670,7 +674,6 @@
           // لو اللي مكتوب إيميل
           if (identifier.includes("@")) {
             loginEmail = identifier.trim().toLowerCase();
-            // لو مفيش profile مع ذلك → نحاول نجيبه تاني بعد اللوجين، بس هنحتاجه للصلاحيات
           } else {
             // مستخدم كتب username
             if (!profile) {
@@ -701,7 +704,6 @@
           }
 
           if (!profile) {
-            // في الحالة دي إحنا مش عارفين Role ولا Active → نمنع الدخول
             errorEl.textContent =
               "تم تسجيل الدخول في Firebase، لكن لا يوجد ملف صلاحيات (app_users) لهذا المستخدم. برجاء مراجعة مسؤول النظام.";
             return;
@@ -724,7 +726,23 @@
             loginTime: new Date().toISOString()
           };
 
+          // نحفظ الجلسة في المتصفح
           localStorage.setItem("aln_session", JSON.stringify(sessionData));
+
+          // ✅ نسجّل حدث نجاح الدخول في سجل النشاط
+          try {
+            if (window.logActivity) {
+              await window.logActivity("LOGIN_SUCCESS", {
+                username: finalUsername,
+                role: finalRole,
+                email: sessionData.email
+              });
+            }
+          } catch (e) {
+            console.warn("logActivity LOGIN_SUCCESS error:", e);
+          }
+
+          // تحويل للبوابة
           window.location.href = "portal.html";
         } catch (err) {
           console.error("Firebase login error:", err);
@@ -738,11 +756,23 @@
             msg = "بيانات الدخول غير صحيحة.";
           }
           errorEl.textContent = msg + " لو المشكلة مستمرة، راجع مسؤول النظام.";
+
+          // ❌ نسجّل محاولة فاشلة (اختياري)
+          try {
+            if (window.logActivity) {
+              await window.logActivity("LOGIN_FAILED", {
+                identifier,
+                errorCode: err.code || null
+              });
+            }
+          } catch (e) {
+            console.warn("logActivity LOGIN_FAILED error:", e);
+          }
         }
       });
     }
 
-    // ===== زر "نسيت كلمة المرور؟" (اعتماد كامل على app_users + Firebase Auth) =====
+    // ===== زر "نسيت كلمة المرور؟" =====
     if (forgotBtn) {
       forgotBtn.addEventListener("click", async () => {
         errorEl.textContent = "";
@@ -773,6 +803,17 @@
           errorEl.style.color = "#bbf7d0";
           errorEl.textContent =
             "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني (إن كان مسجّل في Firebase).";
+
+          // حدث إعادة تعيين باسورد (اختياري)
+          try {
+            if (window.logActivity) {
+              await window.logActivity("PASSWORD_RESET_REQUESTED", {
+                email: resetEmail
+              });
+            }
+          } catch (e) {
+            console.warn("logActivity PASSWORD_RESET_REQUESTED error:", e);
+          }
         } catch (err) {
           console.error("reset error:", err);
           errorEl.style.color = "#ff8080";
@@ -791,7 +832,7 @@
       });
     }
 
-    // ===== كود فورم "إنشاء حساب جديد" → حفظ في Firestore (signup_requests) =====
+    // ===== كود فورم "إنشاء حساب جديد" → حفظ في Firestore (signup_requests) + سجل النشاط =====
     const OPEN_SIGNUP_BTN  = document.getElementById("openSignup");
     const SIGNUP_OVERLAY   = document.getElementById("signupOverlay");
     const CLOSE_SIGNUP_BTN = document.getElementById("closeSignup");
@@ -839,6 +880,19 @@
             status: "pending",
             createdAt: serverTimestamp()
           });
+
+          // ✅ تسجيل طلب تسجيل جديد في سجل النشاط
+          try {
+            if (window.logActivity) {
+              await window.logActivity("SIGNUP_REQUEST_SUBMITTED", {
+                username,
+                email,
+                phone
+              });
+            }
+          } catch (e) {
+            console.warn("logActivity SIGNUP_REQUEST_SUBMITTED error:", e);
+          }
 
           SIGNUP_FORM.reset();
           closeSignup();

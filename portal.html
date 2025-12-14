@@ -559,15 +559,39 @@
       return a;
     }
 
-    function createResCard({label, code, icon, desc, href}){
-      const a=document.createElement('a'); a.className='card'; a.href=href; a.target='_blank'; a.rel='noopener';
-      const known=['wah','hwp','exc','cse','gwp','lop','log','ra','tbt'];
-      const iconHtml = known.includes((icon||'').toLowerCase())
-        ? `<svg class="ic" aria-hidden="true"><use href="#icon-${icon.toLowerCase()}"/></svg>`
-        : `<span>${icon||''}</span>`;
-      a.innerHTML=`<div class="top"><span>${iconHtml}</span><span class="title">${label}</span><span class="badge">${code}</span></div><div class="desc">${desc}</div>`;
-      return a;
-    }
+   function createResCard({label, code, icon, desc, href}){
+  const a = document.createElement('a');
+  a.className = 'card';
+  a.href = href;
+  a.target = '_blank';
+  a.rel = 'noopener';
+
+  const known = ['wah','hwp','exc','cse','gwp','lop','log','ra','tbt'];
+  const iconHtml = known.includes((icon || '').toLowerCase())
+    ? `<svg class="ic" aria-hidden="true"><use href="#icon-${icon.toLowerCase()}"/></svg>`
+    : `<span>${icon || ''}</span>`;
+
+  a.innerHTML = `
+    <div class="top">
+      <span>${iconHtml}</span>
+      <span class="title">${label}</span>
+      <span class="badge">${code}</span>
+    </div>
+    <div class="desc">${desc}</div>
+  `;
+
+  // ✅ تسجيل فتح أي مورد إضافي (LOG / RA / TBT ...)
+  a.addEventListener('click', () => {
+    logAction("OPEN_RESOURCE", {
+      label,
+      code,
+      href
+    });
+  });
+
+  return a;
+}
+
 
     function applyActive(projectId){
       document.querySelectorAll('.seg button').forEach(b=>{

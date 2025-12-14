@@ -592,7 +592,7 @@
     function classifyType(type){
       const t = (type || "").toUpperCase();
       if (t.startsWith("LOGIN") || t === "LOGOUT") return "login";
-      if (t.startsWith("PERMIT") || t === "OPEN_PERMIT") return "permit";
+      if (t.startsWith("PERMIT") || t === "OPEN_PERMIT" || t === "OPEN_RESOURCE") return "permit";
       if (t === "PORTAL_OPEN" || t === "SWITCH_PROJECT") return "portal";
       return "other";
     }

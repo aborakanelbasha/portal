@@ -1,8 +1,14 @@
 // js/activity-log.js
 // ملف واحد مسؤول عن تسجيل وقراءة سجل النشاط من Firestore
 
-// نستعمل CDN لمكتبة Firebase (أنسب لحالتك مع GitHub Pages / Cloudflare)
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+// نستخدم نفس إصدار Firebase اللي في index.html (11.0.1)
+// ونعيد استخدام الـ app لو كانت متعرّفة قبل كده
+import {
+  initializeApp,
+  getApps,
+  getApp
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+
 import {
   getFirestore,
   collection,
@@ -12,9 +18,9 @@ import {
   doc,
   query,
   orderBy
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-// ✅ إعدادات Firebase لمشروعك (نفس اللي نسختها من الـ console)
+// إعدادات Firebase لمشروعك
 const firebaseConfig = {
   apiKey: "AIzaSyDXQW3_6iFkb8Ec2aaVtFMJZYxLN-FmI54",
   authDomain: "ptw-najran-sharurah.firebaseapp.com",
@@ -25,8 +31,9 @@ const firebaseConfig = {
   measurementId: "G-PQED2DCRL1"
 };
 
-// ✅ تهيئة Firebase + Firestore
-const app = initializeApp(firebaseConfig);
+// ✅ لو فيه app متعرّف قبل كده (مثلاً من index.html) نستخدمه
+// لو مافيش، نعمل initializeApp عادي
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
 // ✅ دالة لتسجيل حدث جديد
@@ -54,7 +61,7 @@ async function logActivity(type, details = {}) {
   }
 }
 
-// ✅ دالة لقراءة كل السجل (هتستخدمها صفحة activity.html)
+// ✅ دالة لقراءة كل السجل (تُستخدم في activity.html)
 async function fetchActivityLog() {
   const q = query(
     collection(db, "activity_log"),

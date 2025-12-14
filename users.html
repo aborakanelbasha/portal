@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>إدارة المستخدمين (نسخة جديدة)| بوابة تصاريح العمل</title>
+  <title>إدارة المستخدمين | بوابة تصاريح العمل</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light dark" />
 
@@ -25,7 +25,7 @@
     };
   </script>
 
-  <!-- شوية CSS بسيط للأجزاء اللي الجافاسكربت بيعتمد على الكلاسات بتاعتها -->
+  <!-- CSS بسيط للأجزاء اللي الجافاسكربت بيعتمد على الكلاسات بتاعتها -->
   <style>
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, "Tahoma";
@@ -86,10 +86,27 @@
     }
 
     /* تبويبات */
+    .tab-btn {
+      border-radius: 999px;
+      border: 1px solid transparent;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.78rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      cursor: pointer;
+      background: transparent;
+      color: #6b7280;
+      transition: all .15s ease;
+    }
+    .tab-btn:hover {
+      background: #e5e7eb;
+    }
     .tab-btn.active {
       background-color: #ffffff;
       color: #0f172a;
       border-color: #e5e7eb;
+      box-shadow: 0 8px 20px rgba(15,23,42,.08);
     }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
@@ -107,325 +124,371 @@
     .modal-backdrop.active { display: flex; }
   </style>
 </head>
-<body class="bg-slate-100 min-h-screen text-slate-900">
-  <div class="max-w-7xl mx-auto px-4 lg:px-6 py-4 lg:py-6 space-y-4">
 
-    <!-- ===== Header ===== -->
-    <header class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-      <!-- Brand -->
-      <div class="flex items-center gap-3">
-        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-primary-500 to-sky-400 flex items-center justify-center text-white font-extrabold shadow-lg shadow-primary-500/40">
+<body class="bg-slate-100 min-h-screen text-slate-900">
+  <div class="min-h-screen flex bg-slate-100">
+
+    <!-- ===== Sidebar ===== -->
+    <aside class="hidden md:flex flex-col w-64 bg-white border-l border-slate-200 shadow-sm">
+      <div class="px-4 py-4 flex items-center gap-3 border-b border-slate-100">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary-500 to-sky-400 flex items-center justify-center text-white font-extrabold shadow-lg shadow-primary-500/40">
           PT
         </div>
         <div>
-          <h1 class="text-lg font-semibold">إدارة المستخدمين</h1>
-          <p class="text-sm text-slate-500">
-            لوحة تحكم مسؤولي بوابة تصاريح العمل
-          </p>
+          <div class="text-sm font-semibold">بوابة تصاريح العمل</div>
+          <div class="text-[11px] text-slate-500">لوحة تحكم المسؤول</div>
         </div>
       </div>
-
-      <!-- User panel -->
-      <div class="flex items-center gap-3 bg-white/80 border border-slate-200 rounded-full px-3 py-2 shadow-md shadow-slate-200/80 flex-wrap">
-        <div class="flex flex-col gap-1 text-xs">
-          <strong id="userInfo" class="text-sm">جاري التحقق من المستخدم…</strong>
-          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200 text-[11px] text-slate-600">
-            🛡️ الدور الحالي:
-            <span id="userRoleChip" class="mono small">-</span>
+      <nav class="flex-1 px-2 py-3 text-sm text-slate-600 space-y-1">
+        <div class="px-3 py-2 text-[11px] text-slate-400">القائمة</div>
+        <button onclick="goPortal()" class="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-slate-50">
+          <span class="flex items-center gap-2">
+            <span>🏠</span><span>الرجوع للبوابة</span>
           </span>
-        </div>
-        <div class="flex gap-2 ml-auto flex-wrap text-xs">
-          <button type="button"
-                  onclick="goPortal()"
-                  class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-white border border-slate-200 hover:border-primary-500 hover:bg-slate-50 text-slate-700 transition text-xs">
-            ⬅ الرجوع للبوابة
-          </button>
-          <button type="button"
-                  onclick="goActivity()"
-                  class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-white border border-slate-200 hover:border-primary-500 hover:bg-slate-50 text-slate-700 transition text-xs">
-            📜 سجل النشاط
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <!-- ===== Sub header ===== -->
-    <section class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-      <div>
-        <h2 class="text-base font-semibold">نظرة عامة</h2>
-        <p class="text-sm text-slate-500">
-          إدارة المستخدمين المحليين، مراجعة طلبات التسجيل، والمزامنة مع Firestore.
-        </p>
-      </div>
-      <div class="text-[11px] text-slate-500">
-        بوابة تصاريح العمل /
-        <span class="mono small">admin</span>
-        / إدارة المستخدمين
-      </div>
-    </section>
-
-    <!-- ===== Stats ===== -->
-    <section class="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-      <!-- إجمالي المستخدمين -->
-      <article class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3.5 flex flex-col gap-1">
-        <div class="text-[11px] text-slate-500">إجمالي المستخدمين</div>
-        <div class="text-xl font-bold" id="statUsersTotal">0</div>
-        <div class="flex items-center justify-between text-[11px] text-slate-500 mt-1">
-          <span>كل الحسابات المسجلة</span>
-          <span class="px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200" id="usersCountLabel">0 مستخدم</span>
-        </div>
-      </article>
-
-      <!-- مفعّلين -->
-      <article class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3.5 flex flex-col gap-1">
-        <div class="text-[11px] text-slate-500">مستخدمون مفعّلون</div>
-        <div class="text-xl font-bold" id="statUsersActive">0</div>
-        <div class="flex items-center justify-between text-[11px] text-slate-500 mt-1">
-          <span>يمكنهم تسجيل الدخول</span>
-          <span class="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700">Active</span>
-        </div>
-      </article>
-
-      <!-- موقوفون -->
-      <article class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3.5 flex flex-col gap-1">
-        <div class="text-[11px] text-slate-500">مستخدمون موقوفون</div>
-        <div class="text-xl font-bold" id="statUsersInactive">0</div>
-        <div class="flex items-center justify-between text-[11px] text-slate-500 mt-1">
-          <span>ممنوعون من الوصول</span>
-          <span class="px-2 py-0.5 rounded-full bg-rose-50 border border-rose-200 text-rose-700">Suspended</span>
-        </div>
-      </article>
-
-      <!-- طلبات التسجيل -->
-      <article class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3.5 flex flex-col gap-1">
-        <div class="text-[11px] text-slate-500">طلبات التسجيل</div>
-        <div class="text-xl font-bold" id="statReqPending">0</div>
-        <div class="flex items-center justify-between text-[11px] text-slate-500 mt-1">
-          <span>طلبات معلّقة</span>
-          <span class="px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">
-            إجمالي: <span id="statReqTotal">0</span>
+        </button>
+        <button onclick="goActivity()" class="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-slate-50">
+          <span class="flex items-center gap-2">
+            <span>📜</span><span>سجل النشاط</span>
           </span>
-        </div>
-      </article>
-    </section>
-
-    <!-- ===== Main layout ===== -->
-    <main class="grid gap-4 lg:grid-cols-[minmax(0,2.1fr)_minmax(0,1.4fr)]">
-
-      <!-- ==== Users list card ==== -->
-      <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3">
-        <!-- Header -->
-        <div class="flex items-start justify-between gap-2">
-          <div>
-            <h2 class="text-base font-semibold">قائمة المستخدمين</h2>
-            <p class="text-xs text-slate-500">
-              المستخدمون المخزّنون محليًا في
-              <span class="mono small">ptw_users</span>.
-            </p>
-          </div>
-        </div>
-
-        <!-- Toolbar -->
-        <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-          <div class="flex items-center gap-2 w-full md:w-auto">
-            <input id="searchInput"
-                   type="text"
-                   placeholder="🔍 بحث بالاسم أو الإيميل..."
-                   class="w-full md:w-64 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500" />
-          </div>
-          <div class="flex flex-wrap items-center gap-2 text-xs">
-            <select id="filterRole"
-                    class="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500">
-              <option value="">كل الأدوار</option>
-              <option value="admin">Admin</option>
-              <option value="najran">Najran</option>
-              <option value="sharurah">Sharurah</option>
-              <option value="najran_viewer">Najran Viewer</option>
-              <option value="sharurah_viewer">Sharurah Viewer</option>
-            </select>
-            <select id="filterStatus"
-                    class="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500">
-              <option value="">كل الحالات</option>
-              <option value="active">مفعّل</option>
-              <option value="inactive">موقوف</option>
-            </select>
-            <button type="button"
-                    onclick="syncLocalUsersToFirestore()"
-                    class="inline-flex items-center gap-1 rounded-full bg-primary-500 hover:bg-primary-600 text-white px-3 py-1.5 text-xs font-medium shadow-sm">
-              ☁ مزامنة مع Firestore
-            </button>
-          </div>
-        </div>
-
-        <!-- Table -->
-        <div class="mt-2 rounded-xl border border-slate-200 overflow-hidden bg-slate-50">
-          <div class="max-h-[65vh] overflow-auto">
-            <table class="min-w-full text-xs">
-              <thead class="bg-slate-100 text-[11px] text-slate-600 sticky top-0 z-10">
-                <tr>
-                  <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">#</th>
-                  <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">اسم المستخدم</th>
-                  <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">الإيميل</th>
-                  <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">الدور</th>
-                  <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">الحالة</th>
-                  <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">أضيف في</th>
-                  <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">إجراءات</th>
-                </tr>
-              </thead>
-              <tbody id="usersBody" class="divide-y divide-slate-100 bg-white">
-                <tr id="emptyRow">
-                  <td colspan="7" class="text-center text-xs text-slate-500 px-3 py-6">
-                    لا يوجد مستخدمون مسجلون بعد.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==== Right panel (control + signup) ==== -->
-      <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3">
-        <!-- Header -->
-        <div class="flex items-start justify-between gap-2">
-          <div>
-            <h2 class="text-base font-semibold">لوحة التحكم</h2>
-            <p class="text-xs text-slate-500">
-              إضافة مستخدم جديد ومراجعة طلبات التسجيل.
-            </p>
-          </div>
-          <span id="reqCountLabel"
-                class="inline-flex items-center px-2 py-1 rounded-full bg-slate-50 border border-slate-200 text-[11px] text-slate-600">
-            0 طلب تسجيل
+        </button>
+        <div class="mt-4 px-3 py-2 text-[11px] text-slate-400">إدارة</div>
+        <div class="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-primary-50 text-primary-700 border border-primary-100">
+          <span class="flex items-center gap-2">
+            <span>👥</span><span>إدارة المستخدمين</span>
           </span>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-white border border-primary-100">أنت هنا</span>
         </div>
+      </nav>
+      <div class="px-4 py-3 border-t border-slate-100 text-[11px] text-slate-400">
+        © <span class="mono">PTW</span> – لوحة إدارة المستخدمين
+      </div>
+    </aside>
 
-        <!-- Tabs -->
-        <div class="flex border-b border-slate-200 text-xs">
-          <button type="button"
-                  class="tab-btn active relative px-3 py-2 rounded-t-xl border border-transparent text-slate-600 flex items-center gap-1"
-                  data-tab="addUser"
-                  onclick="switchTab('addUser')">
-            ➕ إضافة مستخدم
-          </button>
-          <button type="button"
-                  class="tab-btn relative px-3 py-2 rounded-t-xl border border-transparent text-slate-500 flex items-center gap-1"
-                  data-tab="signup"
-                  onclick="switchTab('signup')">
-            طلبات التسجيل
-            <span id="pendingBadge"
-                  style="display:none;"
-                  class="inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-rose-500 text-white text-[10px]">
-              0
-            </span>
-          </button>
-        </div>
+    <!-- ===== Main content ===== -->
+    <div class="flex-1 flex flex-col">
 
-        <!-- Tab body -->
-        <div class="border border-t-0 border-slate-200 rounded-b-2xl bg-slate-50 p-3">
-
-          <!-- Tab: add user -->
-          <div id="tab-addUser" class="tab-content active">
-            <form onsubmit="handleAddUser(event)" class="space-y-3 text-xs">
-              <div>
-                <label for="usernameInput" class="block mb-1 text-[11px] font-medium text-slate-700">
-                  اسم المستخدم (لتسجيل الدخول)
-                </label>
-                <input id="usernameInput"
-                       type="text"
-                       required
-                       class="w-full rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500" />
-              </div>
-
-              <div>
-                <label for="emailInput" class="block mb-1 text-[11px] font-medium text-slate-700">
-                  الإيميل (المستخدم في Firebase)
-                </label>
-                <input id="emailInput"
-                       type="email"
-                       required
-                       class="w-full rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500" />
-                <p class="text-[11px] text-slate-500 mt-1">
-                  مثال: eng.moustafa3013@gmail.com
-                </p>
-              </div>
-
-              <div>
-                <label for="passwordInput" class="block mb-1 text-[11px] font-medium text-slate-700">
-                  كلمة المرور
-                </label>
-                <input id="passwordInput"
-                       type="password"
-                       required
-                       class="w-full rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500" />
-              </div>
-
-              <div>
-                <label for="roleSelect" class="block mb-1 text-[11px] font-medium text-slate-700">
-                  الدور (Role)
-                </label>
-                <select id="roleSelect"
-                        required
-                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500">
-                  <option value="najran">Najran فقط</option>
-                  <option value="sharurah">Sharurah فقط</option>
-                  <option value="admin">Admin (كل المشاريع)</option>
-                  <option value="najran_viewer">Najran Viewer (عرض فقط)</option>
-                  <option value="sharurah_viewer">Sharurah Viewer (عرض فقط)</option>
-                </select>
-              </div>
-
-              <div class="flex items-center gap-2">
-                <input id="activeCheck"
-                       type="checkbox"
-                       checked
-                       class="w-4 h-4 rounded border-slate-300 text-primary-500 focus:ring-primary-500" />
-                <label for="activeCheck" class="text-xs text-slate-700">مستخدم مفعل</label>
-              </div>
-
-              <button type="submit"
-                      class="inline-flex items-center gap-1 rounded-full bg-primary-500 hover:bg-primary-600 text-white px-4 py-1.5 text-xs font-medium shadow-sm">
-                ➕ إضافة المستخدم
-              </button>
-            </form>
-          </div>
-
-          <!-- Tab: signup requests -->
-          <div id="tab-signup" class="tab-content">
-            <p class="text-[11px] text-slate-500 mb-2">
-              البيانات التالية قادمة من
-              <span class="mono small">Firestore → collection: signup_requests</span>
-            </p>
-            <div class="rounded-xl border border-slate-200 overflow-hidden bg-white">
-              <div class="max-h-[40vh] overflow-auto">
-                <table class="min-w-full text-xs">
-                  <thead class="bg-slate-100 text-[11px] text-slate-600 sticky top-0 z-10">
-                    <tr>
-                      <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">#</th>
-                      <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">اسم المستخدم</th>
-                      <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">الإيميل</th>
-                      <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">الجوال</th>
-                      <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">الرسالة</th>
-                      <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">الحالة</th>
-                      <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">تم الإرسال</th>
-                      <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">إجراءات</th>
-                    </tr>
-                  </thead>
-                  <tbody id="signupRequestsBody" class="divide-y divide-slate-100 bg-white">
-                    <tr id="signupEmptyRow">
-                      <td colspan="8" class="text-center text-xs text-slate-500 px-3 py-6">
-                        لا توجد طلبات تسجيل حتى الآن.
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+      <!-- Top bar -->
+      <header class="bg-white/80 backdrop-blur border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 lg:px-6 py-3 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 md:hidden">
+            <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-primary-500 to-sky-400 flex items-center justify-center text-white font-extrabold shadow-md shadow-primary-500/40">
+              PT
+            </div>
+            <div>
+              <div class="text-sm font-semibold">بوابة تصاريح العمل</div>
+              <div class="text-[11px] text-slate-500">إدارة المستخدمين</div>
             </div>
           </div>
 
+          <div class="flex-1 flex items-center justify-end gap-3">
+            <div class="hidden sm:flex flex-col items-end text-xs">
+              <strong id="userInfo" class="text-sm">جاري التحقق من المستخدم…</strong>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200 text-[11px] text-slate-600">
+                🛡️ الدور الحالي:
+                <span id="userRoleChip" class="mono small">-</span>
+              </span>
+            </div>
+            <div class="flex gap-2 text-xs">
+              <button type="button"
+                      onclick="goPortal()"
+                      class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-white border border-slate-200 hover:border-primary-500 hover:bg-slate-50 text-slate-700 transition">
+                ⬅ الرجوع للبوابة
+              </button>
+              <button type="button"
+                      onclick="goActivity()"
+                      class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-white border border-slate-200 hover:border-primary-500 hover:bg-slate-50 text-slate-700 transition">
+                📜 سجل النشاط
+              </button>
+            </div>
+          </div>
         </div>
-      </section>
-    </main>
+      </header>
+
+      <!-- Page content -->
+      <main class="flex-1 overflow-y-auto">
+        <div class="max-w-7xl mx-auto px-4 lg:px-6 py-5 space-y-5">
+
+          <!-- Sub header -->
+          <section class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+            <div>
+              <h1 class="text-lg font-semibold">إدارة المستخدمين</h1>
+              <p class="text-sm text-slate-500">
+                إدارة المستخدمين المحليين، مراجعة طلبات التسجيل، والمزامنة مع Firestore.
+              </p>
+            </div>
+            <div class="text-[11px] text-slate-500">
+              بوابة تصاريح العمل /
+              <span class="mono small">admin</span>
+              / إدارة المستخدمين
+            </div>
+          </section>
+
+          <!-- ===== Stats row ===== -->
+          <section class="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <!-- إجمالي المستخدمين -->
+            <article class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3.5 flex flex-col gap-1">
+              <div class="text-[11px] text-slate-500">إجمالي المستخدمين</div>
+              <div class="text-xl font-bold" id="statUsersTotal">0</div>
+              <div class="flex items-center justify-between text-[11px] text-slate-500 mt-1">
+                <span>كل الحسابات المسجلة</span>
+                <span class="px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200" id="usersCountLabel">0 مستخدم</span>
+              </div>
+            </article>
+
+            <!-- مفعّلين -->
+            <article class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3.5 flex flex-col gap-1">
+              <div class="text-[11px] text-slate-500">مستخدمون مفعّلون</div>
+              <div class="text-xl font-bold" id="statUsersActive">0</div>
+              <div class="flex items-center justify-between text-[11px] text-slate-500 mt-1">
+                <span>يمكنهم تسجيل الدخول</span>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700">Active</span>
+              </div>
+            </article>
+
+            <!-- موقوفون -->
+            <article class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3.5 flex flex-col gap-1">
+              <div class="text-[11px] text-slate-500">مستخدمون موقوفون</div>
+              <div class="text-xl font-bold" id="statUsersInactive">0</div>
+              <div class="flex items-center justify-between text-[11px] text-slate-500 mt-1">
+                <span>ممنوعون من الوصول</span>
+                <span class="px-2 py-0.5 rounded-full bg-rose-50 border border-rose-200 text-rose-700">Suspended</span>
+              </div>
+            </article>
+
+            <!-- طلبات التسجيل -->
+            <article class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3.5 flex flex-col gap-1">
+              <div class="text-[11px] text-slate-500">طلبات التسجيل</div>
+              <div class="text-xl font-bold" id="statReqPending">0</div>
+              <div class="flex items-center justify-between text-[11px] text-slate-500 mt-1">
+                <span>طلبات معلّقة</span>
+                <span class="px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">
+                  إجمالي: <span id="statReqTotal">0</span>
+                </span>
+              </div>
+            </article>
+          </section>
+
+          <!-- ===== Main layout: users + control panel ===== -->
+          <section class="grid gap-4 xl:grid-cols-[minmax(0,2.1fr)_minmax(0,1.4fr)]">
+
+            <!-- ==== Users list card ==== -->
+            <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3">
+              <!-- Header -->
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <h2 class="text-base font-semibold">قائمة المستخدمين</h2>
+                  <p class="text-xs text-slate-500">
+                    المستخدمون المخزّنون محليًا في
+                    <span class="mono small">ptw_users</span>.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Toolbar -->
+              <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                <div class="flex items-center gap-2 w-full md:w-auto">
+                  <input id="searchInput"
+                         type="text"
+                         placeholder="🔍 بحث بالاسم أو الإيميل..."
+                         class="w-full md:w-72 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500" />
+                </div>
+                <div class="flex flex-wrap items-center gap-2 text-xs">
+                  <select id="filterRole"
+                          class="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500">
+                    <option value="">كل الأدوار</option>
+                    <option value="admin">Admin</option>
+                    <option value="najran">Najran</option>
+                    <option value="sharurah">Sharurah</option>
+                    <option value="najran_viewer">Najran Viewer</option>
+                    <option value="sharurah_viewer">Sharurah Viewer</option>
+                  </select>
+                  <select id="filterStatus"
+                          class="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500">
+                    <option value="">كل الحالات</option>
+                    <option value="active">مفعّل</option>
+                    <option value="inactive">موقوف</option>
+                  </select>
+                  <button type="button"
+                          onclick="syncLocalUsersToFirestore()"
+                          class="inline-flex items-center gap-1 rounded-full bg-primary-500 hover:bg-primary-600 text-white px-3 py-1.5 text-xs font-medium shadow-sm">
+                    ☁ مزامنة مع Firestore
+                  </button>
+                </div>
+              </div>
+
+              <!-- Table -->
+              <div class="mt-2 rounded-xl border border-slate-200 overflow-hidden bg-slate-50">
+                <div class="max-h-[65vh] overflow-auto">
+                  <table class="min-w-full text-xs">
+                    <thead class="bg-slate-100 text-[11px] text-slate-600 sticky top-0 z-10">
+                      <tr>
+                        <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">#</th>
+                        <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">اسم المستخدم</th>
+                        <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">الإيميل</th>
+                        <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">الدور</th>
+                        <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">الحالة</th>
+                        <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">أضيف في</th>
+                        <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">إجراءات</th>
+                      </tr>
+                    </thead>
+                    <tbody id="usersBody" class="divide-y divide-slate-100 bg-white">
+                      <tr id="emptyRow">
+                        <td colspan="7" class="text-center text-xs text-slate-500 px-3 py-6">
+                          لا يوجد مستخدمون مسجلون بعد.
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <!-- ==== Right panel (control + signup) ==== -->
+            <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-4">
+              <!-- Header -->
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <h2 class="text-base font-semibold">لوحة التحكم</h2>
+                  <p class="text-xs text-slate-500">
+                    إضافة مستخدم جديد ومراجعة طلبات التسجيل.
+                  </p>
+                </div>
+                <span id="reqCountLabel"
+                      class="inline-flex items-center px-2 py-1 rounded-full bg-slate-50 border border-slate-200 text-[11px] text-slate-600">
+                  0 طلب تسجيل
+                </span>
+              </div>
+
+              <!-- Tabs -->
+              <div class="flex items-center gap-2 bg-slate-50 rounded-full p-1 border border-slate-200 text-xs">
+                <button type="button"
+                        class="tab-btn active"
+                        data-tab="addUser"
+                        onclick="switchTab('addUser')">
+                  ➕ إضافة مستخدم
+                </button>
+                <button type="button"
+                        class="tab-btn"
+                        data-tab="signup"
+                        onclick="switchTab('signup')">
+                  طلبات التسجيل
+                  <span id="pendingBadge"
+                        style="display:none;"
+                        class="inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-rose-500 text-white text-[10px]">
+                    0
+                  </span>
+                </button>
+              </div>
+
+              <!-- Tab body -->
+              <div class="border border-slate-200 rounded-2xl bg-slate-50 p-3">
+
+                <!-- Tab: add user -->
+                <div id="tab-addUser" class="tab-content active">
+                  <form onsubmit="handleAddUser(event)" class="space-y-3 text-xs">
+                    <div>
+                      <label for="usernameInput" class="block mb-1 text-[11px] font-medium text-slate-700">
+                        اسم المستخدم (لتسجيل الدخول)
+                      </label>
+                      <input id="usernameInput"
+                             type="text"
+                             required
+                             class="w-full rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500" />
+                    </div>
+
+                    <div>
+                      <label for="emailInput" class="block mb-1 text-[11px] font-medium text-slate-700">
+                        الإيميل (المستخدم في Firebase)
+                      </label>
+                      <input id="emailInput"
+                             type="email"
+                             required
+                             class="w-full rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500" />
+                      <p class="text-[11px] text-slate-500 mt-1">
+                        مثال: eng.moustafa3013@gmail.com
+                      </p>
+                    </div>
+
+                    <div>
+                      <label for="passwordInput" class="block mb-1 text-[11px] font-medium text-slate-700">
+                        كلمة المرور
+                      </label>
+                      <input id="passwordInput"
+                             type="password"
+                             required
+                             class="w-full rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500" />
+                    </div>
+
+                    <div>
+                      <label for="roleSelect" class="block mb-1 text-[11px] font-medium text-slate-700">
+                        الدور (Role)
+                      </label>
+                      <select id="roleSelect"
+                              required
+                              class="w-full rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500">
+                        <option value="najran">Najran فقط</option>
+                        <option value="sharurah">Sharurah فقط</option>
+                        <option value="admin">Admin (كل المشاريع)</option>
+                        <option value="najran_viewer">Najran Viewer (عرض فقط)</option>
+                        <option value="sharurah_viewer">Sharurah Viewer (عرض فقط)</option>
+                      </select>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                      <input id="activeCheck"
+                             type="checkbox"
+                             checked
+                             class="w-4 h-4 rounded border-slate-300 text-primary-500 focus:ring-primary-500" />
+                      <label for="activeCheck" class="text-xs text-slate-700">مستخدم مفعل</label>
+                    </div>
+
+                    <button type="submit"
+                            class="inline-flex items-center gap-1 rounded-full bg-primary-500 hover:bg-primary-600 text-white px-4 py-1.5 text-xs font-medium shadow-sm">
+                      ➕ إضافة المستخدم
+                    </button>
+                  </form>
+                </div>
+
+                <!-- Tab: signup requests -->
+                <div id="tab-signup" class="tab-content">
+                  <p class="text-[11px] text-slate-500 mb-2">
+                    البيانات التالية قادمة من
+                    <span class="mono small">Firestore → collection: signup_requests</span>
+                  </p>
+                  <div class="rounded-xl border border-slate-200 overflow-hidden bg-white">
+                    <div class="max-h-[40vh] overflow-auto">
+                      <table class="min-w-full text-xs">
+                        <thead class="bg-slate-100 text-[11px] text-slate-600 sticky top-0 z-10">
+                          <tr>
+                            <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">#</th>
+                            <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">اسم المستخدم</th>
+                            <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">الإيميل</th>
+                            <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">الجوال</th>
+                            <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">الرسالة</th>
+                            <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">الحالة</th>
+                            <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">تم الإرسال</th>
+                            <th class="px-3 py-2 text-right font-semibold border-b border-slate-200">إجراءات</th>
+                          </tr>
+                        </thead>
+                        <tbody id="signupRequestsBody" class="divide-y divide-slate-100 bg-white">
+                          <tr id="signupEmptyRow">
+                            <td colspan="8" class="text-center text-xs text-slate-500 px-3 py-6">
+                              لا توجد طلبات تسجيل حتى الآن.
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </section>
+
+          </section>
+        </div>
+      </main>
+    </div>
   </div>
 
   <!-- ===== Modal تغيير الدور ===== -->
@@ -467,8 +530,7 @@
     </div>
   </div>
 
-  <!-- ===== سكربت إدارة المستخدمين (نفس كودك السابق بالظبط) ===== -->
-  <!-- سكربت localStorage + حماية الصفحة + إدارة المستخدمين -->
+  <!-- ========= سكربت localStorage + حماية الصفحة + إدارة المستخدمين ========= -->
   <script>
     "use strict";
 
@@ -479,6 +541,7 @@
     let SEARCH_TERM = "";
     let ROLE_MODAL_USERNAME = null;
 
+    // تنسيق التاريخ
     function formatCreatedAt(value) {
       if (!value) return "-";
       try {
@@ -495,6 +558,7 @@
       return "-";
     }
 
+    // إحصائيات المستخدمين
     function updateUserStats(list) {
       if (!Array.isArray(list)) list = [];
       const total = list.length;
@@ -512,6 +576,7 @@
       if (usersCountLabel)   usersCountLabel.textContent   = total + " مستخدم";
     }
 
+    // إحصائيات طلبات التسجيل (يُستدعى من سكربت Firestore)
     function updateSignupStatsFromDocs(docs) {
       const all = docs || [];
       const total = all.length;
@@ -542,6 +607,7 @@
     }
     window.updateSignupStats = updateSignupStatsFromDocs;
 
+    // حماية الصفحة: admin فقط
     (function protectUsersPage() {
       try {
         const raw = localStorage.getItem("aln_session");
@@ -586,6 +652,7 @@
     function goPortal(){ window.location.href = "/portal"; }
     function goActivity(){ window.location.href = "/activity.html"; }
 
+    // قراءة/كتابة المستخدمين من localStorage
     function readUsers(){
       const raw = localStorage.getItem(USERS_KEY);
       if (!raw) return [];
@@ -605,6 +672,7 @@
       }
     }
 
+    // التأكد من وجود الأدمن الحالي
     function ensureCurrentAdminInUsers(){
       if (!CURRENT_USER) return;
       const list = readUsers();
@@ -622,6 +690,7 @@
       }
     }
 
+    // تطبيق البحث/الفلاتر
     function applyUserFilters(list){
       let filtered = Array.isArray(list) ? [...list] : [];
       if (SEARCH_TERM){
@@ -641,6 +710,7 @@
       return filtered;
     }
 
+    // تحميل وعرض المستخدمين
     function loadUsers(){
       const tbody = document.getElementById("usersBody");
       const emptyRow = document.getElementById("emptyRow");
@@ -731,6 +801,7 @@
       });
     }
 
+    // تهيئة البحث + الفلاتر
     function initFilters(){
       const searchInput  = document.getElementById("searchInput");
       const filterRole   = document.getElementById("filterRole");
@@ -756,6 +827,7 @@
       }
     }
 
+    // تبويب البانل
     function switchTab(name){
       const buttons = document.querySelectorAll(".tab-btn");
       const contents = document.querySelectorAll(".tab-content");
@@ -768,6 +840,7 @@
     }
     window.switchTab = switchTab;
 
+    // إضافة مستخدم جديد (محليًا + إرسال مباشر إلى Firestore)
     async function handleAddUser(evt){
       evt.preventDefault();
 
@@ -813,6 +886,7 @@
       loadUsers();
       alert("تم إضافة المستخدم إلى القائمة (محليًا).");
 
+      // إرسال مباشر إلى Firestore (app_users)
       if (window.addUserDirectToFirestore){
         window.addUserDirectToFirestore({
           username,
@@ -833,6 +907,7 @@
       roleSelect.value    = "najran";
     }
 
+    // تفعيل/إيقاف
     function toggleActive(username){
       let list = readUsers();
       const idx = list.findIndex(u => u.username === username);
@@ -847,6 +922,7 @@
       loadUsers();
     }
 
+    // حذف
     function deleteUser(username){
       if (!confirm("هل أنت متأكد من حذف هذا المستخدم من هذه القائمة؟")) return;
       let list = readUsers();
@@ -855,6 +931,7 @@
       loadUsers();
     }
 
+    // تغيير باسورد
     function handleChangePassword(username){
       const list = readUsers();
       const idx = list.findIndex(u => u.username === username);
@@ -884,6 +961,7 @@
       alert("تم تحديث كلمة المرور بنجاح.");
     }
 
+    // مودال تغيير الدور
     function openRoleModal(username){
       const list = readUsers();
       const user = list.find(u => u.username === username);
@@ -942,6 +1020,7 @@
       alert("تم تحديث الدور بنجاح (محليًا).");
     }
 
+    // نعرّض الدوال المهمة للـ window
     window.readUsers = readUsers;
     window.loadUsers = loadUsers;
     window.toggleActive = toggleActive;
@@ -952,7 +1031,7 @@
     window.saveRoleFromModal = saveRoleFromModal;
   </script>
 
-  <!-- سكربت Firebase / Firestore + Auth (نفس كودك) -->
+  <!-- ========= سكربت Firebase / Firestore + Auth ========= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import {
@@ -1089,6 +1168,7 @@
       console.error("Firestore init / query error:", e);
     }
 
+    // إضافة مباشرة إلى app_users عند إنشاء مستخدم من لوحة التحكم
     window.addUserDirectToFirestore = async function(user){
       try{
         const username = (user.username || "").trim();
@@ -1114,6 +1194,7 @@
           source: "panel_add"
         },{merge:true});
 
+        // بعد الحفظ في app_users نسألك لو عايز نعمل مستخدم في Firebase Auth
         if (password && password.length >= 6){
           const ok = confirm(
             "✅ تم حفظ المستخدم في Firestore (app_users).\nهل تريد أيضًا إنشاء مستخدم في Firebase Auth بنفس الإيميل وكلمة المرور؟"
@@ -1138,6 +1219,7 @@
       }
     };
 
+    // مزامنة ptw_users -> app_users (للهجرة/المستخدمين القدامى)
     window.syncLocalUsersToFirestore = async function (){
       if (typeof window.readUsers !== "function"){
         alert("تعذر قراءة المستخدمين المحليين.");
@@ -1185,6 +1267,7 @@
       );
     };
 
+    // إضافة/تحديث مستخدم محليًا من طلب تسجيل
     function addLocalUserFromRequest(data, role){
       try{
         const username = (data.username || "").trim();
@@ -1242,6 +1325,7 @@
       }
     }
 
+    // APPROVE
     window.approveSignup = async function(id){
       const data = requestsCache.get(id);
       if (!data){
@@ -1323,6 +1407,7 @@
       }
     };
 
+    // REJECT
     window.rejectSignup = async function(id){
       const data = requestsCache.get(id);
       if (!data){

@@ -33,7 +33,14 @@
       padding:0 16px 110px;
       background: radial-gradient(circle at top, #1e293b 0, #020617 55%, #000 100%);
     }
-    .overlay{position:fixed;inset:0;backdrop-filter:blur(5px) brightness(.55);z-index:0}
+   .overlay{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  /* خلفية غامقة شفافة بدل الـ blur */
+  background: radial-gradient(circle at top, rgba(15,23,42,.85), rgba(0,0,0,.95));
+}
+
     .container{
       position:relative;
       z-index:1;
@@ -171,12 +178,27 @@
 
     .section-title{max-width:980px;margin:22px auto 10px; font-size:1.1rem; border-bottom:1px solid #475569; padding-bottom:8px}
     .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:18px; max-width:980px; margin:0 auto}
-    .card{
-      display:block; text-decoration:none; color:var(--text); text-align:right;
-      background:var(--card-bg); border-radius:20px; padding:16px 18px; backdrop-filter:blur(6px);
-      transition:.25s; border:1px solid rgba(148,163,184,.45); box-shadow:0 18px 45px rgba(15,23,42,.7);
-    }
-    .card:hover{ transform:translateY(-4px) scale(1.01); background:var(--card-bg-hover); box-shadow:0 26px 65px rgba(59,130,246,.6)}
+   .card{
+  display:block;
+  text-decoration:none;
+  color:var(--text);
+  text-align:right;
+  background:var(--card-bg);
+  border-radius:20px;
+  padding:16px 18px;
+  /* شيل الـ backdrop-filter */
+  /* backdrop-filter:blur(6px); */
+  transition:.2s;
+  border:1px solid rgba(148,163,184,.35);
+  box-shadow:0 10px 26px rgba(15,23,42,.55);
+}
+
+.card:hover{
+  transform:translateY(-3px); /* حركة أبسط */
+  background:var(--card-bg-hover);
+  box-shadow:0 16px 40px rgba(59,130,246,.45);
+}
+
     .card:focus{ outline:3px solid rgba(96,165,250,.6); outline-offset:2px }
     .top{display:flex; gap:10px; align-items:center; margin-bottom:6px}
     .title{font-weight:700}
@@ -754,7 +776,11 @@
       if(q){ const si=document.getElementById('searchInput'); si.value=q; filterPermits(); }
 
       const img = new Image();
-      img.onload = ()=> document.body.style.background = "#0f172a url('https://i.postimg.cc/RVdVFtz0/hero.png') no-repeat center/cover fixed";
+     img.onload = () => {
+  document.body.style.background =
+    "#0f172a url('https://i.postimg.cc/RVdVFtz0/hero.png') center center / cover no-repeat";
+};
+
       img.src = 'https://i.postimg.cc/RVdVFtz0/hero.png';
     })();
 

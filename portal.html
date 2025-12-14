@@ -19,27 +19,46 @@
   <meta property="og:image" content="./og-image.png">
 
   <style>
-    :root{
-      --card-bg: rgba(255,255,255,.07);
-      --card-bg-hover: rgba(255,255,255,.10);
-      --text:#fff; --muted:#d1d5db; --focus:#60a5fa;
-      --accent-najran:#2563eb; --accent-sharurah:#16a34a;
-      --panel: rgba(0,0,0,.35); --panel-brd: rgba(255,255,255,.16);
-    }
+   :root{
+  /* الزجاج أفتح شوية */
+  --card-bg: rgba(255,255,255,.11);
+  --card-bg-hover: rgba(255,255,255,.18);
+
+  --text:#f9fafb;
+  --muted:#e5e7eb;
+  --focus:#60a5fa;
+
+  --accent-najran:#2563eb;
+  --accent-sharurah:#16a34a;
+
+  /* البانلز أفتح وبرواز أوضح */
+  --panel: rgba(15,23,42,.78);
+  --panel-brd: rgba(148,163,184,.55);
+}
+
     *{box-sizing:border-box}
-    body{
-      font-family:'Segoe UI',system-ui,Tahoma; margin:0; color:var(--text);
-      background:#0f172a;
-      padding:0 16px 110px;
-      background: radial-gradient(circle at top, #1e293b 0, #020617 55%, #000 100%);
-    }
-   .overlay{
+   body{
+  font-family:'Segoe UI',system-ui,Tahoma;
+  margin:0;
+  color:var(--text);
+  padding:0 16px 110px;
+
+  /* خلفية أفتح شوية مع إضاءة فوق */
+  background:
+    radial-gradient(circle at top, rgba(148,163,184,.35) 0, rgba(15,23,42,1) 55%, #020617 100%),
+    linear-gradient(135deg, #0f172a, #020617);
+}
+
+ .overlay{
   position:fixed;
   inset:0;
   z-index:0;
-  /* خلفية غامقة شفافة بدل الـ blur */
-  background: radial-gradient(circle at top, rgba(15,23,42,.85), rgba(0,0,0,.95));
+
+  /* طبقة زجاجية خفيفة مش سودا قوي */
+  background:
+    linear-gradient(135deg, rgba(15,23,42,.45), rgba(15,23,42,.80));
 }
+
 
     .container{
       position:relative;

@@ -5,114 +5,191 @@
   <title>سجل النشاط | بوابة تصاريح العمل</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="dark light" />
+
   <style>
     :root{
-      --panel-bg: rgba(15,23,42,.98);
-      --panel-brd: rgba(148,163,184,.7);
+      --bg: radial-gradient(circle at top, #1e293b 0, #020617 55%, #000 100%);
+      --panel: rgba(15,23,42,.92);
+      --panel-brd: rgba(148,163,184,.65);
       --accent: #38bdf8;
+      --accent-soft: rgba(56,189,248,.14);
       --text:#f9fafb;
       --muted:#cbd5f5;
+      --danger:#f97373;
     }
-    *{box-sizing:border-box}
+
+    *{box-sizing:border-box;}
+
     body{
       margin:0;
       font-family:'Segoe UI',system-ui,Tahoma;
-      background: radial-gradient(circle at top, #1e293b 0, #020617 55%, #000 100%);
+      background:var(--bg);
       color:var(--text);
-      padding:20px 12px 60px;
+      padding:20px 14px 80px;
     }
+
     .container{
       max-width:1100px;
       margin:0 auto;
     }
-    h1{
-      margin:0 0 8px;
-      font-size:1.8rem;
-      text-align:right;
-    }
-    .subtitle{
-      margin:0 0 18px;
-      color:var(--muted);
-      font-size:.95rem;
-      text-align:right;
-    }
+
+    /* شريط المستخدم العلوي */
     .user-bar{
-      margin:0 0 18px;
-      padding:10px 14px;
-      border-radius:12px;
-      background:linear-gradient(135deg, rgba(15,23,42,.95), rgba(30,64,175,.92));
+      margin:0 0 20px;
+      padding:12px 16px;
+      border-radius:16px;
+      background:linear-gradient(135deg, rgba(15,23,42,.96), rgba(30,64,175,.95));
       border:1px solid var(--panel-brd);
       display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:8px;
-      box-shadow:0 18px 40px rgba(15,23,42,.8);
+      gap:10px;
+      box-shadow:0 22px 55px rgba(15,23,42,.9);
       font-size:.9rem;
     }
+
+    .user-main{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .user-main strong{
+      font-size:.95rem;
+    }
+
+    .user-meta{
+      color:var(--muted);
+      font-size:.8rem;
+    }
+
+    .user-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      justify-content:flex-end;
+    }
+
     .btn{
-      border-radius:10px;
+      border-radius:999px;
       border:1px solid rgba(148,163,184,.8);
       background:rgba(15,23,42,.9);
       color:var(--text);
-      padding:6px 12px;
+      padding:7px 14px;
       cursor:pointer;
       font-weight:600;
-      font-size:.9rem;
+      font-size:.85rem;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
     }
+
     .btn:hover{
       box-shadow:0 0 0 1px rgba(56,189,248,.7);
     }
+
+    .btn-danger{
+      border-color:#fecaca;
+      background:rgba(127,29,29,.9);
+      color:#fee2e2;
+    }
+
+    h1{
+      margin:0 0 6px;
+      font-size:1.9rem;
+      text-align:right;
+    }
+
+    .subtitle{
+      margin:0 0 18px;
+      color:var(--muted);
+      font-size:.92rem;
+      text-align:right;
+    }
+
+    .badge-strip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.7);
+      background:rgba(15,23,42,.9);
+      font-size:.8rem;
+      margin-bottom:10px;
+    }
+
+    .status-dot{
+      width:9px;
+      height:9px;
+      border-radius:999px;
+      background:#22c55e;
+    }
+
     .panel{
-      background:var(--panel-bg);
-      border-radius:16px;
+      margin-top:8px;
+      background:var(--panel);
+      border-radius:18px;
       border:1px solid var(--panel-brd);
       padding:14px 14px 10px;
-      box-shadow:0 16px 40px rgba(15,23,42,.8);
+      box-shadow:0 20px 55px rgba(15,23,42,.9);
     }
+
     .panel-head{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      margin-bottom:10px;
       gap:10px;
+      margin-bottom:8px;
       font-size:.9rem;
     }
+
     .panel-head h2{
       margin:0;
       font-size:1rem;
     }
-    .badge{
+
+    .count-pill{
       display:inline-flex;
       align-items:center;
       gap:6px;
-      padding:3px 9px;
+      padding:4px 10px;
       border-radius:999px;
-      border:1px solid rgba(148,163,184,.8);
+      background:var(--accent-soft);
+      border:1px solid rgba(56,189,248,.6);
       font-size:.8rem;
-      background:rgba(15,23,42,.9);
     }
-    .badge-dot{
-      width:8px;
-      height:8px;
-      border-radius:999px;
-      background:#22c55e;
+
+    .count-pill span:first-child{
+      font-weight:700;
+    }
+
+    .scroll-wrap{
+      margin-top:8px;
+      max-height:65vh;
+      overflow:auto;
+      border-radius:12px;
+      border:1px solid rgba(30,64,175,.7);
     }
 
     table{
       width:100%;
       border-collapse:collapse;
-      font-size:.86rem;
+      font-size:.84rem;
       direction:rtl;
     }
+
     thead{
       background:rgba(15,23,42,1);
     }
+
     th,td{
       padding:8px 6px;
-      border-bottom:1px solid rgba(51,65,85,.9);
+      border-bottom:1px solid rgba(31,41,55,.95);
       text-align:right;
       vertical-align:top;
     }
+
     th{
       font-weight:700;
       color:#e5e7eb;
@@ -121,71 +198,137 @@
       background:rgba(15,23,42,.98);
       z-index:1;
     }
+
     tbody tr:nth-child(even){
-      background:rgba(15,23,42,.7);
+      background:rgba(15,23,42,.8);
     }
+
     .mono{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
       direction:ltr;
       text-align:left;
     }
-    .small{
-      font-size:.78rem;
-    }
+
+    .small{font-size:.78rem;}
+
+    .time-cell{white-space:nowrap;}
+
     .empty{
       text-align:center;
-      padding:20px 6px;
+      padding:24px 8px;
       color:var(--muted);
       font-size:.9rem;
     }
-    .time-cell{
-      white-space:nowrap;
-    }
-    .scroll-wrap{
-      max-height:65vh;
-      overflow:auto;
+
+    .error-msg{
+      margin-top:10px;
+      padding:8px 10px;
       border-radius:10px;
-      border:1px solid rgba(30,64,175,.6);
+      border:1px solid rgba(248,113,113,.8);
+      background:rgba(127,29,29,.85);
+      color:#fee2e2;
+      font-size:.8rem;
     }
-    @media(max-width:700px){
-      th:nth-child(1),
-      td:nth-child(1){
-        display:none;
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      padding:2px 8px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.6);
+      font-size:.75rem;
+      background:rgba(15,23,42,.96);
+      color:var(--muted);
+    }
+
+    .type-pill{
+      display:inline-flex;
+      align-items:center;
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:.75rem;
+      border:1px solid rgba(148,163,184,.6);
+      background:rgba(15,23,42,.96);
+    }
+
+    .type-pill[data-kind="login"]{
+      border-color:#4ade80;
+      color:#bbf7d0;
+    }
+    .type-pill[data-kind="permit"]{
+      border-color:#38bdf8;
+      color:#bae6fd;
+    }
+    .type-pill[data-kind="portal"]{
+      border-color:#fbbf24;
+      color:#fef3c7;
+    }
+
+    @media(max-width:780px){
+      .user-bar{
+        flex-direction:column;
+        align-items:flex-start;
       }
       .panel-head{
         flex-direction:column;
         align-items:flex-start;
       }
-      .user-bar{
-        flex-direction:column;
-        align-items:flex-start;
+    }
+
+    @media(max-width:640px){
+      body{padding:14px 10px 70px;}
+      h1{font-size:1.6rem;}
+      .subtitle{font-size:.86rem;}
+      th:nth-child(1),
+      td:nth-child(1){
+        display:none;
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
+    <!-- شريط المستخدم -->
     <div class="user-bar">
-      <div id="userInfo">👋 جاري التحقق من المستخدم…</div>
-      <div style="display:flex;gap:8px">
-        <button type="button" class="btn" onclick="goPortal()">الرجوع للبوابة</button>
-        <button type="button" class="btn" onclick="clearLog()">مسح السجل من النظام</button>
+      <div class="user-main">
+        <strong id="userWelcome">👋 جاري التحقق من المستخدم…</strong>
+        <div class="user-meta" id="userMeta"></div>
+      </div>
+      <div class="user-actions">
+        <button type="button" class="btn" onclick="goPortal()">
+          ⬅️ الرجوع للبوابة
+        </button>
+        <button type="button" class="btn" onclick="clearLocalLog()">
+          🧹 مسح السجل من هذا المتصفح
+        </button>
+        <button type="button" class="btn btn-danger" onclick="clearServerLog()">
+          ⚠️ مسح السجل من النظام
+        </button>
       </div>
     </div>
 
+    <span class="badge-strip">
+      <span class="status-dot"></span>
+      <span>هذا السجل مركزي من قاعدة بيانات Firestore لجميع المستخدمين.</span>
+    </span>
+
     <h1>سجل النشاط</h1>
     <p class="subtitle">
-      هذه الصفحة تعرض سجل النشاط المسجَّل على نظام البوابة لجميع المستخدمين.
+      تعرض هذه الصفحة جميع الأحداث المسجّلة على نظام بوابة التصاريح
+      (تسجيل دخول، فتح بوابة، فتح تصاريح، تبديل مشروع، تسجيل خروج، وغيرها).
     </p>
 
     <div class="panel">
       <div class="panel-head">
         <h2>أحدث الأحداث المسجّلة</h2>
-        <span id="countBadge" class="badge">
-          <span class="badge-dot"></span>
-          <span id="eventsCount">0</span> حركات
-        </span>
+        <div class="count-pill">
+          <span id="eventsCount">0</span>
+          <span>حركة</span>
+        </div>
       </div>
+
+      <div id="errorBox" class="error-msg" style="display:none;"></div>
 
       <div class="scroll-wrap">
         <table>
@@ -200,22 +343,25 @@
             </tr>
           </thead>
           <tbody id="logBody">
-            <tr>
-              <td colspan="6" class="empty">جاري تحميل سجل النشاط…</td>
+            <tr id="emptyRow">
+              <td colspan="6" class="empty">
+                لا توجد بيانات في سجل النشاط بعد.
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
-
     </div>
   </div>
 
-  <!-- 🔗 ربط الصفحة بملف سجل النشاط (Firebase / Firestore) -->
+  <!-- سكربت سجل النشاط المركزي -->
   <script type="module" src="activity-log.js"></script>
 
-  <script type="module">
+  <!-- سكربت من نوع عادي (عشان الدوال تكون Global للـ onclick) -->
+  <script>
     let CURRENT_USER = null;
 
+    // حماية الصفحة - مسموح فقط للـ admin
     (function protectActivityPage(){
       try{
         const raw = localStorage.getItem("aln_session");
@@ -232,16 +378,22 @@
           return;
         }
 
-        if (session.role !== "admin"){
+        if ((session.role || "").toLowerCase() !== "admin"){
           alert("هذه الصفحة متاحة لمسؤول النظام (admin) فقط.");
           window.location.href = "/portal";
           return;
         }
 
         CURRENT_USER = session;
-        const userInfo = document.getElementById("userInfo");
-        if (userInfo){
-          userInfo.textContent = `👋 مرحبًا ${session.username} — دورك: ${session.role}`;
+
+        const welcomeEl = document.getElementById("userWelcome");
+        const metaEl    = document.getElementById("userMeta");
+        if (welcomeEl){
+          welcomeEl.textContent = `👋 مرحبًا ${session.username} — دورك: ${session.role}`;
+        }
+        if (metaEl){
+          const t = new Date();
+          metaEl.textContent = `تم فتح الصفحة في ${t.toLocaleString("ar-EG")}`;
         }
       } catch(e){
         console.error(e);
@@ -261,65 +413,118 @@
       return d.toLocaleString("ar-EG");
     }
 
+    function classifyType(type){
+      const t = (type || "").toUpperCase();
+      if (t.startsWith("LOGIN") || t === "LOGOUT") return "login";
+      if (t.startsWith("PERMIT") || t === "OPEN_PERMIT") return "permit";
+      if (t === "PORTAL_OPEN" || t === "SWITCH_PROJECT") return "portal";
+      return "";
+    }
+
     async function loadLog(){
-      const tbody     = document.getElementById("logBody");
-      const countSpan = document.getElementById("eventsCount");
+      const tbody    = document.getElementById("logBody");
+      const emptyRow = document.getElementById("emptyRow");
+      const countEl  = document.getElementById("eventsCount");
+      const errorBox = document.getElementById("errorBox");
 
       if (!tbody) return;
 
+      errorBox.style.display = "none";
+      errorBox.textContent = "";
+
+      let list = [];
+
       try{
-        let list = await window.fetchActivityLog();
-
-        if (!Array.isArray(list) || !list.length){
-          tbody.innerHTML = `
-            <tr>
-              <td colspan="6" class="empty">لا توجد بيانات في سجل النشاط حتى الآن.</td>
-            </tr>`;
-          if (countSpan) countSpan.textContent = "0";
-          return;
+        if (window.fetchActivityLog){
+          list = await window.fetchActivityLog();
+        } else {
+          const raw = localStorage.getItem("ptw_activity_log");
+          list = raw ? (JSON.parse(raw) || []) : [];
         }
+      }catch(e){
+        console.error("Error loading activity log:", e);
+        errorBox.style.display = "block";
+        errorBox.textContent = "حدث خطأ أثناء الاتصال بقاعدة البيانات. سيتم عرض أي سجل محلي متاح (إن وجد).";
 
-        list = list.slice().reverse();
-
-        tbody.innerHTML = "";
-        list.forEach((item, index) => {
-          const tr = document.createElement("tr");
-          const detailsText = item.details ? JSON.stringify(item.details) : "";
-
-          tr.innerHTML = `
-            <td>${index + 1}</td>
-            <td class="time-cell">${formatTime(item.time)}</td>
-            <td>${item.user || "-"}</td>
-            <td>${item.role || "-"}</td>
-            <td class="mono small">${item.type || "-"}</td>
-            <td class="mono small">${detailsText}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-
-        if (countSpan) countSpan.textContent = String(list.length);
-      } catch(err){
-        console.error("Error loading activity log:", err);
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="6" class="empty">حدث خطأ أثناء تحميل سجل النشاط.</td>
-          </tr>`;
-        if (countSpan) countSpan.textContent = "0";
+        // محاولة أخيرة من الـ localStorage
+        try{
+          const raw = localStorage.getItem("ptw_activity_log");
+          list = raw ? (JSON.parse(raw) || []) : [];
+        }catch(_){}
       }
+
+      if (!Array.isArray(list)) list = [];
+
+      // الأحدث أولاً
+      list = list.slice().sort((a,b)=>{
+        const ta = a.time || "";
+        const tb = b.time || "";
+        return ta < tb ? 1 : -1;
+      });
+
+      if (!list.length){
+        tbody.innerHTML = "";
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="6" class="empty">لا توجد بيانات في سجل النشاط بعد.</td>`;
+        tbody.appendChild(tr);
+        if (countEl) countEl.textContent = "0";
+        return;
+      }
+
+      tbody.innerHTML = "";
+      list.forEach((item, index) => {
+        const tr = document.createElement("tr");
+        const detailsText = item.details ? JSON.stringify(item.details) : "";
+        const kind = classifyType(item.type);
+
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td class="time-cell small mono">${formatTime(item.time)}</td>
+          <td class="small">${item.user || "-"}</td>
+          <td class="small">
+            <span class="tag">
+              <span></span>
+              <span>${item.role || "-"}</span>
+            </span>
+          </td>
+          <td>
+            <span class="type-pill small" data-kind="${kind}">
+              ${item.type || "-"}
+            </span>
+          </td>
+          <td class="mono small">${detailsText}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      if (countEl) countEl.textContent = String(list.length);
     }
 
-    async function clearLog(){
-      if (!confirm("هل أنت متأكد من مسح سجل النشاط من النظام بالكامل؟")) return;
+    async function clearServerLog(){
+      if (!window.clearActivityLog){
+        alert("لا يمكن مسح سجل النظام حاليًا، ملف activity-log غير متوفر.");
+        return;
+      }
+      if (!confirm("⚠ هل أنت متأكد من مسح سجل النشاط بالكامل من النظام (Firestore)؟")) return;
+
       try{
         await window.clearActivityLog();
-        loadLog();
-      } catch(err){
-        console.error("Error clearing log:", err);
-        alert("حدث خطأ أثناء مسح السجل.");
+        await loadLog();
+        alert("تم مسح سجل النشاط من النظام.");
+      }catch(e){
+        console.error("clearServerLog error:", e);
+        alert("تعذر مسح السجل من النظام في الوقت الحالي.");
       }
     }
 
-    loadLog();
+    function clearLocalLog(){
+      if (!confirm("هل أنت متأكد من مسح السجل المحلي من هذا المتصفح فقط؟")) return;
+      localStorage.removeItem("ptw_activity_log");
+      loadLog();
+    }
+
+    // تحميل السجل عند فتح الصفحة
+    document.addEventListener("DOMContentLoaded", loadLog);
   </script>
 </body>
 </html>

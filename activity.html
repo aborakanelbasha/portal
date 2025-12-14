@@ -213,10 +213,9 @@
   <!-- 🔗 ربط الصفحة بملف سجل النشاط (Firebase / Firestore) -->
   <script type="module" src="activity-log.js"></script>
 
-  <script>
+  <script type="module">
     let CURRENT_USER = null;
 
-    // حماية الصفحة - مسموح للـ admin فقط
     (function protectActivityPage(){
       try{
         const raw = localStorage.getItem("aln_session");
@@ -233,7 +232,6 @@
           return;
         }
 
-        // لو حابب تخليها مفتوحة للجميع، شيل الشرط ده
         if (session.role !== "admin"){
           alert("هذه الصفحة متاحة لمسؤول النظام (admin) فقط.");
           window.location.href = "/portal";
@@ -263,7 +261,6 @@
       return d.toLocaleString("ar-EG");
     }
 
-    // ✅ تحميل السجل من Firestore
     async function loadLog(){
       const tbody     = document.getElementById("logBody");
       const countSpan = document.getElementById("eventsCount");
@@ -271,7 +268,6 @@
       if (!tbody) return;
 
       try{
-        // الدالة دي جاية من activity-log.js
         let list = await window.fetchActivityLog();
 
         if (!Array.isArray(list) || !list.length){
@@ -283,7 +279,6 @@
           return;
         }
 
-        // نخلي الأحدث فوق
         list = list.slice().reverse();
 
         tbody.innerHTML = "";
@@ -313,11 +308,10 @@
       }
     }
 
-    // ✅ مسح السجل من Firestore
     async function clearLog(){
       if (!confirm("هل أنت متأكد من مسح سجل النشاط من النظام بالكامل؟")) return;
       try{
-        await window.clearActivityLog(); // من activity-log.js
+        await window.clearActivityLog();
         loadLog();
       } catch(err){
         console.error("Error clearing log:", err);
@@ -325,7 +319,6 @@
       }
     }
 
-    // تحميل السجل عند فتح الصفحة
     loadLog();
   </script>
 </body>
